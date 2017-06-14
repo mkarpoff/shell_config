@@ -1,0 +1,77 @@
+#!/bin/bash
+# Prompt function because PROMPT_COMMAND is awesome
+function set_prompt() {
+
+	# Regular Colors
+#	RED='\[\e[1;31m\]'          # Red
+#	GREEN='\[\e[1;32m\]'        # Green
+#	ORANGE='\[\e[0;33m\]'       # Yellow
+#	BLUE='\[\e[1;34m\]'         # Blue
+#	PURPLE='\[\e[0;35m\]'       # Purple
+#	CYAN='\[\e[1;36m\]'         # Cyan
+#	WHITE='\[\e[0;37m\]'  
+	plen=4
+
+	# GIT STUFF
+	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
+		then
+			if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
+				 --cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
+				 --quiet --ignore-submodules 2>/dev/null
+      then 
+			 	dirty=""
+				plen=$(expr $plen + 0)
+	    else
+	      dirty="${RED}*"
+				plen=$(expr $plen + 1)
+	    fi
+	    _branch=$(git symbolic-ref HEAD 2>/dev/null)
+	    _branch=${_branch#refs/heads/} # apparently faster than sed
+	    branch="" # need this to clear it when we leave a repo
+	    if [[ -n $_branch ]]; then
+	      branch="$RED[${ORANGE}${_branch}${dirty}$RED]"
+				plen=$(expr $plen + ${#_branch})
+				plen=$(expr $plen + 2) # for square brackets
+	    fi
+	else
+		branch=""
+	fi
+	# Virtual Env stuff
+	if [[ $VIRTUAL_ENV != "" ]]; then
+		_venv=${VIRTUAL_ENV##*/}
+		venv="${RED}(${ORANGE}${_venv}${RED})"
+		venv="\[\e[1;31m\](\[\e[0;33m\]${_venv}\[\e[1;31m\])"
+		plen=$(expr $plen + ${#_venv})
+		plen=$(expr $plen + 2)
+	else
+		venv=""
+	fi	
+
+	# Display Username
+	#USRIN="$RED{$GREEN\h$RED}"
+	USRIN="\[\e[1;31m\]{\[\e[1;32m\]\h\[\e[1;31m\]}"
+	plen=$(expr $plen + ${#HOSTNAME}) #length of username
+	plen=$(expr $plen + ${#PWD})
+	if [ "${PWD##$HOME}" != "${PWD}" ]; then
+		plen=$(expr $plen - ${#HOME})
+		plen=$(expr $plen + 4)
+	else
+		plen=$(expr $plen + 3)
+	fi
+
+	# Time
+	#CTIME="$CYAN\@"
+	CTIME="\[\e[1;36m\]\@"
+
+	#ps1a="$RED┌─$USRIN${branch}${venv}$RED<$BLUE\w$RED >"
+	#ps1b="$RED└─>$WHITE"
+	ps1a="\[\e[1;31m\]┌─$USRIN${branch}${venv}\[\e[1;31m\]<\[\e[1;34m\]\w\[\e[1;31m\] >"
+	ps1b="\[\e[1;31m\]└─>\[\e[0;37m\]"
+	padding=$(expr $COLUMNS - $plen)
+	export PS1="\r$ps1a`printf "%${padding}s" "${CTIME}"`\r\n$ps1b"
+	export PS2="$ps1b"
+}
+
+export PROMPT_COMMAND=set_prompt
+
+

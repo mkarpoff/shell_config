@@ -1,0 +1,11 @@
+function latest(){
+   A=(${@})
+   prog=$1;
+   lat=$(find . -type f -printf "%C@ %p\n" | sort | tail -n 1 | cut -d " " -f 2-)
+   if [ ! -z $2 ] ; then 
+     args=${A[@]:1}; 
+     $prog "$lat" "${A[@]:1}"
+   else
+     $prog "$lat"
+   fi
+}

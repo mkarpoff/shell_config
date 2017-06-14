@@ -1,0 +1,211 @@
+"""
+" Environment settings
+"""
+"
+" set nocompatible
+set mouse=a
+map <ScrollWheelUp> <C-Y>
+map <ScrollWheelDown> <C-E>
+
+" Huawei servers backspace doesn't work...
+set backspace=2
+
+" Set the shell to run bash
+set shell=/bin/bash
+
+" To hell with visual and audio bell
+set noerrorbells visualbell t_vb=
+autocmd GUIEnter * set visualbell t_vb=
+
+" Assume I want syntax highlighting
+syntax enable
+
+" Persistent undo history
+set undofile
+set undodir=$HOME/.vim/undo
+set undolevels=1000
+set undoreload=10000
+
+" Move viminfo to .vim folder
+set viminfo+=n$HOME/.vim/info
+
+" General indenting rules
+set autoindent
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+
+" Status line
+set laststatus=2
+
+" vim-airline settings
+set encoding=utf-8
+set termencoding=utf-8
+let g:airline_powerline_fonts=1
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+let g:airline_theme='simple'
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = '<RO>'
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.linenr = ''
+
+
+" Hotkeys for speeding usage
+imap jk <Esc>
+nmap ww <c-w>
+map ; :
+
+" Spell Checking
+command SCon setlocal spell spelllang=en_ca
+command SCoff setlocal nospell
+
+function! ColorColumn(col)
+	let &colorcolumn=join(range(a:col,999),",")
+endfunction
+command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
+
+" Show white spacing
+set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
+command ToggleWS set invlist
+
+"""
+" Environment Specific settings
+" ALE specific package .vim/pack/git/opt/ale
+function! s:ale_settings()
+	packadd ale
+	highlight ALEErrorSign ctermfg=160 ctermbg=232 guifg=#ff0000 guibg=#080808
+	highlight ALEWarningSign ctermfg=202 ctermbg=234 guifg=#ff5f00 guibg=#1c1c1c
+	highlight ALEInfoSign ctermfg=45 ctermbg=234
+	highlight ALESignColumnWithErrors ctermfg=243 ctermbg=5 guifg=#767676 guibg=#080808
+	highlight ALESignColumnWithoutErrors term=bold cterm=bold ctermfg=239 ctermbg=234 gui=bold guifg=#4e4e4e guibg=#1c1c1c
+	helptags ALL
+	let g:ale_sign_column_always=1
+	let g:ale_change_sign_column_color=1
+	let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+endfunction
+
+
+" C++ specific
+function! s:cpp_settings()
+	call ColorColumn(121)
+	setlocal expandtab
+	setlocal tabstop=2
+	setlocal number
+	setlocal nowrap
+
+	" syntax settings .vim/after/syntax/cpp start
+		let g:cpp_class_scope_highlight = 1
+		let g:cpp_member_variable_highlight = 1
+	" syntax settings .vim/after/syntax/cpp end
+
+	call s:ale_settings()
+
+	" folding options start
+		" .vim/pack/git/opt/FastFold start
+			packadd FastFold
+		" .vim/pack/git/opt/FastFold end
+		setlocal foldmethod=indent
+		setlocal shiftwidth=2
+		setlocal foldnestmax=1
+	" folding options end
+
+endfunction
+autocmd Filetype cpp call s:cpp_settings()
+autocmd Filetype c call s:cpp_settings()
+
+" sh specific
+function! s:sh_settings()
+	call s:ale_settings()
+	call ColorColumn(81)
+	set number
+	set nowrap
+endfunction
+autocmd FileType sh call s:sh_settings()
+
+function! s:python_settings()
+	call s:ale_settings()
+	call ColorColumn(121)
+	setlocal number
+	setlocal nowrap
+	setlocal shiftwidth=4
+	setlocal softtabstop=4
+	setlocal expandtab
+	setlocal tabstop=4
+	packadd FastFold
+	setlocal foldmethod=indent
+endfunction
+autocmd FileType python call s:python_settings()
+	
+
+" Markdown settings
+function! s:md_settings()
+	set textwidth=120
+	let &colorcolumn=join(range(121,999),",")
+	set wrapmargin=2
+	call s:ale_settings()
+	SCon
+endfunction
+autocmd FileType markdown call s:md_settings()
+
+" Make specific
+function! s:make_settings()
+	setlocal autoindent
+	setlocal tabstop=4
+	setlocal softtabstop=4
+	setlocal shiftwidth=4
+endfunction
+autocmd FileType make call s:make_settings()
+
+" LaTeX specific
+function! s:latex_settings()
+	setlocal textwidth=999999
+	setlocal wrap
+	setlocal linebreak
+	setlocal showbreak=+--
+	setlocal number
+	SCon
+	map j gj
+	map k gk
+endfunction
+autocmd FileType latex call s:latex_settings()
+
+au BufNewFile,BufRead *.log set filetype=log
+" log files
+function! s:log_settings()
+	packadd vim-autoread
+	AutoRead
+	packadd vim-log-syntax
+	syntax enable
+	set nowrap
+	AirlineRefresh
+	set tabstop=8
+	set softtabstop=8
+	set shiftwidth=8
+endfunction
+autocmd FileType log call s:log_settings()
+
+" git commit messages
+function! s:gitcommit_settings()
+	SCon
+endfunction
+autocmd FileType gitcommit call s:gitcommit_settings()
+
+function! s:x86_settings()
+	let g:airline#extensions#whitespace#enabled = 0
+	packadd vim-gas
+	set ft=gas
+endfunction
+au BufNewFile,BufRead *.x86 set filetype=x86
+autocmd FileType x86 call s:x86_settings()
+
+
+" Color Scheme
+colorscheme desert
+highlight LineNr term=bold cterm=bold ctermfg=239 ctermbg=234
+highlight LineNr gui=bold guifg=#4e4e4e guibg=#1c1c1c
+"highlight Todo ctermfg=11
+highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
+highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
+highlight NonText ctermbg=234 guibg=#1c1c1c
