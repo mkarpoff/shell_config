@@ -1,0 +1,24 @@
+[ale]
+	dir = opt/ale
+	url = https://github.com/w0rp/ale.git
+[FastFold]
+	dir = opt/FastFold
+	url = https://github.com/Konfekt/FastFold.git
+[vim-autoread]
+	dir = opt/vim-autoread
+	url = https://github.com/chrisbra/vim-autoread
+[vim-gas]
+	dir = opt/vim-gas
+	url = https://github.com/Shirk/vim-gas
+[vim-log-syntax]
+	dir = opt/vim-log-syntax
+	url = https://github.com/dzeban/vim-log-syntax
+[vim-airline]
+	dir = start/vim-airline
+	url = https://github.com/vim-airline/vim-airline
+[vim-airline-themes]
+	dir = start/vim-airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes
+[vim-fugitive]
+	dir = start/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive
