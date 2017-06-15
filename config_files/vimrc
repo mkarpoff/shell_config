@@ -3,9 +3,6 @@
 """
 "
 " set nocompatible
-set mouse=a
-map <ScrollWheelUp> <C-Y>
-map <ScrollWheelDown> <C-E>
 
 " Huawei servers backspace doesn't work...
 set backspace=2
@@ -138,7 +135,7 @@ function! s:python_settings()
 	setlocal foldmethod=indent
 endfunction
 autocmd FileType python call s:python_settings()
-	
+
 
 " Markdown settings
 function! s:md_settings()
