@@ -4,8 +4,6 @@
 "
 " set nocompatible
 set mouse=a
-map <ScrollWheelUp> <C-Y>
-map <ScrollWheelDown> <C-E>
 
 " Huawei servers backspace doesn't work...
 set backspace=2
@@ -83,8 +81,10 @@ function! s:ale_settings()
 	highlight ALESignColumnWithoutErrors term=bold cterm=bold ctermfg=239 ctermbg=234 gui=bold guifg=#4e4e4e guibg=#1c1c1c
 	helptags ALL
 	let g:ale_sign_column_always=1
+	let g:ale_sign_error='E>'
+	let g:ale_sign_warning='W>'
 	let g:ale_change_sign_column_color=1
-	let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+	let g:ale_echo_msg_format='[%linter%] [%severity%] %s'
 endfunction
 
 
