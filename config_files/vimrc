@@ -67,7 +67,7 @@ command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
 
 " Show white spacing
 set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
-command ToggleWS set invlist
+command WSToggle set invlist
 
 """
 " Environment Specific settings
