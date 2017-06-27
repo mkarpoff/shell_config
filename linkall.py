@@ -12,6 +12,7 @@ files=[
     {name:"config_files/vim_packages",   target:"~/.vim/vim_packages"},
     {name:"config_files/inputrc",        target:"~/.inputrc"},
     {name:"config_files/tmux.conf",      target:"~/.tmux.conf"},
+    {name:"config_giles/global_makefile",target:"~/.global_makefile"},
     ]
 
 def link(filename, target):

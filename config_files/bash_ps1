@@ -67,7 +67,7 @@ function set_prompt() {
 	#ps1b="$RED└─>$WHITE"
 	ps1a="\[\e[1;31m\]┌─$USRIN${branch}${venv}\[\e[1;31m\]<\[\e[1;34m\]\w\[\e[1;31m\] >"
 	ps1b="\[\e[1;31m\]└─>\[\e[0;37m\]"
-	padding=$(expr $COLUMNS - $plen)
+	padding=$(expr $(tput cols) - $plen)
 	export PS1="\r$ps1a`printf "%${padding}s" "${CTIME}"`\r\n$ps1b"
 	export PS2="$ps1b"
 }
