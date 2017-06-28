@@ -56,6 +56,9 @@ imap jk <Esc>
 nmap ww <c-w>
 map ; :
 
+" Search Settings
+set hlsearch
+
 " Spell Checking
 command SCon setlocal spell spelllang=en_ca
 command SCoff setlocal nospell
