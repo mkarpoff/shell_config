@@ -20,18 +20,17 @@ function set_prompt() {
 				 --quiet --ignore-submodules 2>/dev/null
       then 
 			 	dirty=""
-				plen=$(expr $plen + 0)
+				plen=$((plen + 0))
 	    else
 	      dirty="${RED}*"
-				plen=$(expr $plen + 1)
+				plen=$((plen + 1))
 	    fi
 	    _branch=$(git symbolic-ref HEAD 2>/dev/null)
 	    _branch=${_branch#refs/heads/} # apparently faster than sed
 	    branch="" # need this to clear it when we leave a repo
 	    if [[ -n $_branch ]]; then
 	      branch="$RED[${ORANGE}${_branch}${dirty}$RED]"
-				plen=$(expr $plen + ${#_branch})
-				plen=$(expr $plen + 2) # for square brackets
+				plen=$((plen + ${#_branch} + 2)) # for square brackets
 	    fi
 	else
 		branch=""
@@ -41,8 +40,7 @@ function set_prompt() {
 		_venv=${VIRTUAL_ENV##*/}
 		venv="${RED}(${ORANGE}${_venv}${RED})"
 		venv="\[\e[1;31m\](\[\e[0;33m\]${_venv}\[\e[1;31m\])"
-		plen=$(expr $plen + ${#_venv})
-		plen=$(expr $plen + 2)
+		plen=$((plen + ${#_venv} + 2))
 	else
 		venv=""
 	fi	
@@ -50,21 +48,18 @@ function set_prompt() {
 	# Display Username
 	#USRIN="$RED{$GREEN\h$RED}"
 	USRIN="\[\e[1;31m\]{\[\e[1;32m\]\h\[\e[1;31m\]}"
-	plen=$(expr $plen + ${#HOSTNAME}) #length of username
-	plen=$(expr $plen + ${#PWD})
+	plen=$((plen + ${#HOSTNAME})) #length of username
+	plen=$((plen + ${#PWD}))
 	if [ "${PWD##$HOME}" != "${PWD}" ]; then
-		plen=$(expr $plen - ${#HOME})
-		plen=$(expr $plen + 4)
+		plen=$((plen - ${#HOME} + 4))
 	else
-		plen=$(expr $plen + 3)
+		plen=$((plen + 3))
 	fi
 
 	# Time
 	#CTIME="$CYAN\@"
 	CTIME="\[\e[1;36m\]\@"
 
-	#ps1a="$RED┌─$USRIN${branch}${venv}$RED<$BLUE\w$RED >"
-	#ps1b="$RED└─>$WHITE"
 	ps1a="\[\e[1;31m\]┌─$USRIN${branch}${venv}\[\e[1;31m\]<\[\e[1;34m\]\w\[\e[1;31m\] >"
 	ps1b="\[\e[1;31m\]└─>\[\e[0;37m\]"
 	padding=$(expr $(tput cols) - $plen)
@@ -73,5 +68,3 @@ function set_prompt() {
 }
 
 export PROMPT_COMMAND=set_prompt
-
-
