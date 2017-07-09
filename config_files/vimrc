@@ -97,7 +97,7 @@ function! s:ale_settings()
 	highlight ALEInfoSign ctermfg=45 ctermbg=234
 	highlight ALESignColumnWithErrors ctermfg=243 ctermbg=5 guifg=#767676 guibg=#080808
 	highlight ALESignColumnWithoutErrors term=bold cterm=bold ctermfg=239 ctermbg=234 gui=bold guifg=#4e4e4e guibg=#1c1c1c
-	helptags ALL
+	silent! helptags ALL
 	let g:airline#extensions#ale#enabled = 1
 	let g:ale_sign_column_always=1
 	let g:ale_sign_error='E>'
