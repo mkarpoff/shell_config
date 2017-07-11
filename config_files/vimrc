@@ -42,7 +42,6 @@ let g:airline_powerline_fonts=1
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
-"let g:airline#extensions#tabline#enabled = 0
 let g:airline_theme='simple'
 let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = '<RO>'
@@ -126,15 +125,13 @@ function! s:cpp_settings()
 	" syntax settings .vim/after/syntax/cpp end
 
 	call s:ale_settings()
-	
+	let g:ale_linters['cpp'] = ['clang', 'g++']
 
 	" folding options start
-		" .vim/pack/git/opt/FastFold start
-			packadd FastFold
-		" .vim/pack/git/opt/FastFold end
-		setlocal foldmethod=indent
-		setlocal shiftwidth=2
-		setlocal foldnestmax=1
+	packadd FastFold
+	setlocal foldmethod=indent
+	setlocal shiftwidth=2
+	setlocal foldnestmax=1
 	" folding options end
 
 endfunction
