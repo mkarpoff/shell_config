@@ -2,29 +2,30 @@
 # Prompt function because PROMPT_COMMAND is awesome
 
 function set_prompt() {
-	RED=$(tput setaf 9)
-	GREEN=$(tput setaf 10)
-	YELLOW=$(tput setaf 3)
-	PURPLE=$(tput setaf 13)
-	BLUE=$(tput setaf 12)
+	RED="\[$(tput setaf 9)\]"
+	GREEN="\[$(tput setaf 10)\]"
+	YELLOW="\[$(tput setaf 3)\]"
+	PURPLE="\[$(tput setaf 13)\]"
+	BLUE="\[$(tput setaf 12)\]"
+	WHITE="\[$(tput setaf 7)\]"
 
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
+	then
+		if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
+			--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
+			--quiet --ignore-submodules 2>/dev/null
 		then
-			if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
-				--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
-				--quiet --ignore-submodules 2>/dev/null
-			then
-				dirty=""
-			else
-				dirty="*"
-			fi
-			_branch=$(git symbolic-ref HEAD 2>/dev/null)
-			_branch=${_branch#refs/heads/} # apparently faster than sed
-			branch="" # need this to clear it when we leave a repo
-			if [[ -n $_branch ]]; then
-				branch="${RED}[${YELLOW}${_branch}${RED}${dirty}${RED}]"
-			fi
+		 	dirty=""
+		else
+			dirty="*"
+		fi
+		_branch=$(git symbolic-ref HEAD 2>/dev/null)
+		_branch=${_branch#refs/heads/} # apparently faster than sed
+		branch="" # need this to clear it when we leave a repo
+		if [[ -n $_branch ]]; then
+			branch="${RED}[${YELLOW}${_branch}${RED}${dirty}${RED}]"
+		fi
 	else
 		branch=""
 	fi
@@ -41,8 +42,8 @@ function set_prompt() {
 
 
 	ps1a="${RED}┌─${usrin}${branch}${venv}${RED}<${BLUE}\\w ${RED}>"
-	ps1b="${RED}└─>$(tput sgr0)"
-	PS1="${ps1a}\\n${ps1b}"
+	ps1b="${RED}└─>${WHITE}\[$(tput sgr0)\]"
+	PS1="${ps1a}\\r\\n${ps1b}"
 	PS2="$ps1b"
 	export PS1
 	export PS2
