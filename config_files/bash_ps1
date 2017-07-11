@@ -1,70 +1,51 @@
 #!/bin/bash
 # Prompt function because PROMPT_COMMAND is awesome
-function set_prompt() {
 
-	# Regular Colors
-#	RED='\[\e[1;31m\]'          # Red
-#	GREEN='\[\e[1;32m\]'        # Green
-#	ORANGE='\[\e[0;33m\]'       # Yellow
-#	BLUE='\[\e[1;34m\]'         # Blue
-#	PURPLE='\[\e[0;35m\]'       # Purple
-#	CYAN='\[\e[1;36m\]'         # Cyan
-#	WHITE='\[\e[0;37m\]'  
-	plen=4
+function set_prompt() {
+	RED=$(tput setaf 9)
+	GREEN=$(tput setaf 10)
+	YELLOW=$(tput setaf 3)
+	PURPLE=$(tput setaf 13)
+	BLUE=$(tput setaf 12)
 
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 		then
 			if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
-				 --cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
-				 --quiet --ignore-submodules 2>/dev/null
-      then 
-			 	dirty=""
-				plen=$((plen + 0))
-	    else
-	      dirty="${RED}*"
-				plen=$((plen + 1))
-	    fi
-	    _branch=$(git symbolic-ref HEAD 2>/dev/null)
-	    _branch=${_branch#refs/heads/} # apparently faster than sed
-	    branch="" # need this to clear it when we leave a repo
-	    if [[ -n $_branch ]]; then
-	      branch="$RED[${ORANGE}${_branch}${dirty}$RED]"
-				plen=$((plen + ${#_branch} + 2)) # for square brackets
-	    fi
+				--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
+				--quiet --ignore-submodules 2>/dev/null
+			then
+				dirty=""
+			else
+				dirty="*"
+			fi
+			_branch=$(git symbolic-ref HEAD 2>/dev/null)
+			_branch=${_branch#refs/heads/} # apparently faster than sed
+			branch="" # need this to clear it when we leave a repo
+			if [[ -n $_branch ]]; then
+				branch="${RED}[${YELLOW}${_branch}${RED}${dirty}${RED}]"
+			fi
 	else
 		branch=""
 	fi
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
 		_venv=${VIRTUAL_ENV##*/}
-		venv="${RED}(${ORANGE}${_venv}${RED})"
-		venv="\[\e[1;31m\](\[\e[0;33m\]${_venv}\[\e[1;31m\])"
-		plen=$((plen + ${#_venv} + 2))
+		venv="${RED}(${PURPLE}${_venv}${RED})"
 	else
 		venv=""
-	fi	
-
-	# Display Username
-	#USRIN="$RED{$GREEN\h$RED}"
-	USRIN="\[\e[1;31m\]{\[\e[1;32m\]\h\[\e[1;31m\]}"
-	plen=$((plen + ${#HOSTNAME})) #length of username
-	plen=$((plen + ${#PWD}))
-	if [ "${PWD##$HOME}" != "${PWD}" ]; then
-		plen=$((plen - ${#HOME} + 4))
-	else
-		plen=$((plen + 3))
 	fi
 
-	# Time
-	#CTIME="$CYAN\@"
-	CTIME="\[\e[1;36m\]\@"
+	# Display Username
+	usrin="${RED}{${GREEN}\\h${RED}}"
 
-	ps1a="\[\e[1;31m\]┌─$USRIN${branch}${venv}\[\e[1;31m\]<\[\e[1;34m\]\w\[\e[1;31m\] >"
-	ps1b="\[\e[1;31m\]└─>\[\e[0;37m\]"
-	padding=$(expr $(tput cols) - $plen)
-	export PS1="\r$ps1a`printf "%${padding}s" "${CTIME}"`\r\n$ps1b"
-	export PS2="$ps1b"
+
+	ps1a="${RED}┌─${usrin}${branch}${venv}${RED}<${BLUE}\\w ${RED}>"
+	ps1b="${RED}└─>$(tput sgr0)"
+	PS1="${ps1a}\\n${ps1b}"
+	PS2="$ps1b"
+	export PS1
+	export PS2
 }
 
 export PROMPT_COMMAND=set_prompt
