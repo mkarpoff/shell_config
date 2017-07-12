@@ -104,21 +104,13 @@ function set_normal_prompt() {
 	export PS2
 }
 
-has_powerline() {
-	fc-list | grep -i "Powerline.ttf" >/dev/null
-}
-
 function set_prompt() {
-	if has_powerline; then
-		use_powerline=$(( 1 ))
-	else 
-		use_powerline=$(( 0 ))
-	fi
+	use_powerline=$(( 1 ))
 	if (( use_powerline )); then
-		set_powerline_prompt
+		export PROMPT_COMMAND=set_powerline_prompt
 	else
-		set_normal_prompt
+		export PROMPT_COMMAND=set_normal_prompt
 	fi
 }
 
-export PROMPT_COMMAND=set_prompt
+set_prompt
