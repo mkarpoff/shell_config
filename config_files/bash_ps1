@@ -1,13 +1,22 @@
 #!/bin/bash
 # Prompt function because PROMPT_COMMAND is awesome
 
-function set_prompt() {
-	RED="\\[$(tput setaf 9)\\]"
-	GREEN="\\[$(tput setaf 10)\\]"
-	YELLOW="\\[$(tput setaf 3)\\]"
-	PURPLE="\\[$(tput setaf 13)\\]"
-	BLUE="\\[$(tput setaf 12)\\]"
-	WHITE="\\[$(tput setaf 7)\\]"
+function set_powerline_prompt() {
+	RA=' '
+	BLKF="\\[$(tput setaf  0)\\]"
+	REDF="\\[$(tput setaf  9)\\]"
+	GREF="\\[$(tput setaf  2)\\]"
+	YELF="\\[$(tput setaf  3)\\]"
+	PRPF="\\[$(tput setaf 13)\\]"
+	BLUF="\\[$(tput setaf  4)\\]"
+	BLKB="\\[$(tput setab  0)\\]"
+	GREB="\\[$(tput setab  2)\\]"
+	YELB="\\[$(tput setab  3)\\]"
+	PRPB="\\[$(tput setab 13)\\]"
+	BLUB="\\[$(tput setab  4)\\]"
+
+	# Display Username
+	usrin="${GREB}${BLKF} \\h  ${GREF}"
 
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
@@ -16,7 +25,55 @@ function set_prompt() {
 			--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
 			--quiet --ignore-submodules 2>/dev/null
 		then
-		 	dirty=""
+			dirty=" "
+		else
+			dirty="*"
+		fi
+		_branch=$(git symbolic-ref HEAD 2>/dev/null)
+		_branch=${_branch#refs/heads/} # apparently faster than sed
+		if [[ -n $_branch ]]; then
+			branch="${YELB}${RA}${BLKF} ${_branch}${REDF}${dirty} ${YELF}"
+		fi
+	else
+		branch=""
+	fi
+
+	# Virtual Env stuff
+	if [[ $VIRTUAL_ENV != "" ]]; then
+		_venv=${VIRTUAL_ENV##*/}
+		venv="${PRPB}${RA}${BLKB} ${_venv}  ${PRPF}"
+	else
+		venv=""
+	fi
+
+	path="${BLUB}${RA}${BLKF}${BLUB} \\w  ${BLUF}"
+
+	ps1a="${usrin}${branch}${venv}${path}${BLKB}${RA}"
+	ps1b="${BLKB}${GREF}${RA}\\[$(tput sgr0)\\]"
+	PS1="${ps1a}\\r\\n${ps1b}"
+	PS2="$ps1b"
+	export PS1
+	export PS2
+}
+
+function set_normal_prompt() {
+	REDF="\\[$(tput setaf  9)\\]"
+	GREF="\\[$(tput setaf 10)\\]"
+	YELF="\\[$(tput setaf  3)\\]"
+	PURF="\\[$(tput setaf 13)\\]"
+	BLUF="\\[$(tput setaf 12)\\]"
+
+	# Display Username
+	usrin="${REDF}{${GREF}\\h${REDF}}"
+
+	# GIT STUFF
+	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
+	then
+		if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
+			--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
+			--quiet --ignore-submodules 2>/dev/null
+		then
+			dirty=""
 		else
 			dirty="*"
 		fi
@@ -24,7 +81,7 @@ function set_prompt() {
 		_branch=${_branch#refs/heads/} # apparently faster than sed
 		branch="" # need this to clear it when we leave a repo
 		if [[ -n $_branch ]]; then
-			branch="${RED}[${YELLOW}${_branch}${RED}${dirty}${RED}]"
+			branch="${REDF}[${YELF}${_branch}${REDF}${dirty}]"
 		fi
 	else
 		branch=""
@@ -32,21 +89,36 @@ function set_prompt() {
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
 		_venv=${VIRTUAL_ENV##*/}
-		venv="${RED}(${PURPLE}${_venv}${RED})"
+		venv="${REDF}(${PURF}${_venv}${REDF})"
 	else
 		venv=""
 	fi
 
-	# Display Username
-	usrin="${RED}{${GREEN}\\h${RED}}"
+	path="${REDF}<${BLUF}\\w ${REDF}>"
 
-
-	ps1a="${RED}┌─${usrin}${branch}${venv}${RED}<${BLUE}\\w ${RED}>"
-	ps1b="${RED}└─>${WHITE}\\[$(tput sgr0)\\]"
+	ps1a="${REDF}┌─${usrin}${branch}${venv}${path}"
+	ps1b="${REDF}└─>\\[$(tput sgr0)\\]"
 	PS1="${ps1a}\\r\\n${ps1b}"
 	PS2="$ps1b"
 	export PS1
 	export PS2
+}
+
+has_powerline() {
+	fc-list | grep -i "Powerline.ttf" >/dev/null
+}
+
+function set_prompt() {
+	if has_powerline; then
+		use_powerline=$(( 1 ))
+	else 
+		use_powerline=$(( 0 ))
+	fi
+	if (( use_powerline )); then
+		set_powerline_prompt
+	else
+		set_normal_prompt
+	fi
 }
 
 export PROMPT_COMMAND=set_prompt
