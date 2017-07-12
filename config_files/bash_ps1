@@ -2,19 +2,21 @@
 # Prompt function because PROMPT_COMMAND is awesome
 
 function set_powerline_prompt() {
+	local RA REDF BLKF BLKB GREF GREB YELF YELB PRPF PRPB BLUF BLUB
+	local usrin branch venv path ps1a ps1b
 	RA=' '
 
-	REDF="\\[$(tput setaf  1)\\]"
 	BLKF="\\[$(tput setaf  0)\\]"
 	BLKB="\\[$(tput setab  0)\\]"
+	REDF="\\[$(tput setaf  1)\\]"
 	GREF="\\[$(tput setaf  2)\\]"
 	GREB="\\[$(tput setab  2)\\]"
 	YELF="\\[$(tput setaf  3)\\]"
 	YELB="\\[$(tput setab  3)\\]"
-	PRPF="\\[$(tput setaf 13)\\]"
-	PRPB="\\[$(tput setab 13)\\]"
 	BLUF="\\[$(tput setaf  4)\\]"
 	BLUB="\\[$(tput setab  4)\\]"
+	PRPF="\\[$(tput setaf  5)\\]"
+	PRPB="\\[$(tput setab  5)\\]"
 
 	# Display Username
 	usrin="${GREB}${BLKF} \\h  ${GREF}"
@@ -22,17 +24,21 @@ function set_powerline_prompt() {
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 	then
-		local _ahead _behind _dirty _branch
+		local _ahead _behind _dirty _branch _stash _status
 		_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
 		_behind=$(git rev-list "HEAD..@{u}" | wc -l)
+		_stash=$(git stash list | wc -l)
 		_dirty=$(git status --porcelain | wc -l)
 		_branch=$(git symbolic-ref HEAD 2>/dev/null)
-		_branch=${_branch#refs/heads/} # apparently faster than sed
+		_status=${_branch#refs/heads/} # apparently faster than sed
 		if (( _dirty > 0 ))
 		then
-			_status="${REDF} $_dirty✗"
+			_status="$_status${REDF} $_dirty✗"
 		else
-			_status="${GREF}✓"
+			_status="$_status${GREF}✓"
+		fi
+		if (( _stash > 0 )); then
+			_status="$_status${_stash}☐"
 		fi
 		if (( _ahead > 0 )); then 
 			_status="$_status${_ahead}↑"
@@ -40,14 +46,14 @@ function set_powerline_prompt() {
 		if (( _behind > 0 )); then
 			_status="$_status${_behind}↓"
 		fi
-		branch="${YELB}${RA}${BLKF} ${_branch}${_status} ${YELF}"
+		branch="${YELB}${RA}${BLKF} ${_status} ${YELF}"
 	else
 		branch=""
 	fi
 
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
-		_venv=${VIRTUAL_ENV##*/}
+		local _venv=${VIRTUAL_ENV##*/}
 		venv="${PRPB}${RA}${BLKF} ${_venv}  ${PRPF}"
 	else
 		venv=""
@@ -64,6 +70,9 @@ function set_powerline_prompt() {
 }
 
 function set_normal_prompt() {
+	local REDF YELF GREF BLUF PURF
+	local usrin branch venv path ps1a ps1b
+
 	REDF="\\[$(tput setaf  1)\\]"
 	YELF="\\[$(tput setaf  3)\\]"
 	GREF="\\[$(tput setaf 10)\\]"
@@ -76,9 +85,9 @@ function set_normal_prompt() {
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 	then
-		if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
-			--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
-			--quiet --ignore-submodules 2>/dev/null
+		local _branch _dirty
+		_dirty=$(git status --porcelain | wc -l)
+		if (( _dirty > 0 ))
 		then
 			dirty=""
 		else
@@ -86,16 +95,13 @@ function set_normal_prompt() {
 		fi
 		_branch=$(git symbolic-ref HEAD 2>/dev/null)
 		_branch=${_branch#refs/heads/} # apparently faster than sed
-		branch="" # need this to clear it when we leave a repo
-		if [[ -n $_branch ]]; then
-			branch="${REDF}[${YELF}${_branch}${REDF}${dirty}]"
-		fi
+		branch="${REDF}[${YELF}${_branch}${REDF}${dirty}]"
 	else
 		branch=""
 	fi
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
-		_venv=${VIRTUAL_ENV##*/}
+		local _venv=${VIRTUAL_ENV##*/}
 		venv="${REDF}(${PURF}${_venv}${REDF})"
 	else
 		venv=""
