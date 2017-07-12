@@ -3,16 +3,16 @@
 
 function set_powerline_prompt() {
 	RA=' '
+
 	BLKF="\\[$(tput setaf  0)\\]"
-	REDF="\\[$(tput setaf  9)\\]"
-	GREF="\\[$(tput setaf  2)\\]"
-	YELF="\\[$(tput setaf  3)\\]"
-	PRPF="\\[$(tput setaf 13)\\]"
-	BLUF="\\[$(tput setaf  4)\\]"
 	BLKB="\\[$(tput setab  0)\\]"
+	GREF="\\[$(tput setaf  2)\\]"
 	GREB="\\[$(tput setab  2)\\]"
+	YELF="\\[$(tput setaf  3)\\]"
 	YELB="\\[$(tput setab  3)\\]"
+	PRPF="\\[$(tput setaf 13)\\]"
 	PRPB="\\[$(tput setab 13)\\]"
+	BLUF="\\[$(tput setaf  4)\\]"
 	BLUB="\\[$(tput setab  4)\\]"
 
 	# Display Username
@@ -41,27 +41,27 @@ function set_powerline_prompt() {
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
 		_venv=${VIRTUAL_ENV##*/}
-		venv="${PRPB}${RA}${BLKB} ${_venv}  ${PRPF}"
+		venv="${PRPB}${RA}${BLKF} ${_venv}  ${PRPF}"
 	else
 		venv=""
 	fi
 
-	path="${BLUB}${RA}${BLKF}${BLUB} \\w  ${BLUF}"
+	path="${BLUB}${RA}${BLKF} \\w  ${BLUF}"
 
-	ps1a="${usrin}${branch}${venv}${path}${BLKB}${RA}"
+	ps1a="${usrin}${branch}${venv}${path} ${BLKB}${RA} "
 	ps1b="${BLKB}${GREF}${RA}\\[$(tput sgr0)\\]"
 	PS1="${ps1a}\\r\\n${ps1b}"
-	PS2="$ps1b"
+	PS2="${ps1b}"
 	export PS1
 	export PS2
 }
 
 function set_normal_prompt() {
-	REDF="\\[$(tput setaf  9)\\]"
-	GREF="\\[$(tput setaf 10)\\]"
+	REDF="\\[$(tput setaf  1)\\]"
 	YELF="\\[$(tput setaf  3)\\]"
-	PURF="\\[$(tput setaf 13)\\]"
+	GREF="\\[$(tput setaf 10)\\]"
 	BLUF="\\[$(tput setaf 12)\\]"
+	PURF="\\[$(tput setaf 13)\\]"
 
 	# Display Username
 	usrin="${REDF}{${GREF}\\h${REDF}}"
