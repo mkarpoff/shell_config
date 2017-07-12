@@ -4,6 +4,7 @@
 function set_powerline_prompt() {
 	RA=' '
 
+	REDF="\\[$(tput setaf  1)\\]"
 	BLKF="\\[$(tput setaf  0)\\]"
 	BLKB="\\[$(tput setab  0)\\]"
 	GREF="\\[$(tput setaf  2)\\]"
@@ -21,19 +22,25 @@ function set_powerline_prompt() {
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 	then
-		if git update-index -q --refresh 2>/dev/null; git diff-index --quiet\
-			--cached HEAD --ignore-submodules -- 2>/dev/null && git diff-files\
-			--quiet --ignore-submodules 2>/dev/null
-		then
-			dirty=" "
-		else
-			dirty="*"
-		fi
+		local _ahead _behind _dirty _branch
+		_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
+		_behind=$(git rev-list "HEAD..@{u}" | wc -l)
+		_dirty=$(git status --porcelain | wc -l)
 		_branch=$(git symbolic-ref HEAD 2>/dev/null)
 		_branch=${_branch#refs/heads/} # apparently faster than sed
-		if [[ -n $_branch ]]; then
-			branch="${YELB}${RA}${BLKF} ${_branch}${REDF}${dirty} ${YELF}"
+		if (( _dirty > 0 ))
+		then
+			_status="${REDF} $_dirty✗"
+		else
+			_status="${GREF}✓"
 		fi
+		if (( _ahead > 0 )); then 
+			_status="$_status${_ahead}↑"
+		fi
+		if (( _behind > 0 )); then
+			_status="$_status${_behind}↓"
+		fi
+		branch="${YELB}${RA}${BLKF} ${_branch}${_status} ${YELF}"
 	else
 		branch=""
 	fi
@@ -48,7 +55,7 @@ function set_powerline_prompt() {
 
 	path="${BLUB}${RA}${BLKF} \\w  ${BLUF}"
 
-	ps1a="${usrin}${branch}${venv}${path} ${BLKB}${RA} "
+	ps1a="\\[$(tput hpa 0)\\]${usrin}${branch}${venv}${path} ${BLKB}${RA} "
 	ps1b="${BLKB}${GREF}${RA}\\[$(tput sgr0)\\]"
 	PS1="${ps1a}\\r\\n${ps1b}"
 	PS2="${ps1b}"
