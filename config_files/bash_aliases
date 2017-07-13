@@ -5,6 +5,8 @@ alias ll='ls -lh'
 alias ls='ls --color=auto'
 #alias make="global_make"
 
+export EDITOR=vim
+
 function latest(){
    A=(${@})
    prog=$1;
