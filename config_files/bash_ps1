@@ -5,6 +5,7 @@ function set_powerline_prompt() {
 	local RA REDF BLKF BLKB GREF GREB YELF YELB PRPF PRPB BLUF BLUB
 	local usrin branch venv path ps1a ps1b
 	RA=' '
+	LA=''
 
 	BLKF="\\[$(tput setaf  0)\\]"
 	BLKB="\\[$(tput setab  0)\\]"
@@ -60,11 +61,12 @@ function set_powerline_prompt() {
 	fi
 
 	path="${BLUB}${RA}${BLKF} \\w  ${BLUF}"
-
+	clock="\\[$(tput hpa $(($(tput cols) - 15)))\\] ${GREF}${BLKB}${LA}${GREB}${BLKF} \@    "
 	ps1a="\\[$(tput hpa 0)\\]${usrin}${branch}${venv}${path} ${BLKB}${RA} "
 	ps1b="${BLKB}${GREF}${RA}\\[$(tput sgr0)\\]"
-	PS1="${ps1a}\\r\\n${ps1b}"
+	PS1="${ps1a}${clock}\\r\\n${ps1b}"
 	PS2="${ps1b}"
+	PS4="${ps1a}\\r\\n${ps1b}"
 	export PS1
 	export PS2
 }
