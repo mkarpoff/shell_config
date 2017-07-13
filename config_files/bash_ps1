@@ -2,10 +2,16 @@
 # Prompt function because PROMPT_COMMAND is awesome
 
 function set_powerline_prompt() {
-	local RA REDF BLKF BLKB GREF GREB YELF YELB PRPF PRPB BLUF BLUB
-	local usrin branch venv path ps1a ps1b
-	RA=' '
+	local RA REDF BLKF BLKB GREF GREB YELF YELB PRPF PRPB BLUF BLUB GRYF GRYB
+	local usrin branch venv path ps1a ps1b non_mono_used
+	RA=''
 	LA=''
+	non_mono_used=$((0))
+	DIRTY_SYM='✗'
+	CLEAN_SYM='✓'
+	STASH_SYM='☇'
+	AHEAD_SYM='↑'
+	BHIND_SYM='↓'
 
 	BLKF="\\[$(tput setaf  0)\\]"
 	BLKB="\\[$(tput setab  0)\\]"
@@ -18,6 +24,8 @@ function set_powerline_prompt() {
 	BLUB="\\[$(tput setab  4)\\]"
 	PRPF="\\[$(tput setaf  5)\\]"
 	PRPB="\\[$(tput setab  5)\\]"
+	GRYF="\\[$(tput setaf  8)\\]"
+	GRYB="\\[$(tput setab  8)\\]"
 
 	# Display Username
 	usrin="${GREB}${BLKF} \\h  ${GREF}"
@@ -34,18 +42,21 @@ function set_powerline_prompt() {
 		_status=${_branch#refs/heads/} # apparently faster than sed
 		if (( _dirty > 0 ))
 		then
-			_status="$_status${REDF} $_dirty✗"
+			_status="$_status${REDF} $_dirty${DIRTY_SYM} "
+			non_mono_used=$((non_mono_used + 1))
 		else
-			_status="$_status${GREF}✓"
+			_status="$_status${GREF}${CLEAN_SYM} "
+			non_mono_used=$((non_mono_used + 1))
 		fi
 		if (( _stash > 0 )); then
-			_status="$_status${_stash}☐"
+			_status="$_status${_stash}${STASH_SYM}"
+			non_mono_used=$((non_mono_used + 1))
 		fi
 		if (( _ahead > 0 )); then 
-			_status="$_status${_ahead}↑"
+			_status="$_status${_ahead}${AHEAD_SYM}"
 		fi
 		if (( _behind > 0 )); then
-			_status="$_status${_behind}↓"
+			_status="$_status${_behind}${BHIND_SYM}"
 		fi
 		branch="${YELB}${RA}${BLKF} ${_status} ${YELF}"
 	else
@@ -60,20 +71,27 @@ function set_powerline_prompt() {
 		venv=""
 	fi
 
-	path="${BLUB}${RA}${BLKF} \\w  ${BLUF}"
-	clock="\\[$(tput hpa $(($(tput cols) - 15)))\\] ${GREF}${BLKB}${LA}${GREB}${BLKF} \@    "
-	ps1a="\\[$(tput hpa 0)\\]${usrin}${branch}${venv}${path} ${BLKB}${RA} "
-	ps1b="${BLKB}${GREF}${RA}\\[$(tput sgr0)\\]"
-	PS1="${ps1a}${clock}\\r\\n${ps1b}"
-	PS2="${ps1b}"
-	PS4="${ps1a}\\r\\n${ps1b}"
+	path="${BLUB}${RA}${BLKF} \\w ${BLUF}"
+	clock="${GREF}${BLKB}${LA}${GREB}${BLKF} \\@"
+	ps1_1_l="\\[$(tput hpa 0)\\]${GRYF}${GRYB} ${GREB}${RA}${usrin}${branch}${venv}${path} ${BLKB}${RA} "
+	ps1_1_r="\\[$(tput hpa $(($(tput cols) - 15 - non_mono_used)))\\] ${clock}  ${GRYF}${LA}${GRYB}\\[$(tput el)\\]"
+	ps1_2_l="${BLKB}${GRYF}${RA}\\[$(tput sgr0)\\]"
+	PS1="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
+	PS2="${ps1_2_l}"
+	PS4="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
 	export PS1
 	export PS2
+	export PS4
 }
 
 function set_normal_prompt() {
 	local REDF YELF GREF BLUF PURF
 	local usrin branch venv path ps1a ps1b
+	DIRTY_SYM='*'
+	CLEAN_SYM=''
+	STASH_SYM='S'
+	AHEAD_SYM='A'
+	BHIND_SYM='B'
 
 	REDF="\\[$(tput setaf  1)\\]"
 	YELF="\\[$(tput setaf  3)\\]"
@@ -87,20 +105,33 @@ function set_normal_prompt() {
 	# GIT STUFF
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 	then
-		local _branch _dirty
+		local _ahead _behind _dirty _branch _stash _status
+		_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
+		_behind=$(git rev-list "HEAD..@{u}" | wc -l)
+		_stash=$(git stash list | wc -l)
 		_dirty=$(git status --porcelain | wc -l)
+		_branch=$(git symbolic-ref HEAD 2>/dev/null)
+		_status=${_branch#refs/heads/} # apparently faster than sed
 		if (( _dirty > 0 ))
 		then
-			dirty=""
+			_status="$_status${REDF} $_dirty${DIRTY_SYM} "
 		else
-			dirty="*"
+			_status="$_status${GREF}${CLEAN_SYM} "
 		fi
-		_branch=$(git symbolic-ref HEAD 2>/dev/null)
-		_branch=${_branch#refs/heads/} # apparently faster than sed
-		branch="${REDF}[${YELF}${_branch}${REDF}${dirty}]"
+		if (( _stash > 0 )); then
+			_status="$_status${_stash}${STASH_SYM}"
+		fi
+		if (( _ahead > 0 )); then 
+			_status="$_status${_ahead}${AHEAD_SYM}"
+		fi
+		if (( _behind > 0 )); then
+			_status="$_status${_behind}${BHIND_SYM}"
+		fi
+		branch="${REDF}[${YELF}${_status}${REDF}]"
 	else
 		branch=""
 	fi
+
 	# Virtual Env stuff
 	if [[ $VIRTUAL_ENV != "" ]]; then
 		local _venv=${VIRTUAL_ENV##*/}
