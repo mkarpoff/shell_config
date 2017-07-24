@@ -12,7 +12,6 @@ set shell=/bin/bash
 
 " To hell with visual and audio bell
 set noerrorbells visualbell t_vb=
-autocmd GUIEnter * set visualbell t_vb=
 
 " Assume I want syntax highlighting
 syntax enable
@@ -37,17 +36,19 @@ set laststatus=2
 
 " vim-airline settings
 set encoding=utf-8
+scriptencoding=utf-8
 set termencoding=utf-8
 let g:airline_powerline_fonts=1
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
-let airline#extensions#whitespace#mixed_indent_algo=1
+let g:airline#extensions#whitespace#mixed_indent_algo=1
 let g:airline_theme='simple'
 let g:airline_symbols.branch = ''
 let g:airline_symbols.readonly = '<RO>'
 let g:airline_symbols.maxlinenr = ''
 let g:airline_symbols.linenr = ''
+let g:airline_symbols.crypt = 'C'
 
 
 " Hotkeys for speeding usage
@@ -55,22 +56,16 @@ imap jk <Esc>
 nmap ww <c-w>
 map ; :
 
-" Uncomment the following to have Vim jump to the last position when
-" reopening a file
-if has("autocmd")
-	au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-		\| exe "normal! g'\"" | endif
-endif
 
 " Search Settings
 function! HighlightSearch()
 	if &hlsearch
 		set nohlsearch
-		echo "Search highlight off"
+		echo 'Search highlight off'
 	else
 		set hlsearch
-		echo "Search highlight on"
-	endif	
+		echo 'Search highlight on'
+	endif
 endfunction
 cmap hs call HighlightSearch()<CR>
 
@@ -79,13 +74,16 @@ command SCon setlocal spell spelllang=en_ca
 command SCoff setlocal nospell
 
 function! ColorColumn(col)
-	let &colorcolumn=join(range(a:col,999),",")
+	let &colorcolumn=join(range(a:col,999),',')
 endfunction
 command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
 
 " Show white spacing
 set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
 command WSToggle set invlist
+
+" vim-qf settings
+let g:qf_auto_resize = 0
 
 """
 " Environment Specific settings
@@ -97,7 +95,6 @@ function! s:ale_settings()
 	highlight ALEInfoSign ctermfg=45 ctermbg=234
 	highlight ALESignColumnWithErrors ctermfg=243 ctermbg=5 guifg=#767676 guibg=#080808
 	highlight ALESignColumnWithoutErrors term=bold cterm=bold ctermfg=239 ctermbg=234 gui=bold guifg=#4e4e4e guibg=#1c1c1c
-	silent! helptags ALL
 	let g:airline#extensions#ale#enabled = 1
 	let g:ale_sign_column_always=1
 	let g:ale_sign_error='E>'
@@ -126,7 +123,7 @@ function! s:cpp_settings()
 	" syntax settings .vim/after/syntax/cpp end
 
 	call s:ale_settings()
-	let g:ale_linters['cpp'] = ['clang', 'g++']
+	let g:ale_linters = {'cpp': ['clang', 'clangtidy', 'cppcheck', 'cpplint', 'g++'],}
 
 	" folding options start
 	packadd FastFold
@@ -136,8 +133,6 @@ function! s:cpp_settings()
 	" folding options end
 
 endfunction
-autocmd Filetype cpp call s:cpp_settings()
-autocmd Filetype c call s:cpp_settings()
 
 " sh specific
 function! s:sh_settings()
@@ -146,7 +141,6 @@ function! s:sh_settings()
 	set number
 	set nowrap
 endfunction
-autocmd FileType sh call s:sh_settings()
 
 function! s:python_settings()
 	call s:ale_settings()
@@ -160,18 +154,16 @@ function! s:python_settings()
 	packadd FastFold
 	setlocal foldmethod=indent
 endfunction
-autocmd FileType python call s:python_settings()
 
 
 " Markdown settings
 function! s:md_settings()
 	set textwidth=120
-	let &colorcolumn=join(range(121,999),",")
+	call ColorColumn(121)
 	set wrapmargin=2
 	call s:ale_settings()
 	SCon
 endfunction
-autocmd FileType markdown call s:md_settings()
 
 " Make specific
 function! s:make_settings()
@@ -180,10 +172,10 @@ function! s:make_settings()
 	setlocal softtabstop=4
 	setlocal shiftwidth=4
 endfunction
-autocmd FileType make call s:make_settings()
 
 " LaTeX specific
 function! s:latex_settings()
+	call s:ale_settings()
 	setlocal textwidth=999999
 	setlocal wrap
 	setlocal linebreak
@@ -193,9 +185,7 @@ function! s:latex_settings()
 	map j gj
 	map k gk
 endfunction
-autocmd FileType latex call s:latex_settings()
 
-au BufNewFile,BufRead *.log set filetype=log
 " log files
 function! s:log_settings()
 	packadd vim-autoread
@@ -208,28 +198,50 @@ function! s:log_settings()
 	set softtabstop=8
 	set shiftwidth=8
 endfunction
-autocmd FileType log call s:log_settings()
 
 " git commit messages
 function! s:gitcommit_settings()
 	SCon
 endfunction
-autocmd FileType gitcommit call s:gitcommit_settings()
 
 function! s:x86_settings()
-	let g:airline#extensions#whitespace#enabled = 0
 	packadd vim-gas
-	set ft=gas
+	set filetype=gas
 endfunction
-au BufNewFile,BufRead *.x86 set filetype=x86
-autocmd FileType x86 call s:x86_settings()
 
+function! s:vim_settings()
+	call s:ale_settings()
+endfunction
+
+augroup vimrc
+	" Uncomment the following to have Vim jump to the last position when
+	" reopening a file
+	if has('autocmd')
+		au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+			\| exe "normal! g'\"" | endif
+	endif
+	autocmd BufNewFile,BufRead *.x86 set filetype=x86
+	autocmd BufNewFile,BufRead *.log set filetype=log
+
+	autocmd Filetype cpp call s:cpp_settings()
+	autocmd Filetype c call s:cpp_settings()
+	autocmd FileType sh call s:sh_settings()
+	autocmd FileType python call s:python_settings()
+	autocmd FileType markdown call s:md_settings()
+	autocmd FileType make call s:make_settings()
+	autocmd FileType latex call s:latex_settings()
+	autocmd FileType log call s:log_settings()
+	autocmd FileType gitcommit call s:gitcommit_settings()
+	autocmd FileType vim call s:vim_settings()
+	autocmd FileType x86 call s:x86_settings()
+augroup END
 
 " Color Scheme
 colorscheme desert
 highlight LineNr term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight LineNr gui=bold guifg=#4e4e4e guibg=#1c1c1c
-"highlight Todo ctermfg=11
+highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
 highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight NonText ctermbg=234 guibg=#1c1c1c
+silent! helptags ALL
