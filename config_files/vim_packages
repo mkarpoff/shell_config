@@ -28,3 +28,6 @@
 [vim-fugitive]
 	dir = start/vim-fugitive
 	url = https://github.com/tpope/vim-fugitive
+[vim-qf]
+	dir = start/vim-qf
+	url = https://github.com/romainl/vim-qf
