@@ -1,0 +1,8 @@
+altscreen on
+
+set -g prefix 'M-w'
+bindkey 'M-w' send-prefix
+
+termcapinfo xterm*-unicode ti@:te@
+termcapinfo xterm* ti@:te@
+termcapinfo xterm* 'hs:ts=\E]2;:fs=07:ds=\E]2;screen07'

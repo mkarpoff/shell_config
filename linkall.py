@@ -9,8 +9,10 @@ files=[
     {name:"config_files/bash_aliases",   target:"~/.bash_aliases"},
     {name:"config_files/bash_ps1",       target:"~/.bash_ps1"},
     {name:"config_files/vimrc",          target:"~/.vim/vimrc"},
+    {name:"config_files/vim-build",          target:"~/.local/bin/vim-build"},
     {name:"config_files/vim_packages",   target:"~/.vim/vim_packages"},
     {name:"config_files/inputrc",        target:"~/.inputrc"},
+    {name:"config_files/screenrc",        target:"~/.screenrc"},
     {name:"config_files/tmux.conf",      target:"~/.tmux.conf"},
     {name:"config_giles/global_makefile",target:"~/.global_makefile"},
     ]
