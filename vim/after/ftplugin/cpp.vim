@@ -17,7 +17,7 @@ let g:cpp_member_variable_highlight = 1
 
 " syntax settings .vim/after/syntax/cpp end
 
-call g:Ale_Settings()
+call g:AleSettings()
 let g:ale_linters = {'cpp': ['clang', 'clangtidy', 'cppcheck', 'cpplint', 'g++'],}
 
 " folding options start
