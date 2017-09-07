@@ -19,7 +19,7 @@ cd "$HOME/.local/src/vim" || exit 1
 --enable-largefile \
 --disable-netbeans \
 --with-compiledby="Marcus Karpoff" \
---enable-fail-if-missing 
+--enable-fail-if-missing
 #--enable-rubyinterp=dynamic \
 #--with-ruby-command=/usr/local/bin/ruby \
 #--enable-perlinterp=dynamic \

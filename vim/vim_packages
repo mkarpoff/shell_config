@@ -10,6 +10,9 @@
 [vim-autoread]
 	dir = opt/vim-autoread
 	url = https://github.com/chrisbra/vim-autoread
+[vim-cpp-enhanced-highlight]
+	dir = opt/vim-cpp-enhanced-highlight
+	url = https://github.com/octol/vim-cpp-enhanced-highlight.git
 [vim-gas]
 	dir = opt/vim-gas
 	url = https://github.com/Shirk/vim-gas

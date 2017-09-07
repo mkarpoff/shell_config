@@ -52,6 +52,7 @@ let g:airline_symbols.crypt = 'C'
 
 
 " Hotkeys for speeding usage
+set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
 nmap ww <c-w>
 map ; :
@@ -85,10 +86,12 @@ command WSToggle set invlist
 " vim-qf settings
 let g:qf_auto_resize = 0
 
+filetype plugin on
+
 """
 " Environment Specific settings
 " ALE specific package .vim/pack/git/opt/ale
-function! s:ale_settings()
+function! g:AleSettings()
 	packadd ale
 	highlight ALEErrorSign ctermfg=160 ctermbg=232 guifg=#ff0000 guibg=#080808
 	highlight ALEWarningSign ctermfg=202 ctermbg=234 guifg=#ff5f00 guibg=#1c1c1c
@@ -103,116 +106,6 @@ function! s:ale_settings()
 	let g:ale_echo_msg_format='[%linter%] [%severity%] %s'
 endfunction
 
-
-" C++ specific
-function! s:cpp_settings()
-	call ColorColumn(121)
-	setlocal expandtab
-	setlocal tabstop=2
-	setlocal number
-	setlocal nowrap
-
-	packadd completor.vim
-	let g:completor_clang_binary='/usr/bin/clang'
-	inoremap <expr> <Tab>   pumvisible()? "\<C-n>"      : "\<Tab>"
-	inoremap <expr> <S-Tab> pumvisible()? "\<C-p>"      : "\<S-Tab>"
-	inoremap <expr> <cr>    pumvisible()? "\<C-y>\<cr>" : "\<cr>"
-	" syntax settings .vim/after/syntax/cpp start
-		let g:cpp_class_scope_highlight = 1
-		let g:cpp_member_variable_highlight = 1
-	" syntax settings .vim/after/syntax/cpp end
-
-	call s:ale_settings()
-	let g:ale_linters = {'cpp': ['clang', 'clangtidy', 'cppcheck', 'cpplint', 'g++'],}
-
-	" folding options start
-	packadd FastFold
-	setlocal foldmethod=indent
-	setlocal shiftwidth=2
-	setlocal foldnestmax=1
-	" folding options end
-
-endfunction
-
-" sh specific
-function! s:sh_settings()
-	call s:ale_settings()
-	call ColorColumn(81)
-	set number
-	set nowrap
-endfunction
-
-function! s:python_settings()
-	call s:ale_settings()
-	call ColorColumn(121)
-	setlocal number
-	setlocal nowrap
-	setlocal shiftwidth=4
-	setlocal softtabstop=4
-	setlocal expandtab
-	setlocal tabstop=4
-	packadd FastFold
-	setlocal foldmethod=indent
-endfunction
-
-
-" Markdown settings
-function! s:md_settings()
-	set textwidth=120
-	call ColorColumn(121)
-	set wrapmargin=2
-	call s:ale_settings()
-	SCon
-endfunction
-
-" Make specific
-function! s:make_settings()
-	setlocal autoindent
-	setlocal tabstop=4
-	setlocal softtabstop=4
-	setlocal shiftwidth=4
-endfunction
-
-" LaTeX specific
-function! s:latex_settings()
-	call s:ale_settings()
-	setlocal textwidth=999999
-	setlocal wrap
-	setlocal linebreak
-	setlocal showbreak=+--
-	setlocal number
-	SCon
-	map j gj
-	map k gk
-endfunction
-
-" log files
-function! s:log_settings()
-	packadd vim-autoread
-	AutoRead
-	packadd vim-log-syntax
-	syntax enable
-	set nowrap
-	AirlineRefresh
-	set tabstop=8
-	set softtabstop=8
-	set shiftwidth=8
-endfunction
-
-" git commit messages
-function! s:gitcommit_settings()
-	SCon
-endfunction
-
-function! s:x86_settings()
-	packadd vim-gas
-	set filetype=gas
-endfunction
-
-function! s:vim_settings()
-	call s:ale_settings()
-endfunction
-
 augroup vimrc
 	" Uncomment the following to have Vim jump to the last position when
 	" reopening a file
@@ -220,20 +113,9 @@ augroup vimrc
 		au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
 			\| exe "normal! g'\"" | endif
 	endif
-	autocmd BufNewFile,BufRead *.x86 set filetype=x86
+	autocmd BufNewFile,BufRead *.x86 set filetype=gas
 	autocmd BufNewFile,BufRead *.log set filetype=log
 
-	autocmd Filetype cpp call s:cpp_settings()
-	autocmd Filetype c call s:cpp_settings()
-	autocmd FileType sh call s:sh_settings()
-	autocmd FileType python call s:python_settings()
-	autocmd FileType markdown call s:md_settings()
-	autocmd FileType make call s:make_settings()
-	autocmd FileType latex call s:latex_settings()
-	autocmd FileType log call s:log_settings()
-	autocmd FileType gitcommit call s:gitcommit_settings()
-	autocmd FileType vim call s:vim_settings()
-	autocmd FileType x86 call s:x86_settings()
 augroup END
 
 " Color Scheme
@@ -244,4 +126,5 @@ highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
 highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight NonText ctermbg=234 guibg=#1c1c1c
+highlight clear SignColumn
 silent! helptags ALL
