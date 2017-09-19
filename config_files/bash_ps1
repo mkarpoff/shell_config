@@ -30,6 +30,11 @@ if [[ $STY != "" ]]; then
   readonly screen_n="${AQUB}${RA}${BLKF} ${STY##*.} ${AQUF}"
 fi
 
+# Tmux 
+if [[ $TMUX != "" ]]; then
+  readonly tmux_n="${AQUB}${RA}${BLKF} $(tmux display-message -p '#S') ${AQUF}"
+fi
+
 # Nested shell level
 if [[ $SHLVL != "1" ]]; then
 	readonly shlvl="${GRYB} ${SHLVL} ${GRYF}"
@@ -90,7 +95,7 @@ function set_prompt() {
 	fi
 
 	local path ps1_1_l_1 ps1_1_l_2
-	ps1_1_l_1="\\[$(tput hpa 0)\\]${shlvl}${screen_n}${usrin}${branch}${venv}"
+	ps1_1_l_1="\\[$(tput hpa 0)\\]${shlvl}${tmux_n}${screen_n}${usrin}${branch}${venv}"
 	ps1_1_l_2="${BLKB}${RA}\\[$(tput sgr0)\\]"
 
 	# Check to make sure the path isn't going to run over the clock. Will display
