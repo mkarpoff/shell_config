@@ -2,6 +2,8 @@
 
 from pathlib import Path
 import sys
+if sys.version_info[0] < 3 or sys.version_info[1] < 5:
+    raise "Must be greater than or equal to Python 3.5 to run this script"
 name="name"
 target="target"
 
@@ -39,11 +41,11 @@ def link(filename, target):
         target_path.parent.mkdir(parents=True);
     target_path.symlink_to(source_path.resolve())
     print("[%16s] -> [%s] symlink created successfully" %(source_path, target_path))
-    
+
 
 def query_yes_no(question, default="yes"):
     """Ask a yes/no question via raw_input() and return their answer.
-    
+
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
         It must be "yes" (the default), "no" or None (meaning
