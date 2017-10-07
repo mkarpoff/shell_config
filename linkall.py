@@ -24,23 +24,23 @@ def link(filename, target):
     target_path = Path(target).expanduser()
     source_path = Path(filename).expanduser()
     if (not source_path.exists()):
-        print("[%16s] -> [%s] Not linked. Source missing" %(source_path, target_path))
+        print("[%-30s] -> [%-40s] Not linked. Source missing" %(source_path, target_path))
         return
     if (target_path.exists()):
-        print("[%16s] -> [%s] Not linked. Target exists" %(source_path, target_path))
+        print("[%-30s] -> [%-40s] Not linked. Target exists" %(source_path, target_path))
         return
     if (target_path.is_symlink()):
-        print("[%16s] -> [%s] Target exist and is symlink" %(source_path, target_path))
+        print("[%-30s] -> [%-40s] Target exist and is symlink" %(source_path, target_path))
         if (query_yes_no("Remove and remake? ")):
             target_path.unlink()
-            print("[%16s] -> [%s] Target old link removed" %(source_path, target_path))
+            print("[%-30s] -> [%-40s] Target old link removed" %(source_path, target_path))
         else:
             return
     if (not target_path.parent.exists()):
-        print("[%16s] -> [%s] Creating missing parent directory" %(source_path, target_path))
+        print("[%-30s] -> [%-40s] Creating missing parent directory" %(source_path, target_path))
         target_path.parent.mkdir(parents=True);
     target_path.symlink_to(source_path.resolve())
-    print("[%16s] -> [%s] symlink created successfully" %(source_path, target_path))
+    print("[%-30s] -> [%-40s] Symlink created successfully" %(source_path, target_path))
 
 
 def query_yes_no(question, default="yes"):
