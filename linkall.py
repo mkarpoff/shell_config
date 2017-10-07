@@ -1,24 +1,16 @@
 #! /usr/bin/env python3
 
 from pathlib import Path
+import json
 import sys
 if sys.version_info[0] < 3 or sys.version_info[1] < 5:
     raise "Must be greater than or equal to Python 3.5 to run this script"
 name="name"
 target="target"
 
-files=[
-    {name:"config_files/bash_aliases",   target:"~/.bash_aliases"},
-    {name:"config_files/bash_ps1",       target:"~/.bash_ps1"},
-    {name:"vim/vimrc",                   target:"~/.vim/vimrc"},
-    {name:"vim/vim-build",               target:"~/.local/bin/vim-build"},
-    {name:"vim/vim_packages",            target:"~/.vim/vim_packages"},
-    {name:"vim/after/",                  target:"~/.vim/after"},
-    {name:"config_files/inputrc",        target:"~/.inputrc"},
-    {name:"config_files/screenrc",       target:"~/.screenrc"},
-    {name:"config_files/tmux.conf",      target:"~/.tmux.conf"},
-    {name:"config_files/global_makefile",target:"~/.global_makefile"},
-    ]
+with open("files.json") as data_files:
+    files = json.load(data_files)
+
 
 def link(filename, target):
     target_path = Path(target).expanduser()
