@@ -1,27 +1,27 @@
-[ale]
-	dir = opt/ale
-	url = https://github.com/w0rp/ale.git
-[completor.vim]
-	dir = opt/completor.vim
-	url = https://github.com/maralla/completor.vim.git
 [FastFold]
 	dir = opt/FastFold
 	url = https://github.com/Konfekt/FastFold.git
+[ale]
+	dir = opt/ale
+	url = https://github.com/w0rp/ale
+[completor.vim]
+	dir = opt/completor.vim
+	url = https://github.com/maralla/completor.vim
+[vim-addon-local-vimrc]
+	dir = opt/vim-addon-local-vimrc
+	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
 [vim-autoread]
 	dir = opt/vim-autoread
 	url = https://github.com/chrisbra/vim-autoread
-[vim-cpp-enhanced-highlight]
-	dir = opt/vim-cpp-enhanced-highlight
-	url = https://github.com/octol/vim-cpp-enhanced-highlight.git
 [vim-gas]
 	dir = opt/vim-gas
 	url = https://github.com/Shirk/vim-gas
+[vim-indentguides]
+	dir = opt/vim-indentguides
+	url = https://github.com/thaerkh/vim-indentguides
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
 	url = https://github.com/dzeban/vim-log-syntax
-[vim-addon-local-vimrc]
-	dir = start/vim-addon-local-vimrc
-	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
 [vim-airline]
 	dir = start/vim-airline
 	url = https://github.com/vim-airline/vim-airline
