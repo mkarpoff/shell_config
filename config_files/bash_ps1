@@ -27,12 +27,12 @@ readonly GRYB="\\[$(tput setab  8)\\]"
 
 # Screen
 if [[ $STY != "" ]]; then
-  readonly screen_n="${AQUB}${RA}${BLKF} ${STY##*.} ${AQUF}"
+  readonly screen_n="${AQUB}${RA}${BLKF} screen:${STY##*.} ${AQUF}"
 fi
 
 # Tmux 
 if [[ $TMUX != "" ]]; then
-  readonly tmux_n="${AQUB}${RA}${BLKF} $(tmux display-message -p '#S') ${AQUF}"
+  readonly tmux_n="${AQUB}${RA}${BLKF} tmux:$(tmux display-message -p '#S') ${AQUF}"
 fi
 
 # Nested shell level
@@ -104,8 +104,8 @@ function set_prompt() {
 	path="${PWD/#$HOME/\~}"
 	llen=$(( $(ps_len "$ps1_1_l_2") + $(ps_len "$ps1_1_l_1") ))
 	clock_start=$(( $(tput cols) - 14 - non_mono_used ))
-	if (( (llen + $(ps_len "$path") ) > clock_start)); then
-		path="../${path:$((${#path} - clock_start + (llen + 5)))}"
+	if (( (llen + $(ps_len "$path") ) >= clock_start)); then
+		path="..${path:$((${#path} - clock_start + (llen + 5)))}"
 	fi
 	path="${BLUB}${RA}${BLKF} ${path} ${BLUF}"
 
