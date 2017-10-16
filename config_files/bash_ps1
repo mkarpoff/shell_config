@@ -1,6 +1,8 @@
 #!/bin/bash
 # Prompt function because PROMPT_COMMAND is awesome
 
+if [[ $- == *i* ]]; then
+
 readonly RA=''
 readonly LA=''
 readonly DIRTY_SYM='✗'
@@ -127,5 +129,5 @@ function ps_len() {
 	return 0
 }
 
-
-export PROMPT_COMMAND=set_prompt
+	export PROMPT_COMMAND=set_prompt
+fi
