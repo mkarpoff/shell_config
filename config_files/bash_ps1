@@ -113,7 +113,7 @@ function set_prompt() {
 
 	local ps1_1_l ps1_1_r ps1_2_l
 	ps1_1_l="${ps1_1_l_1}${path}${ps1_1_l_2}"
-	ps1_1_r="\\[$(tput hpa $clock_start)\\] ${clock}${GRYF} ${LA}${GRYB}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
+	ps1_1_r="\\[$(tput hpa $clock_start)\\] ${clock}${GRYF} ${LA}${GRYB} \\[$(tput el)\\]\\[$(tput sgr0)\\]"
 	ps1_2_l="${BLKB}${GRYF}${RA}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
 	PS1="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
 	PS2="${ps1_2_l}"
