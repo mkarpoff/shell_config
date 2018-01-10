@@ -4,9 +4,9 @@
     {"name":"home/inputrc",        "target":"~/.inputrc"},
     {"name":"home/screenrc",       "target":"~/.screenrc"},
     {"name":"home/tmux.conf",      "target":"~/.tmux.conf"},
-    {"name":"home/global_makefile","target":"~/.global_makefile"}
+    {"name":"home/global_makefile","target":"~/.global_makefile"},
     {"name":"vim/vimrc",           "target":"~/.vim/vimrc"},
     {"name":"vim/vim-build",       "target":"~/.local/bin/vim-build"},
     {"name":"vim/vim_packages",    "target":"~/.vim/vim_packages"},
-    {"name":"vim/after/",          "target":"~/.vim/after"},
+    {"name":"vim/after/",          "target":"~/.vim/after"}
 ]
