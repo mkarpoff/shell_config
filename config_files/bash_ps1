@@ -3,6 +3,10 @@
 
 if [[ $- == *i* ]]; then
 
+if [[ -z "${GIT_PS1}" ]]; then
+	export GIT_PS1=0
+fi
+
 readonly RA=''
 readonly LA=''
 readonly DIRTY_SYM='✗'
@@ -56,32 +60,38 @@ function set_prompt() {
 	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
 	then
 		local _ahead _behind _dirty _branch _stash _status
-		_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
-		_behind=$(git rev-list "HEAD..@{u}" | wc -l)
-		_stash=$(git stash list | wc -l)
-		_dirty=$(git status --porcelain | wc -l)
-		_branch=$(git symbolic-ref HEAD 2>/dev/null)
-		_status=${_branch#refs/heads/} # apparently faster than sed
-		if (( _dirty > 0 ))
-		then
-			_status="$_status${REDF} $_dirty${DIRTY_SYM} "
-			non_mono_used=$((non_mono_used + 1))
+
+		if [[ $GIT_PS1 == "1" ]]; then 
+			_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
+			_behind=$(git rev-list "HEAD..@{u}" | wc -l)
+			_stash=$(git stash list | wc -l)
+			_dirty=$(git status --porcelain | wc -l)
+			_branch=$(git symbolic-ref HEAD 2>/dev/null)
+			_status=${_branch#refs/heads/} # apparently faster than sed
+			if (( _dirty > 0 ))
+			then
+				_status="$_status${REDF} $_dirty${DIRTY_SYM} "
+				non_mono_used=$((non_mono_used + 1))
+			else
+				_status="$_status${GREF}${CLEAN_SYM} "
+				non_mono_used=$((non_mono_used + 1))
+			fi
+			if (( _stash > 0 )); then
+				_status="$_status${_stash}${STASH_SYM}"
+				non_mono_used=$((non_mono_used + 1))
+			fi
+			if (( _ahead > 0 )); then
+				_status="$_status${_ahead}${AHEAD_SYM}"
+			fi
+			if (( _behind > 0 )); then
+				_status="$_status${_behind}${BHIND_SYM}"
+			fi
+			if (( _stash > 0 )) || (( _ahead > 0 )) || (( _behind > 0 )); then
+				_status="$_status "
+			fi
 		else
-			_status="$_status${GREF}${CLEAN_SYM} "
-			non_mono_used=$((non_mono_used + 1))
-		fi
-		if (( _stash > 0 )); then
-			_status="$_status${_stash}${STASH_SYM}"
-			non_mono_used=$((non_mono_used + 1))
-		fi
-		if (( _ahead > 0 )); then
-			_status="$_status${_ahead}${AHEAD_SYM}"
-		fi
-		if (( _behind > 0 )); then
-			_status="$_status${_behind}${BHIND_SYM}"
-		fi
-		if (( _stash > 0 )) || (( _ahead > 0 )) || (( _behind > 0 )); then
-			_status="$_status "
+			_branch=$(git symbolic-ref HEAD 2>/dev/null)
+			_status="${_branch#refs/heads/} " # apparently faster than sed
 		fi
 		branch="${YELB}${RA}${BLKF} ${_status}${YELF}"
 	else
@@ -105,7 +115,7 @@ function set_prompt() {
 	local llen clock_start path
 	path="${PWD/#$HOME/\~}"
 	llen=$(( $(ps_len "$ps1_1_l_2") + $(ps_len "$ps1_1_l_1") ))
-	clock_start=$(( $(tput cols) - 14 - non_mono_used ))
+	clock_start=$(( $(tput cols) - 15 - non_mono_used ))
 	if (( (llen + $(ps_len "$path") ) >= clock_start)); then
 		path="..${path:$((${#path} - clock_start + (llen + 5)))}"
 	fi
@@ -113,7 +123,7 @@ function set_prompt() {
 
 	local ps1_1_l ps1_1_r ps1_2_l
 	ps1_1_l="${ps1_1_l_1}${path}${ps1_1_l_2}"
-	ps1_1_r="\\[$(tput hpa $clock_start)\\] ${clock}${GRYF} ${LA}${GRYB} \\[$(tput el)\\]\\[$(tput sgr0)\\]"
+	ps1_1_r="\\[$(tput hpa $clock_start)\\] ${clock}${GRYF} ${LA}${GRYB}${GRYF}|\\[$(tput el)\\]\\[$(tput sgr0)\\]"
 	ps1_2_l="${BLKB}${GRYF}${RA}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
 	PS1="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
 	PS2="${ps1_2_l}"
