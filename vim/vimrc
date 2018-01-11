@@ -118,13 +118,4 @@ augroup vimrc
 
 augroup END
 
-" Color Scheme
-colorscheme desert
-highlight LineNr term=bold cterm=bold ctermfg=239 ctermbg=234
-highlight LineNr gui=bold guifg=#4e4e4e guibg=#1c1c1c
-highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
-highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
-highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
-highlight NonText ctermbg=234 guibg=#1c1c1c
-highlight clear SignColumn
-silent! helptags ALL
+colorscheme mkarpoff

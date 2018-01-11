@@ -8,5 +8,6 @@
     {"name":"vim/vimrc",           "target":"~/.vim/vimrc"},
     {"name":"vim/vim-build",       "target":"~/.local/bin/vim-build"},
     {"name":"vim/vim_packages",    "target":"~/.vim/vim_packages"},
-    {"name":"vim/after/",          "target":"~/.vim/after"}
+    {"name":"vim/after/",          "target":"~/.vim/after"},
+    {"name":"vim/colors/",          "target":"~/.vim/colors"}
 ]
