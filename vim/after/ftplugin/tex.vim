@@ -8,3 +8,10 @@ setlocal number
 SCon
 map j gj
 map k gk
+
+function s:Compile() 
+	execute ! rubber -pdf 
+	echo "Compiled "
+endfunction
+
+let b:Compile = function('<SID>Compile')
