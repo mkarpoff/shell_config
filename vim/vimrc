@@ -71,7 +71,8 @@ function! HighlightSearch()
 		echo 'Search highlight on'
 	endif
 endfunction
-cmap hs call HighlightSearch()<CR>
+command! -nargs=0 HS call HighlightSearch()
+cnoreabbrev hs hs<c-\>esubstitute(getcmdline(), '^hs\>', 'HS', '')<enter>
 
 " Spell Checking
 command SCon setlocal spell spelllang=en_ca
