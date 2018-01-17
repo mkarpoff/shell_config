@@ -14,8 +14,7 @@ setlocal foldmethod=indent
 packadd vim-indentguides
 let g:indentguides_spacechar = '|'
 let g:indentguides_tabchar = '>'
-
-setlocal nolist
+let g:indentguides_toggleListMode=0
 
 packadd completor.vim
 inoremap <expr> <Tab>   pumvisible()? "\<C-n>"      : "\<Tab>"
