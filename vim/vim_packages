@@ -12,34 +12,44 @@
 	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
 [vim-autoread]
 	dir = opt/vim-autoread
-	url = https://github.com/chrisbra/vim-autoread
+	url = https://github.com/chrisbra/vim-autoread.git
 [vim-cpp-enhanced-highlight]
 	dir = opt/vim-cpp-enhanced-highlight
-	url = https://github.com/octol/vim-cpp-enhanced-highlight.git
+	url = https://github.com/octol/vim-cpp-enhanced-highlight.git 
 [vim-gas]
 	dir = opt/vim-gas
-	url = https://github.com/Shirk/vim-gas
+	url = https://github.com/Shirk/vim-gas.git
 [vim-indentguides]
 	dir = opt/vim-indentguides
-	url = https://github.com/thaerkh/vim-indentguides
+	url = https://github.com/thaerkh/vim-indentguides.git
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
-	url = https://github.com/dzeban/vim-log-syntax
+	url = https://github.com/dzeban/vim-log-syntax.git
+[nerdtree]
+	dir = start/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
+[SingleCompile]
+	dir = start/SingleCompile
+	url = https://github.com/xuhdev/SingleCompile.git
 [vim-addon-local-vimrc]
 	dir = start/vim-addon-local-vimrc
 	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
 [vim-airline]
 	dir = start/vim-airline
-	url = https://github.com/vim-airline/vim-airline.git
+	url = https://github.com/vim-airline/vim-airline
 [vim-airline-themes]
 	dir = start/vim-airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes.git
 [vim-fugitive]
 	dir = start/vim-fugitive
-	url = https://github.com/tpope/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+[vim-man]
+	dir = start/vim-man
+	url = https://github.com/vim-utils/vim-man.git
 [vim-qf]
 	dir = start/vim-qf
 	url = https://github.com/romainl/vim-qf.git
 [ZoomWin]
 	dir = start/ZoomWin
 	url = https://github.com/vim-scripts/ZoomWin.git
+
