@@ -57,6 +57,9 @@ imap jk <Esc>
 nmap ww <c-w>
 map ; :
 
+" vim-man package settings
+cnoreabbrev make make<c-\>esubstitute(getcmdline(), '^make\>', 'make!', '')<enter>
+
 
 " Search Settings
 function! HighlightSearch()
