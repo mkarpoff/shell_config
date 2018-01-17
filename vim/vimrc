@@ -95,6 +95,10 @@ filetype plugin on
 " ZoomWin toggle fullscreen hotkey
 nnoremap <silent> <C-w>w :ZoomWin<CR>
 
+" vim-man package settings
+cnoreabbrev man man<c-\>esubstitute(getcmdline(), '^man\>', 'Man', '')<enter>
+
+
 """
 " Environment Specific settings
 " ALE specific package .vim/pack/git/opt/ale

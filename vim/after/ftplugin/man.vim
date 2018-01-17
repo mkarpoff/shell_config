@@ -1,0 +1,1 @@
+call ColorColumn(0)
