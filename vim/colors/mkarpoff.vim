@@ -117,6 +117,6 @@ highlight VertSplit gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
-highlight NonText ctermbg=234 guibg=#1c1c1c
+"highlight NonText ctermbg=234 guibg=#1c1c1c
 highlight clear SignColumn
 silent! helptags ALL
