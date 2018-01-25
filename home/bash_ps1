@@ -4,7 +4,7 @@
 if [[ $- == *i* ]]; then
 
 if [[ -z "${GIT_PS1}" ]]; then
-	export GIT_PS1=0
+	export GIT_PS1=1
 fi
 
 readonly RA=''
