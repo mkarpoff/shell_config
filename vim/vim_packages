@@ -7,15 +7,12 @@
 [FastFold]
 	dir = opt/FastFold
 	url = https://github.com/Konfekt/FastFold.git
-[vim-addon-local-vimrc]
-	dir = opt/vim-addon-local-vimrc
-	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
 [vim-autoread]
 	dir = opt/vim-autoread
 	url = https://github.com/chrisbra/vim-autoread.git
 [vim-cpp-enhanced-highlight]
 	dir = opt/vim-cpp-enhanced-highlight
-	url = https://github.com/octol/vim-cpp-enhanced-highlight.git 
+	url = https://github.com/octol/vim-cpp-enhanced-highlight.git
 [vim-gas]
 	dir = opt/vim-gas
 	url = https://github.com/Shirk/vim-gas.git
@@ -25,6 +22,9 @@
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
 	url = https://github.com/dzeban/vim-log-syntax.git
+[asyncrun.vim]
+	dir = start/asyncrun.vim
+	url = https://github.com/skywind3000/asyncrun.vim
 [nerdtree]
 	dir = start/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
@@ -46,10 +46,6 @@
 [vim-man]
 	dir = start/vim-man
 	url = https://github.com/vim-utils/vim-man.git
-[vim-qf]
-	dir = start/vim-qf
-	url = https://github.com/romainl/vim-qf.git
 [ZoomWin]
 	dir = start/ZoomWin
 	url = https://github.com/vim-scripts/ZoomWin.git
-

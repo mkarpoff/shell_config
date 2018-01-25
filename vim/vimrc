@@ -55,7 +55,10 @@ let g:airline_symbols.crypt = 'C'
 set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
 nmap ww <c-w>
-map ; :
+nmap ; :
+nmap [[ :call b:Compile()<CR>
+nmap ]] :call b:CompileClean()<CR>
+
 
 " vim-man package settings
 cnoreabbrev make make<c-\>esubstitute(getcmdline(), '^make\>', 'make!', '')<enter>

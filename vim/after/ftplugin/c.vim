@@ -26,3 +26,14 @@ setlocal foldmethod=indent
 setlocal shiftwidth=2
 setlocal foldnestmax=1
 " folding options end
+"
+function! s:Compile() 
+	AsyncRun make
+endfunction
+
+function! s:CompileClean() 
+	AsyncRun make clean
+endfunction
+
+let b:Compile = function('<SID>Compile')
+let b:CompileClean = function('<SID>CompileClean')

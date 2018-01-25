@@ -9,9 +9,13 @@ SCon
 map j gj
 map k gk
 
-function s:Compile() 
-	execute ! rubber -pdf 
-	echo "Compiled "
+function! s:Compile() 
+	AsyncRun rubber --pdf %
+endfunction
+
+function! s:CompileClean() 
+	AsyncRun rubber --pdf --clean %
 endfunction
 
 let b:Compile = function('<SID>Compile')
+let b:CompileClean = function('<SID>CompileClean')
