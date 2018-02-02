@@ -54,3 +54,8 @@ export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
 if [ -f ~/.bash_ps1 ]; then
     . ~/.bash_ps1
 fi
+
+#launch tmux if available
+if command -v tmux>/dev/null; then
+  [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
+fi
