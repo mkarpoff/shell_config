@@ -22,6 +22,9 @@
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
 	url = https://github.com/dzeban/vim-log-syntax.git
+[ASP.vim]
+	dir = start/ASP.vim
+	url = https://github.com/Aluriak/ASP.vim
 [asyncrun.vim]
 	dir = start/asyncrun.vim
 	url = https://github.com/skywind3000/asyncrun.vim
@@ -46,6 +49,7 @@
 [vim-man]
 	dir = start/vim-man
 	url = https://github.com/vim-utils/vim-man.git
-[ZoomWin]
-	dir = start/ZoomWin
-	url = https://github.com/vim-scripts/ZoomWin.git
+[vim-qf]
+	dir = start/vim-qf
+	url = https://github.com/romainl/vim-qf
+

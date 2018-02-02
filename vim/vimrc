@@ -13,9 +13,6 @@ set shell=/bin/bash
 " To hell with visual and audio bell
 set noerrorbells visualbell t_vb=
 
-" Assume I want syntax highlighting
-syntax enable
-
 " Persistent undo history
 set undofile
 set undodir=$HOME/.vim/undo
@@ -44,24 +41,35 @@ if !exists('g:airline_symbols')
 endif
 let g:airline#extensions#whitespace#mixed_indent_algo=1
 let g:airline_theme='simple'
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = '<RO>'
-let g:airline_symbols.maxlinenr = ''
-let g:airline_symbols.linenr = ''
-let g:airline_symbols.crypt = 'C'
+
+" unicode symbols
+let g:airline_symbols.linenr = '≡'
+let g:airline_symbols.crypt = ''
+let g:airline_symbols.whitespace= 'Ξ'
+let g:airline_symbols.notexists= '∄'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.spell = '§'
 
 
 " Hotkeys for speeding usage
 set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
 nmap ww <c-w>
+tmap ww <c-w>
 nmap ; :
+tmap ; :
 nmap [[ :call b:Compile()<CR>
 nmap ]] :call b:CompileClean()<CR>
 
 
 " vim-man package settings
-cnoreabbrev make make<c-\>esubstitute(getcmdline(), '^make\>', 'make!', '')<enter>
+cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
+
+" Persistent file undo across reopening vim
+if !isdirectory($HOME."/.vim/undodir")
+	call mkdir($HOME."/.vim/undodir", "p")
+endif
+set undodir=$HOME/.vim/undodir
 
 
 " Search Settings
@@ -75,11 +83,11 @@ function! HighlightSearch()
 	endif
 endfunction
 command! -nargs=0 HS call HighlightSearch()
-cnoreabbrev hs hs<c-\>esubstitute(getcmdline(), '^hs\>', 'HS', '')<enter>
+cnoremap <nowait> <expr> hs getcmdtype() ==# ':' && getcmdpos() == 1 ? 'HS' : 'hs'
 
 " Spell Checking
-command SCon setlocal spell spelllang=en_ca
-command SCoff setlocal nospell
+command! SCon setlocal spell spelllang=en_ca
+command! SCoff setlocal nospell
 
 function! ColorColumn(col)
 	let &colorcolumn=join(range(a:col,999),',')
@@ -88,18 +96,47 @@ command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
 
 " Show white spacing
 set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
-command WSToggle set invlist
+command! WSToggle set invlist
 
 " vim-qf settings
 let g:qf_auto_resize = 0
+let g:qf_auto_open_quickfix = 0
+
+au FileType qf call AdjustWindowHeight(3, 10)
+function! AdjustWindowHeight(minheight, maxheight)
+	let l = 1
+	let n_lines = 0
+	let w_width = winwidth(0)
+	while l <= line('$')
+		" number to float for division
+		let l_len = strlen(getline(l)) + 0.0
+		let line_width = l_len/w_width
+		let n_lines += float2nr(ceil(line_width))
+		let l += 1
+	endw
+	exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
+endfunction
 
 filetype plugin on
 
-" ZoomWin toggle fullscreen hotkey
-nnoremap <silent> <C-w>w :ZoomWin<CR>
+" Zoom / Restore window.
+function! s:ZoomToggle() abort
+    if exists('t:zoomed') && t:zoomed
+        execute t:zoom_winrestcmd
+        let t:zoomed = 0
+    else
+        let t:zoom_winrestcmd = winrestcmd()
+        resize
+        vertical resize
+        let t:zoomed = 1
+    endif
+endfunction
+command! ZoomToggle call s:ZoomToggle()
+nnoremap <silent> <C-w>f :ZoomToggle<CR>
+tnoremap <silent> <C-w>f <C-w>:ZoomToggle<CR>
 
 " vim-man package settings
-cnoreabbrev man man<c-\>esubstitute(getcmdline(), '^man\>', 'Man', '')<enter>
+cnoremap <nowait> <expr> man getcmdtype() ==# ':' && getcmdpos() == 1 ? 'Man' : 'man'
 
 
 """
@@ -134,3 +171,8 @@ augroup vimrc
 augroup END
 
 colorscheme mkarpoff
+
+" Assume I want syntax highlighting
+syntax enable
+
+silent! helptags ALL
