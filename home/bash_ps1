@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 # Prompt function because PROMPT_COMMAND is awesome
 
 if [[ $- == *i* ]]; then
@@ -7,137 +7,108 @@ if [[ -z "${GIT_PS1}" ]]; then
 	export GIT_PS1=1
 fi
 
-readonly RA=''
-readonly LA=''
-readonly DIRTY_SYM='✗'
-readonly CLEAN_SYM='✓'
-readonly STASH_SYM='☇'
-readonly AHEAD_SYM='↑'
-readonly BHIND_SYM='↓'
+declare -A syms=( [RA]='' [LA]='' [BRANCH]='' [DIRTY]='✗' [CLEAN]='✓' [STASH]='☇' [AHEAD]='↑' [BHIND]='↓' )
 
-readonly BLKF="\\[$(tput setaf  0)\\]"
-readonly BLKB="\\[$(tput setab  0)\\]"
-readonly REDF="\\[$(tput setaf  1)\\]"
-readonly GREF="\\[$(tput setaf  2)\\]"
-readonly GREB="\\[$(tput setab  2)\\]"
-readonly YELF="\\[$(tput setaf  3)\\]"
-readonly YELB="\\[$(tput setab  3)\\]"
-readonly BLUF="\\[$(tput setaf  4)\\]"
-readonly BLUB="\\[$(tput setab  4)\\]"
-readonly PRPF="\\[$(tput setaf  5)\\]"
-readonly PRPB="\\[$(tput setab  5)\\]"
-readonly AQUF="\\[$(tput setaf  6)\\]"
-readonly AQUB="\\[$(tput setab  6)\\]"
-readonly GRYF="\\[$(tput setaf  8)\\]"
-readonly GRYB="\\[$(tput setab  8)\\]"
-
-# Screen
-if [[ $STY != "" ]]; then
-  readonly screen_n="${AQUB}${RA}${BLKF} screen:${STY##*.} ${AQUF}"
-fi
-
-# Tmux 
-if [[ $TMUX != "" ]]; then
-  readonly tmux_n="${AQUB}${RA}${BLKF} tmux:$(tmux display-message -p '#S') ${AQUF}"
-fi
+declare -A colors=(
+	[BLKF]="\\[$(tput setaf  0)\\]"
+	[BLKB]="\\[$(tput setab  0)\\]"
+	[REDF]="\\[$(tput setaf  1)\\]"
+	[REDB]="\\[$(tput setab  1)\\]"
+	[GREF]="\\[$(tput setaf  2)\\]"
+	[GREB]="\\[$(tput setab  2)\\]"
+	[YELF]="\\[$(tput setaf  3)\\]"
+	[YELB]="\\[$(tput setab  3)\\]"
+	[BLUF]="\\[$(tput setaf  4)\\]"
+	[BLUB]="\\[$(tput setab  4)\\]"
+	[PRPF]="\\[$(tput setaf  5)\\]"
+	[PRPB]="\\[$(tput setab  5)\\]"
+	[AQUF]="\\[$(tput setaf  6)\\]"
+	[AQUB]="\\[$(tput setab  6)\\]"
+	[GRYF]="\\[$(tput setaf  8)\\]"
+	[GRYB]="\\[$(tput setab  8)\\]"
+	)
 
 # Nested shell level
 if [[ $SHLVL != "1" ]]; then
-	readonly shlvl="${GRYB} ${SHLVL} ${GRYF}"
+	readonly shlvl="${colors[GRYB]} ${SHLVL} ${colors[GRYF]}"
 else
-	readonly shlvl="${GRYF}${GRYB} "
+	readonly shlvl="${colors[GRYF]}${colors[GRYB]} "
 fi
 
 # Display Username
-readonly usrin="${GREB}${RA}${BLKF} ${HOSTNAME}  ${GREF}"
-readonly clock="${GREF}${BLKB}${LA}${GREB}${BLKF} \\@"
+readonly usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
+readonly clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
+readonly ps1_2="${colors[BLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
+
+function git_dirty() {
+	local _dirty=$(git status --porcelain 2>/dev/null| wc -l )
+	if (( _dirty > 0 ))
+	then
+		echo "${colors[REDF]} $_dirty${syms[DIRTY]} "
+	else
+		echo "${colors[GREF]}${syms[CLEAN]} "
+	fi
+}
+function git_stash() {
+	local _stash=$(git stash list 2>/dev/null| wc -l)
+	if (( _stash > 0 )); then
+		echo "${_stash}${syms[STASH]}"
+	fi
+}
+
+function git_ahead() {
+	local _ahead=$(git rev-list "@{u}..HEAD" 2>/dev/null| wc -l)
+	if (( _ahead > 0 )); then
+		echo "${_ahead}${syms[AHEAD]}"
+	fi
+}
+
+function git_behind() {
+	local _behind=$(git rev-list "HEAD..@{u}" 2>/dev/null| wc -l)
+	if (( _behind > 0 )); then
+		echo "${_behind}${syms[BHIND]}"
+	fi
+}
+
+function git_prompt() {
+	# GIT STUFF
+	local git_repo_name=$(git rev-parse --show-toplevel 2>/dev/null)
+	git_repo_name=$(basename ${git_repo_name} 2>/dev/null)
+	if [ "$git_repo_name" == "" ] ; then
+		return 0
+	fi
+	local _branch=$(git symbolic-ref HEAD 2>/dev/null )
+	_branch=${_branch#refs/heads/} # apparently faster than sed
+	echo "${colors[YELB]}${syms[RA]}${colors[BLKF]} ${syms[BRANCH]}${git_repo_name}:${_branch}$(git_dirty &)$(git_stash &)$(git_ahead &)$(git_behind &)${colors[YELF]}"
+}
 
 function set_prompt() {
 
-	local branch
-	local non_mono_used=$((0))
-	# GIT STUFF
-	if [ -d .git ] || git rev-parse --get-dir > /dev/null 2>&1
-	then
-		local _ahead _behind _dirty _branch _stash _status
-
-		if [[ $GIT_PS1 == "1" ]]; then 
-			_ahead=$(git rev-list "@{u}..HEAD" | wc -l)
-			_behind=$(git rev-list "HEAD..@{u}" | wc -l)
-			_stash=$(git stash list | wc -l)
-			_dirty=$(git status --porcelain | wc -l)
-			_branch=$(git symbolic-ref HEAD 2>/dev/null)
-			_status=${_branch#refs/heads/} # apparently faster than sed
-			if (( _dirty > 0 ))
-			then
-				_status="$_status${REDF} $_dirty${DIRTY_SYM} "
-				non_mono_used=$((non_mono_used + 1))
-			else
-				_status="$_status${GREF}${CLEAN_SYM} "
-				non_mono_used=$((non_mono_used + 1))
-			fi
-			if (( _stash > 0 )); then
-				_status="$_status${_stash}${STASH_SYM}"
-				non_mono_used=$((non_mono_used + 1))
-			fi
-			if (( _ahead > 0 )); then
-				_status="$_status${_ahead}${AHEAD_SYM}"
-			fi
-			if (( _behind > 0 )); then
-				_status="$_status${_behind}${BHIND_SYM}"
-			fi
-			if (( _stash > 0 )) || (( _ahead > 0 )) || (( _behind > 0 )); then
-				_status="$_status "
-			fi
-		else
-			_branch=$(git symbolic-ref HEAD 2>/dev/null)
-			_status="${_branch#refs/heads/} " # apparently faster than sed
-		fi
-		branch="${YELB}${RA}${BLKF} ${_status}${YELF}"
-	else
-		branch=""
-	fi
+	branch=$(git_prompt&)
 
 	# Virtual Env stuff
 	local venv
 	if [[ $VIRTUAL_ENV != "" ]]; then
-		venv="${PRPB}${RA}${BLKF} ${VIRTUAL_ENV##*/}  ${PRPF}"
+		venv="${colors[PRPB]}${syms[RA]}${colors[BLKF]} ${VIRTUAL_ENV##*/}  ${colors[PRPF]}"
 	else
 		venv=""
 	fi
 
-	local path ps1_1_l_1 ps1_1_l_2
-	ps1_1_l_1="\\[$(tput hpa 0)\\]${shlvl}${tmux_n}${screen_n}${usrin}${branch}${venv}"
-	ps1_1_l_2="${BLKB}${RA}\\[$(tput sgr0)\\]"
 
+	local path
 	# Check to make sure the path isn't going to run over the clock. Will display
 	# current directory and parent directory if it will run over the clock
-	local llen clock_start path
-	path="${PWD/#$HOME/\~}"
-	llen=$(( $(ps_len "$ps1_1_l_2") + $(ps_len "$ps1_1_l_1") ))
-	clock_start=$(( $(tput cols) - 15 - non_mono_used ))
-	if (( (llen + $(ps_len "$path") ) >= clock_start)); then
-		path="..${path:$((${#path} - clock_start + (llen + 5)))}"
-	fi
-	path="${BLUB}${RA}${BLKF} ${path} ${BLUF}"
+	path="${colors[BLUB]}${syms[RA]}${colors[BLKF]} \w ${colors[BLUF]}"
 
-	local ps1_1_l ps1_1_r ps1_2_l
-	ps1_1_l="${ps1_1_l_1}${path}${ps1_1_l_2}"
-	ps1_1_r="\\[$(tput hpa $clock_start)\\] ${clock}${GRYF} ${LA}${GRYB}${GRYF}|\\[$(tput el)\\]\\[$(tput sgr0)\\]"
-	ps1_2_l="${BLKB}${GRYF}${RA}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
-	PS1="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
-	PS2="${ps1_2_l}"
-	PS4="${ps1_1_l}${ps1_1_r}\\r\\n${ps1_2_l}"
-	export PS1
-	export PS2
-	export PS4
+	local ps1_1 ps1_1_2
+	ps1_1="\\[$(tput el1)\\]\\[$(tput cub $(tput cols))\\]\\[$(tput hpa 0)\\]${shlvl}${usrin}${branch}${venv}"
+	ps1_1_2="${colors[BLKB]}${syms[RA]}\\[$(tput sgr0)\\]"
+
+	local ps1_1 
+	ps1_1="${ps1_1}${path}${ps1_1_2}"
+	export PS1="${ps1_1}\\r\\n${ps1_2}"
 }
 
-function ps_len() {
-	ltext="$(echo -e "$1"| tr -d '[:cntrl:]' |sed -r 's/\\\[\(?B?\[[0-9]?[0-9]?[0-9]?[mGK]\\\]//g')"
-	echo ${#ltext}
-	return 0
-}
-
+	export PS2="${ps1_2}"
 	export PROMPT_COMMAND=set_prompt
 fi
