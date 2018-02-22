@@ -40,7 +40,7 @@ if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
 let g:airline#extensions#whitespace#mixed_indent_algo=1
-let g:airline_theme='simple'
+let g:airline_theme='term'
 
 " unicode symbols
 let g:airline_symbols.linenr = '≡'
@@ -56,8 +56,10 @@ set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
 nmap ww <c-w>
 tmap ww <c-w>
+vmap ww <c-w>
 nmap ; :
 tmap ; :
+vmap ; :
 nmap [[ :call b:Compile()<CR>
 nmap ]] :call b:CompileClean()<CR>
 
