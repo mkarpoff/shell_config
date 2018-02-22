@@ -107,14 +107,24 @@ hi Error	cterm=bold ctermfg=7 ctermbg=1
 
 "
 " Color Scheme
-highlight LineNr term=bold cterm=bold ctermfg=234 ctermbg=237
-highlight LineNr gui=bold guifg=#4e4e4e guibg=#1c1c1c
+highlight LineNr term=bold ctermfg=242 ctermbg=237 gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight StatusLineNC term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight StatusLineNC gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight VertSplit term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight VertSplit gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight ColorColumn term=bold cterm=bold ctermfg=239 ctermbg=234
 highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
+"highlight StatusLineNC gui=bold guifg=#4e4e4e guibg=#1c1c1c
+"highlight StatusLineNC ctermfg=239 ctermbg=234
+"highlight VertSplit ctermfg=239 ctermbg=234
+"highlight VertSplit gui=bold guifg=#4e4e4e guibg=#1c1c1c
+"highlight ColorColumn ctermfg=239 ctermbg=234
+"highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
+highlight SpellLocal term=underline cterm=bold,underline ctermfg=14 ctermbg=0 gui=undercurl guisp=Cyan
+highlight SpellBad term=reverse cterm=bold,underline ctermfg=9 ctermbg=0 gui=undercurl guisp=Red
+highlight ErrorMsg term=standout cterm=bold,underline ctermfg=1 ctermbg=0 guifg=White guibg=Red 
+highlight Error term=standout cterm=bold,underline ctermfg=1 ctermbg=0 guifg=White guibg=Red 
+
 "highlight NonText ctermbg=234 guibg=#1c1c1c
 "highlight clear SignColumn
