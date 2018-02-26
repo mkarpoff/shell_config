@@ -7,6 +7,9 @@
 " Huawei servers backspace doesn't work...
 set backspace=2
 
+" Turn on mouse
+set mouse=a
+
 " Set the shell to run bash
 set shell=/bin/bash
 
@@ -35,12 +38,14 @@ set laststatus=2
 set encoding=utf-8
 scriptencoding=utf-8
 set termencoding=utf-8
+set term=xterm-256color
+
 let g:airline_powerline_fonts=1
 if !exists('g:airline_symbols')
 	let g:airline_symbols = {}
 endif
 let g:airline#extensions#whitespace#mixed_indent_algo=1
-let g:airline_theme='term'
+let g:airline_theme='mkarpoff'
 
 " unicode symbols
 let g:airline_symbols.linenr = '≡'
@@ -62,6 +67,10 @@ tmap ; :
 vmap ; :
 nmap [[ :call b:Compile()<CR>
 nmap ]] :call b:CompileClean()<CR>
+nmap \ :cclose<CR>
+"augroup vimrc
+"	autocmd QuickFixCmdPost * call asyncrun#quickfix_toggle(15, 1)
+"augroup END
 
 
 " vim-man package settings
@@ -91,6 +100,7 @@ cnoremap <nowait> <expr> hs getcmdtype() ==# ':' && getcmdpos() == 1 ? 'HS' : 'h
 command! SCon setlocal spell spelllang=en_ca
 command! SCoff setlocal nospell
 
+" Color Column
 function! ColorColumn(col)
 	let &colorcolumn=join(range(a:col,999),',')
 endfunction
@@ -100,11 +110,15 @@ command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
 set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
 command! WSToggle set invlist
 
-" vim-qf settings
-let g:qf_auto_resize = 0
-let g:qf_auto_open_quickfix = 0
 
-au FileType qf call AdjustWindowHeight(3, 10)
+" Close qf if it is only open window
+aug QFClose
+	au!
+	au WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
+aug END
+
+" Resize qf
+"au FileType qf call AdjustWindowHeight(10, 20)
 function! AdjustWindowHeight(minheight, maxheight)
 	let l = 1
 	let n_lines = 0
@@ -123,15 +137,15 @@ filetype plugin on
 
 " Zoom / Restore window.
 function! s:ZoomToggle() abort
-    if exists('t:zoomed') && t:zoomed
-        execute t:zoom_winrestcmd
-        let t:zoomed = 0
-    else
-        let t:zoom_winrestcmd = winrestcmd()
-        resize
-        vertical resize
-        let t:zoomed = 1
-    endif
+	if exists('t:zoomed') && t:zoomed
+		execute t:zoom_winrestcmd
+		let t:zoomed = 0
+	else
+		let t:zoom_winrestcmd = winrestcmd()
+		resize
+		vertical resize
+		let t:zoomed = 1
+	endif
 endfunction
 command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> <C-w>f :ZoomToggle<CR>
@@ -150,7 +164,7 @@ function! g:AleSettings()
 	highlight ALEWarningSign ctermfg=202 ctermbg=234 guifg=#ff5f00 guibg=#1c1c1c
 	highlight ALEInfoSign ctermfg=45 ctermbg=234
 	highlight ALESignColumnWithErrors ctermfg=243 ctermbg=5 guifg=#767676 guibg=#080808
-	highlight ALESignColumnWithoutErrors term=bold cterm=bold ctermfg=239 ctermbg=234 gui=bold guifg=#4e4e4e guibg=#1c1c1c
+	highlight ALESignColumnWithoutErrors ctermfg=239 ctermbg=234 guifg=#4e4e4e guibg=#1c1c1c
 	let g:airline#extensions#ale#enabled = 1
 	let g:ale_set_loclist=0
 	let g:ale_sign_column_always=1
@@ -159,6 +173,10 @@ function! g:AleSettings()
 	let g:ale_change_sign_column_color=1
 	let g:ale_echo_msg_format='[%linter%] [%severity%] %s'
 endfunction
+
+"""
+" Vim-airline
+"
 
 augroup vimrc
 	" Uncomment the following to have Vim jump to the last position when
@@ -172,9 +190,9 @@ augroup vimrc
 
 augroup END
 
-colorscheme mkarpoff
-
 " Assume I want syntax highlighting
 syntax enable
+colorscheme mkarpoff
+
 
 silent! helptags ALL
