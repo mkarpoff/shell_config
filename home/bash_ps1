@@ -6,8 +6,8 @@ if [[ $- == *i* ]]; then
 if [[ -z "${GIT_PS1}" ]]; then
 	export GIT_PS1=1
 fi
-
-declare -A syms=( [RA]='' [LA]='' [BRANCH]='' [DIRTY]='✗' [CLEAN]='✓' [STASH]='☇' [AHEAD]='↑' [BHIND]='↓' )
+declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='√' [DIRTY]='×' [LOCAL]='←' [STASH]='→' [AHEAD]='↑' [BHIND]='↓' )
+#declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='✓√○' [DIRTY]='✗●×' [LOCAL]='←◄' [STASH]='☇→►◌' [AHEAD]='↑▲' [BHIND]='↓▼' )
 if [ "$(tput colors)" == "256" ]; then
 declare -A colors=(
 	[TERMBLKF]="\\[$(tput setaf  0)\\]"
@@ -66,7 +66,7 @@ function git_dirty() {
 	local _dirty=$(git status --porcelain 2>/dev/null| wc -l )
 	if (( _dirty > 0 ))
 	then
-		echo "${colors[REDF]} $_dirty${syms[DIRTY]} "
+		echo "${colors[REDF]}${syms[DIRTY]} $_dirty${syms[LOCAL]}"
 	else
 		echo "${colors[GREF]}${syms[CLEAN]} "
 	fi
