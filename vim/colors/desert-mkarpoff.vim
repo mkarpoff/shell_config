@@ -21,7 +21,8 @@ if version > 580
 endif
 let g:colors_name="mkarpoff"
 
-hi Normal	guifg=White guibg=grey20
+hi Normal	guifg=LightGrey guibg=Black
+hi Normal	ctermfg=LightGrey ctermbg=Black
 
 " highlight groups
 hi Cursor	guibg=khaki guifg=slategrey
