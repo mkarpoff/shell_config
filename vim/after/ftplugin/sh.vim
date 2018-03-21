@@ -1,4 +1,4 @@
 " sh specific
-call g:AleSettings()
+packadd ale
 set number
 set nowrap

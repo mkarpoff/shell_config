@@ -31,29 +31,12 @@ set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 
-" Status line
-set laststatus=2
-
-" vim-airline settings
 set encoding=utf-8
 scriptencoding=utf-8
 set termencoding=utf-8
 set term=xterm-256color
 
-let g:airline_powerline_fonts=1
-if !exists('g:airline_symbols')
-	let g:airline_symbols = {}
-endif
-let g:airline#extensions#whitespace#mixed_indent_algo=1
-let g:airline_theme='mkarpoff'
-
-" unicode symbols
-let g:airline_symbols.linenr = '≡'
-let g:airline_symbols.crypt = ''
-let g:airline_symbols.whitespace= 'Ξ'
-let g:airline_symbols.notexists= '∄'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.spell = '§'
+filetype plugin on
 
 
 " Hotkeys for speeding usage
@@ -68,13 +51,6 @@ vmap ; :
 nmap [[ :call b:Compile()<CR>
 nmap ]] :call b:CompileClean()<CR>
 nmap \ :cclose<CR>
-"augroup vimrc
-"	autocmd QuickFixCmdPost * call asyncrun#quickfix_toggle(15, 1)
-"augroup END
-
-
-" vim-man package settings
-cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
 
 " Persistent file undo across reopening vim
 if !isdirectory($HOME."/.vim/undodir")
@@ -118,7 +94,6 @@ aug QFClose
 aug END
 
 " Resize qf
-"au FileType qf call AdjustWindowHeight(10, 20)
 function! AdjustWindowHeight(minheight, maxheight)
 	let l = 1
 	let n_lines = 0
@@ -133,7 +108,6 @@ function! AdjustWindowHeight(minheight, maxheight)
 	exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
 endfunction
 
-filetype plugin on
 
 " Zoom / Restore window.
 function! s:ZoomToggle() abort
@@ -151,32 +125,8 @@ command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> <C-w>f :ZoomToggle<CR>
 tnoremap <silent> <C-w>f <C-w>:ZoomToggle<CR>
 
-" vim-man package settings
-cnoremap <nowait> <expr> man getcmdtype() ==# ':' && getcmdpos() == 1 ? 'Man' : 'man'
-
-
-"""
-" Environment Specific settings
-" ALE specific package .vim/pack/git/opt/ale
-function! g:AleSettings()
-	packadd ale
-	highlight ALEErrorSign ctermfg=160 ctermbg=232 guifg=#ff0000 guibg=#080808
-	highlight ALEWarningSign ctermfg=202 ctermbg=234 guifg=#ff5f00 guibg=#1c1c1c
-	highlight ALEInfoSign ctermfg=45 ctermbg=234
-	highlight ALESignColumnWithErrors ctermfg=243 ctermbg=5 guifg=#767676 guibg=#080808
-	highlight ALESignColumnWithoutErrors ctermfg=239 ctermbg=234 guifg=#4e4e4e guibg=#1c1c1c
-	let g:airline#extensions#ale#enabled = 1
-	let g:ale_set_loclist=0
-	let g:ale_sign_column_always=1
-	let g:ale_sign_error='E>'
-	let g:ale_sign_warning='W>'
-	let g:ale_change_sign_column_color=1
-	let g:ale_echo_msg_format='[%linter%] [%severity%] %s'
-endfunction
-
-"""
-" Vim-airline
-"
+" make using make! instead of make 
+cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
 
 augroup vimrc
 	" Uncomment the following to have Vim jump to the last position when
@@ -192,7 +142,8 @@ augroup END
 
 " Assume I want syntax highlighting
 syntax enable
-colorscheme mkarpoff
+colorscheme desert-mkarpoff
 
+let g:airline_powerline_fonts=1
 
 silent! helptags ALL

@@ -1,7 +1,6 @@
 " Vim Specific
-call g:AleSettings()
 
-function! s:Compile() 
+function! s:Compile()
 	source ~/.vim/vimrc
 	echo Reloaded
 endfunction
