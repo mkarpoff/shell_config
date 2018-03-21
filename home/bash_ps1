@@ -10,24 +10,24 @@ declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CL
 #declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='✓√○' [DIRTY]='✗●×' [LOCAL]='←◄' [STASH]='☇→►◌' [AHEAD]='↑▲' [BHIND]='↓▼' )
 if [ "$(tput colors)" == "256" ]; then
 declare -A colors=(
-	[TERMBLKF]="\\[$(tput setaf  0)\\]"
-	[TERMBLKB]="\\[$(tput setab  0)\\]"
-	[BLKF]="\\[$(tput setaf  236)\\]"
-	[BLKB]="\\[$(tput setab  236)\\]"
-	[REDF]="\\[$(tput setaf  160)\\]"
-	[REDB]="\\[$(tput setab  160)\\]"
-	[GREF]="\\[$(tput setaf  70)\\]"
-	[GREB]="\\[$(tput setab  70)\\]"
-	[YELF]="\\[$(tput setaf  178)\\]"
-	[YELB]="\\[$(tput setab  178)\\]"
-	[BLUF]="\\[$(tput setaf  32)\\]"
-	[BLUB]="\\[$(tput setab  32)\\]"
-	[PRPF]="\\[$(tput setaf  096)\\]"
-	[PRPB]="\\[$(tput setab  096)\\]"
-	[AQUF]="\\[$(tput setaf  37)\\]"
-	[AQUB]="\\[$(tput setab  37)\\]"
-	[GRYF]="\\[$(tput setaf  240)\\]"
-	[GRYB]="\\[$(tput setab  240)\\]"
+	[TERMBLKF]="$(tput sgr0)"
+	[TERMBLKB]="$(tput sgr0)"
+	[BLKF]="$(tput setaf  236)"
+	[BLKB]="$(tput setab  236)"
+	[REDF]="$(tput setaf  160)"
+	[REDB]="$(tput setab  160)"
+	[GREF]="$(tput setaf  70)"
+	[GREB]="$(tput setab  70)"
+	[YELF]="$(tput setaf  178)"
+	[YELB]="$(tput setab  178)"
+	[BLUF]="$(tput setaf  32)"
+	[BLUB]="$(tput setab  32)"
+	[PRPF]="$(tput setaf  096)"
+	[PRPB]="$(tput setab  096)"
+	[AQUF]="$(tput setaf  37)"
+	[AQUB]="$(tput setab  37)"
+	[GRYF]="$(tput setaf  240)"
+	[GRYB]="$(tput setab  240)"
 	)
 else
 declare -A colors=(
@@ -60,7 +60,7 @@ fi
 # Display Username
 readonly usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
 readonly clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
-readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)\\]\\[$(tput sgr0)\\]"
+readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}$(tput el)$(tput sgr0)"
 
 function git_dirty() {
 	local _dirty=$(git status --porcelain 2>/dev/null| wc -l )
@@ -105,8 +105,8 @@ function git_prompt() {
 }
 
 function set_prompt() {
-
-	branch=$(git_prompt&)
+	local last_cmd="$?"
+	local branch=$(git_prompt&)
 
 	# Virtual Env stuff
 	local venv
@@ -122,13 +122,10 @@ function set_prompt() {
 	# current directory and parent directory if it will run over the clock
 	path="${colors[BLUB]}${syms[RA]}${colors[BLKF]} \w ${colors[BLUF]}"
 
-	local ps1_1 ps1_1_2
-	ps1_1="\\[$(tput el1)\\]\\[$(tput cub $(tput cols))\\]\\[$(tput hpa 0)\\]${shlvl}${usrin}${branch}${venv}"
-	ps1_1_2="${colors[TERMBLKB]}${syms[RA]}\\[$(tput sgr0)\\]"
+	local ps1_1
+	ps1_1="$(tput el1)$(tput cub $(tput cols))$(tput hpa 0)${shlvl}${usrin}${branch}${venv}${path}${colors[TERMBLKB]}${colors[BLUF]}${syms[RA]}$(tput sgr0)"
 
-	local ps1_1 
-	ps1_1="${ps1_1}${path}${ps1_1_2}"
-	export PS1="${ps1_1}\\r\\n${ps1_2}"
+	export PS1="${ps1_1}\\r\\n$(tput el1)${ps1_2}"
 }
 
 	export PS2="${ps1_2}"

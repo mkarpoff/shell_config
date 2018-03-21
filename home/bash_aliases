@@ -3,8 +3,10 @@ alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -lh'
 alias ls='ls --color=auto'
-alias tmux='TERM=screen-256color tmux -2'
+alias lss='ls'
+#alias tmux='TERM=tmux-256color tmux'
 #alias make="global_make"
+
 
 export EDITOR=vim
 
