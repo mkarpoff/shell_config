@@ -10,24 +10,24 @@ declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CL
 #declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='✓√○' [DIRTY]='✗●×' [LOCAL]='←◄' [STASH]='☇→►◌' [AHEAD]='↑▲' [BHIND]='↓▼' )
 if [ "$(tput colors)" == "256" ]; then
 declare -A colors=(
-	[TERMBLKF]="$(tput sgr0)"
-	[TERMBLKB]="$(tput sgr0)"
-	[BLKF]="$(tput setaf  236)"
-	[BLKB]="$(tput setab  236)"
-	[REDF]="$(tput setaf  160)"
-	[REDB]="$(tput setab  160)"
-	[GREF]="$(tput setaf  70)"
-	[GREB]="$(tput setab  70)"
-	[YELF]="$(tput setaf  178)"
-	[YELB]="$(tput setab  178)"
-	[BLUF]="$(tput setaf  32)"
-	[BLUB]="$(tput setab  32)"
-	[PRPF]="$(tput setaf  096)"
-	[PRPB]="$(tput setab  096)"
-	[AQUF]="$(tput setaf  37)"
-	[AQUB]="$(tput setab  37)"
-	[GRYF]="$(tput setaf  240)"
-	[GRYB]="$(tput setab  240)"
+	[TERMBLKF]="\\[$(tput sgr0)\\]"
+	[TERMBLKB]="\\[$(tput sgr0)\\]"
+	[BLKF]="\\[$(tput setaf  236)\\]"
+	[BLKB]="\\[$(tput setab  236)\\]"
+	[REDF]="\\[$(tput setaf  160)\\]"
+	[REDB]="\\[$(tput setab  160)\\]"
+	[GREF]="\\[$(tput setaf  70)\\]"
+	[GREB]="\\[$(tput setab  70)\\]"
+	[YELF]="\\[$(tput setaf  178)\\]"
+	[YELB]="\\[$(tput setab  178)\\]"
+	[BLUF]="\\[$(tput setaf  32)\\]"
+	[BLUB]="\\[$(tput setab  32)\\]"
+	[PRPF]="\\[$(tput setaf  096)\\]"
+	[PRPB]="\\[$(tput setab  096)\\]"
+	[AQUF]="\\[$(tput setaf  37)\\]"
+	[AQUB]="\\[$(tput setab  37)\\]"
+	[GRYF]="\\[$(tput setaf  240)\\]"
+	[GRYB]="\\[$(tput setab  240)\\]"
 	)
 else
 declare -A colors=(
@@ -60,7 +60,7 @@ fi
 # Display Username
 readonly usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
 readonly clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
-readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}$(tput el)$(tput sgr0)"
+readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)$(tput sgr0)\\]"
 
 function git_dirty() {
 	local _dirty=$(git status --porcelain 2>/dev/null| wc -l )
@@ -123,11 +123,10 @@ function set_prompt() {
 	path="${colors[BLUB]}${syms[RA]}${colors[BLKF]} \w ${colors[BLUF]}"
 
 	local ps1_1
-	ps1_1="$(tput el1)$(tput cub $(tput cols))$(tput hpa 0)${shlvl}${usrin}${branch}${venv}${path}${colors[TERMBLKB]}${colors[BLUF]}${syms[RA]}$(tput sgr0)"
-
-	export PS1="${ps1_1}\\r\\n$(tput el)${ps1_2}"
+	ps1_1="\\[$(tput el1)$(tput cub $(tput cols))$(tput hpa 0)\\]${shlvl}${usrin}${branch}${venv}${path}${colors[TERMBLKB]}${colors[BLUF]}${syms[RA]}\\[$(tput sgr0)\\]"
+	export PS1="${ps1_1}\\r\\n\\[$(tput el)\\]${ps1_2}"
 }
 
-	export PS2="${ps1_2}"
+	export PS2="\\[$(tput el)\\]${ps1_2}"
 	export PROMPT_COMMAND=set_prompt
 fi
