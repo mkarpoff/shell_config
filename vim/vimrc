@@ -137,12 +137,13 @@ augroup vimrc
 	endif
 	autocmd BufNewFile,BufRead *.x86 set filetype=gas
 	autocmd BufNewFile,BufRead *.log set filetype=log
+	autocmd BufNewFile,BufRead *.h set filetype=c
 
 augroup END
 
 " Assume I want syntax highlighting
-syntax enable
 colorscheme desert-mkarpoff
+syntax enable
 
 let g:airline_powerline_fonts=1
 
