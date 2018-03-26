@@ -19,7 +19,7 @@ if version > 580
 	syntax reset
     endif
 endif
-let g:colors_name="mkarpoff"
+let g:colors_name="desert-mkarpoff"
 
 hi Normal	guifg=LightGrey guibg=Black
 hi Normal	ctermfg=LightGrey ctermbg=Black
@@ -123,7 +123,7 @@ highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 "highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
 highlight SpellLocal term=underline cterm=bold,underline ctermfg=14 ctermbg=0 gui=undercurl guisp=Cyan
-highlight SpellBad term=reverse cterm=bold,underline ctermfg=9 ctermbg=0 gui=undercurl guisp=Red
+highlight SpellBad term=reverse ctermfg=0 ctermbg=9 gui=undercurl guisp=Red
 highlight ErrorMsg term=standout cterm=bold,underline ctermfg=1 ctermbg=0 guifg=White guibg=Red 
 highlight Error term=standout cterm=bold,underline ctermfg=1 ctermbg=0 guifg=White guibg=Red 
 
