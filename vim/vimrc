@@ -1,8 +1,9 @@
 """
 " Environment settings
 """
-"
-" set nocompatible
+
+" I don't care about vi compatability
+set nocompatible
 
 " Huawei servers backspace doesn't work...
 set backspace=2
@@ -125,7 +126,7 @@ command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> <C-w>f :ZoomToggle<CR>
 tnoremap <silent> <C-w>f <C-w>:ZoomToggle<CR>
 
-" make using make! instead of make 
+" make using make! instead of make
 cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
 
 augroup vimrc
