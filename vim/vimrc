@@ -43,6 +43,7 @@ filetype plugin on
 " Hotkeys for speeding usage
 set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
+imap JK <Esc>
 nmap ww <c-w>
 tmap ww <c-w>
 vmap ww <c-w>

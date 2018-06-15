@@ -41,5 +41,3 @@ endfunction
 
 let b:Compile = function('<SID>Compile')
 let b:CompileClean = function('<SID>CompileClean')
-colorscheme morning-mkarpoff
-cmap q<CR> :colorscheme desert-mkarpoff<CR> <bar> :quit<CR>
