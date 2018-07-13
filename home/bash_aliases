@@ -9,12 +9,14 @@ alias lss='ls'
 
 
 export EDITOR=vim
+export MANPATH="$HOME/.local/share/man:$MANPATH"
+source "$HOME/.local/src/z/z.sh"
 
-function latest(){
+latest(){
    A=(${@})
    prog=$1;
    lat=$(find . -type f -printf "%C@ %p\n" | sort | tail -n 1 | cut -d " " -f 2-)
-   if [ ! -z "$2" ] ; then 
+   if [[ ! -z "$2" ]] ; then 
      args=${A[*]:1}; 
      $prog "$lat" "$args"
    else
@@ -24,41 +26,44 @@ function latest(){
 
 
 activate_func() {
-	if [[ $1 == */ ]]
-	then
+	if [[ $1 == '*/' ]]; then
 		source "${1}bin/activate"
 	else
 		source "${1}/bin/activate"
 	fi
-	alias pm="python manage.py"
+	alias pm='python manage.py'
 }
-alias activate="activate_func"
+alias activate='activate_func'
 
 global_make() {
-	if [ -e "GNUmakefile" ] || [ -e "makefile" ] || [ -e "Makefile" ] ; then
+	if [[ -e 'GNUmakefile'  ||  -e 'makefile'  ||  -e 'Makefile' ]] ; then
 		make -j "$@"
-	elif  [[ $PWD == *"/home/mkarpoff/UVa"* ]]; then
-		echo "Making using UVa makefile"
+	elif  [[ $PWD == *'/home/mkarpoff/UVa'* ]]; then
+		echo 'Making using UVa makefile'
 		/usr/bin/make -f /home/mkarpoff/UVa/Support/Makefile "$*"
 	else
 		make --file=~/.global_makefile "$@"
 	fi
 }
-export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
-export LESS_TERMCAP_md=$(printf '\e[01;35m') # enter double-bright mode - bold, magenta
-export LESS_TERMCAP_me=$(printf '\e[0m') # turn off all appearance modes (mb, md, so, us)
-export LESS_TERMCAP_se=$(printf '\e[0m') # leave standout mode    
-export LESS_TERMCAP_so=$(printf '\e[01;33m') # enter standout mode - yellow
-export LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
-export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
 
+LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
+LESS_TERMCAP_md=$(printf '\e[01;35m') # enter double-bright mode - bold, magenta
+LESS_TERMCAP_me=$(printf '\e[0m') # turn off all appearance modes (mb, md, so, us)
+LESS_TERMCAP_se=$(printf '\e[0m') # leave standout mode    
+LESS_TERMCAP_so=$(printf '\e[01;33m') # enter standout mode - yellow
+LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
+LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode - cyan
+
+export LESS_TERMCAP_mb
+export LESS_TERMCAP_md
+export LESS_TERMCAP_me
+export LESS_TERMCAP_se
+export LESS_TERMCAP_so
+export LESS_TERMCAP_ue
+export LESS_TERMCAP_us
 
 # enable custom prompt
-if [ -f ~/.bash_ps1 ]; then
+if [[ -f ~/.bash_ps1 ]]; then
     . ~/.bash_ps1
 fi
 
-#launch tmux if available
-#if command -v tmux>/dev/null; then
-#  [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
-#fi
