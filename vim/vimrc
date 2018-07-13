@@ -39,6 +39,7 @@ set term=xterm-256color
 
 if &term == 'xterm-256color' || &term == 'screen-256color'
 	let &t_SI = "\<Esc>[5 q"
+	let &t_SR = "\<Esc>[3 q"
 	let &t_EI = "\<Esc>[1 q"
 endif
 
@@ -49,6 +50,8 @@ filetype plugin on
 set timeoutlen=1000 ttimeoutlen=10
 imap jk <Esc>
 imap JK <Esc>
+lmap jk <Esc>
+lmap JK <Esc>
 nmap ww <c-w>
 tmap ww <c-w>
 vmap ww <c-w>
