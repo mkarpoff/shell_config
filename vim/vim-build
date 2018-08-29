@@ -3,7 +3,8 @@
 cd "$HOME/.local/src/vim" || exit 1
 
 
-./configure \
+CFLAGS=-O3 \
+	./configure \
 	--enable-multibyte \
 	--enable-terminal \
 	--enable-pythoninterp=dynamic \
