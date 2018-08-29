@@ -59,6 +59,13 @@ nmap [[ :call b:Compile()<CR>
 nmap ]] :call b:CompileClean()<CR>
 nmap \ :cclose<CR>
 
+
+" TMUX Navigation plugin
+if exists('$TMUX')
+	packadd vim-tmux-navigator
+	let g:tmux_navigator_no_mappings = 1
+endif
+
 " Persistent file undo across reopening vim
 if !isdirectory($HOME."/.vim/undodir")
 	call mkdir($HOME."/.vim/undodir", "p")
