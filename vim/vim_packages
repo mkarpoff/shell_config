@@ -19,15 +19,15 @@
 [vim-indentguides]
 	dir = opt/vim-indentguides
 	url = https://github.com/thaerkh/vim-indentguides.git
+[vim-indent-guides]
+	dir = opt/vim-indent-guides
+	url = https://github.com/nathanaelkane/vim-indent-guides.git
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
 	url = https://github.com/dzeban/vim-log-syntax.git
-[ASP.vim]
-	dir = start/ASP.vim
-	url = https://github.com/Aluriak/ASP.vim
-[asyncrun.vim]
-	dir = start/asyncrun.vim
-	url = https://github.com/skywind3000/asyncrun.vim
+[vim-tmux-navigator]
+	dir = opt/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator.git
 [nerdtree]
 	dir = start/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
@@ -51,5 +51,8 @@
 	url = https://github.com/vim-utils/vim-man.git
 [vim-qf]
 	dir = start/vim-qf
-	url = https://github.com/romainl/vim-qf
+	url = https://github.com/romainl/vim-qf.git
+[ZoomWin]
+	dir = start/ZoomWin
+	url = https://github.com/vim-scripts/ZoomWin.git
 
