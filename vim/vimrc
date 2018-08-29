@@ -45,19 +45,19 @@ endif
 filetype plugin on
 
 
-" Hotkeys for speeding usage
+" Navigation Hotkeys for speeding usage
 set timeoutlen=1000 ttimeoutlen=10
-imap jk <Esc>
-imap JK <Esc>
-nmap ww <c-w>
-tmap ww <c-w>
-vmap ww <c-w>
-nmap ; :
-tmap ; :
-vmap ; :
-nmap [[ :call b:Compile()<CR>
-nmap ]] :call b:CompileClean()<CR>
-nmap \ :cclose<CR>
+inoremap jk <Esc>
+inoremap JK <Esc>
+nnoremap ww <c-w>
+tnoremap ww <c-w>
+vnoremap ww <c-w>
+nnoremap ; :
+tnoremap ; :
+vnoremap ; :
+nnoremap [[ :call b:Compile()<CR>
+nnoremap ]] :call b:CompileClean()<CR>
+nnoremap \ :cclose<CR>
 
 
 " TMUX Navigation plugin
@@ -151,7 +151,7 @@ augroup vimrc
 	endif
 	autocmd BufNewFile,BufRead *.x86 set filetype=gas
 	autocmd BufNewFile,BufRead *.log set filetype=log
-	autocmd BufNewFile,BufRead *.h set filetype=c
+	autocmd BufNewFile,BufRead *.h set filetype=cpp
 
 augroup END
 
