@@ -17,8 +17,8 @@ fi
 trap 'echo -ne "\033]2;${PWD##*/} [$(history 1 | sed "s/^[ ]*[0-9]*[ ]*//g")]\007"' DEBUG
 
 # The symbols to use in the PS1
-declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='√' [DIRTY]='×' [LOCAL]='←' [STASH]='→' [AHEAD]='↑' [BHIND]='↓' )
-#declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='✓√○' [DIRTY]='✗●×' [LOCAL]='←◄' [STASH]='☇→►◌' [AHEAD]='↑▲' [BHIND]='↓▼' )
+declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='√' [DIRTY]='×' [LOCAL]='Δ' [STASH]='→' [AHEAD]='↑' [BHIND]='↓' )
+#declare -A syms=( [RA]='' [RB]='' [LB]='' [LA]='' [BRANCH]='' [CLEAN]='✓√○' [DIRTY]='✗●×' [LOCAL]='Δ←◄' [STASH]='☇→►◌' [AHEAD]='↑▲' [BHIND]='↓▼' )
 
 # Check if 256 color pallet is available
 if (( $(tput colors) == 256 )); then
