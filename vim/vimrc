@@ -40,8 +40,8 @@ set termencoding=utf-8
 set term=xterm-256color
 
 if &term == 'xterm-256color' || &term == 'screen-256color'
-	let &t_SI = "\<Esc>[5 q"
-	let &t_SR = "\<Esc>[3 q"
+	let &t_SI = "\<Esc>[1 q"
+	let &t_SR = "\<Esc>[1 q"
 	let &t_EI = "\<Esc>[1 q"
 endif
 
@@ -66,7 +66,6 @@ nnoremap \ :cclose<CR>
 " TMUX Navigation plugin
 if exists('$TMUX')
 	packadd vim-tmux-navigator
-	let g:tmux_navigator_no_mappings = 1
 endif
 
 " Persistent file undo across reopening vim
@@ -141,6 +140,8 @@ endfunction
 command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> <C-w>f :ZoomToggle<CR>
 tnoremap <silent> <C-w>f <C-w>:ZoomToggle<CR>
+nnoremap <silent> wwf :ZoomToggle<CR>
+tnoremap <silent> wwf <C-w>:ZoomToggle<CR>
 
 " make using make! instead of make
 cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
