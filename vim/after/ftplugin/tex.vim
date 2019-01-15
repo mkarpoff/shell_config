@@ -1,5 +1,4 @@
 " LaTeX specific
-packadd ale
 setlocal textwidth=999999
 setlocal wrap
 setlocal linebreak
@@ -13,6 +12,12 @@ nmap I g0i
 nmap A g$a
 nmap 0 g0
 nmap $ g$
+
+" Use the old regex engine explicitly the newer robust one doesn't do well
+" with long lines
+setlocal regexpengine=1
+
+packadd ale
 
 packadd completor.vim
 let g:completor_tex_omni_trigger =
@@ -29,7 +34,7 @@ packadd FastFold
 let g:tex_fold_enabled=1
 setlocal shiftwidth=2
 " folding options end
-"
+
 function! s:Compile() 
 	AsyncRun rubber --pdf --inplace %
 endfunction

@@ -4,9 +4,6 @@
 [completor.vim]
 	dir = opt/completor.vim
 	url = https://github.com/maralla/completor.vim.git
-[FastFold]
-	dir = opt/FastFold
-	url = https://github.com/Konfekt/FastFold.git
 [vim-autoread]
 	dir = opt/vim-autoread
 	url = https://github.com/chrisbra/vim-autoread.git
@@ -19,21 +16,18 @@
 [vim-indentguides]
 	dir = opt/vim-indentguides
 	url = https://github.com/thaerkh/vim-indentguides.git
-[vim-indent-guides]
-	dir = opt/vim-indent-guides
-	url = https://github.com/nathanaelkane/vim-indent-guides.git
 [vim-log-syntax]
 	dir = opt/vim-log-syntax
 	url = https://github.com/dzeban/vim-log-syntax.git
-[vim-tmux-navigator]
-	dir = opt/vim-tmux-navigator
-	url = https://github.com/christoomey/vim-tmux-navigator.git
-[nerdtree]
-	dir = start/nerdtree
-	url = https://github.com/scrooloose/nerdtree.git
 [SingleCompile]
 	dir = start/SingleCompile
 	url = https://github.com/xuhdev/SingleCompile.git
+[ZoomWin]
+	dir = start/ZoomWin
+	url = https://github.com/vim-scripts/ZoomWin.git
+[nerdtree]
+	dir = start/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git
 [vim-addon-local-vimrc]
 	dir = start/vim-addon-local-vimrc
 	url = https://github.com/MarcWeber/vim-addon-local-vimrc.git
@@ -52,7 +46,10 @@
 [vim-qf]
 	dir = start/vim-qf
 	url = https://github.com/romainl/vim-qf.git
-[ZoomWin]
-	dir = start/ZoomWin
-	url = https://github.com/vim-scripts/ZoomWin.git
+[vim-stay.git]
+	dir = start/vim-stay.git
+	url = https://github.com/zhimsel/vim-stay.git
+[vim-tmux-navigator]
+	dir = start/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator.git
 
