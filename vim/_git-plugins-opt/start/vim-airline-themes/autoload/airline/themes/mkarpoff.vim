@@ -18,10 +18,10 @@ let s:I2R= [ '#FDE76E' , '#32322F' , 232 , 240 , 'bold']
 let s:I3 = [ '#FDE76E' , '#242424' , 5   , 235 , 'bold']
 
 " Visual mode
-let s:V1 = [ '#141413' , '#B5D3F3' , 234 , 4   , 'bold']
+let s:V1 = [ '#141413' , '#B5D3F3' , 234 , 32  , 'bold']
 let s:V2L= [ '#B5D3F3' , '#32322F' , 12  , 240 , 'bold']
 let s:V2R= [ '#B5D3F3' , '#32322F' , 232 , 240 , 'bold']
-let s:V3 = [ '#B5D3F3' , '#242424' , 4   , 235 , 'bold']
+let s:V3 = [ '#B5D3F3' , '#242424' , 32  , 235 , 'bold']
 
 " Replace mode
 let s:R1 = [ '#141413' , '#E5786D' , 234 , 1   , 'bold']
