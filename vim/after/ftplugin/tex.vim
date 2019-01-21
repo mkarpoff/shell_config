@@ -13,6 +13,12 @@ nmap A g$a
 nmap 0 g0
 nmap $ g$
 
+vmap j gj
+vmap k gk
+vmap A g$a
+vmap 0 g0
+vmap $ g$
+
 " Use the old regex engine explicitly the newer robust one doesn't do well
 " with long lines
 setlocal regexpengine=1
@@ -33,6 +39,8 @@ let g:completor_tex_omni_trigger =
 packadd FastFold
 let g:tex_fold_enabled=1
 setlocal shiftwidth=2
+autocmd InsertLeave,WinEnter * setlocal foldmethod=syntax
+autocmd InsertEnter,WinLeave * setlocal foldmethod=manual
 " folding options end
 
 function! s:Compile() 
