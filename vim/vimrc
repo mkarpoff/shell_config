@@ -51,6 +51,8 @@ filetype plugin on
 " Navigation Hotkeys for speeding usage
 set timeoutlen=1000 ttimeoutlen=10
 inoremap jk <Esc>
+inoremap Jk <Esc>
+inoremap jK <Esc>
 inoremap JK <Esc>
 nnoremap ww <c-w>
 tnoremap ww <c-w>
