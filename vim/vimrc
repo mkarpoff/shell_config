@@ -50,16 +50,14 @@ filetype plugin on
 
 " Navigation Hotkeys for speeding usage
 set timeoutlen=1000 ttimeoutlen=10
-inoremap jk <Esc>
-inoremap Jk <Esc>
-inoremap jK <Esc>
-inoremap JK <Esc>
-nnoremap ww <c-w>
+noremap! jk <Esc>
+noremap! Jk <Esc>
+noremap! jK <Esc>
+noremap! JK <Esc>
+noremap ww <c-w>
 tnoremap ww <c-w>
-vnoremap ww <c-w>
-nnoremap ; :
-tnoremap ; :
-vnoremap ; :
+tnoremap ww; <c-w>:
+noremap ; :
 nnoremap [[ :call b:Compile()<CR>
 nnoremap ]] :call b:CompileClean()<CR>
 nnoremap \ :cclose<CR>
