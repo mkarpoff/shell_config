@@ -45,6 +45,7 @@ autocmd InsertEnter,WinLeave * setlocal foldmethod=manual
 
 function! s:Compile() 
 	AsyncRun rubber --pdf --inplace %
+	AsyncRun rubber --clean --inplace %
 endfunction
 
 function! s:CompileClean() 
