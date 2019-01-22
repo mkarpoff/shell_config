@@ -10,9 +10,6 @@ alias lss='ls'
 
 export EDITOR=vim
 export MANPATH="$HOME/.local/share/man:$MANPATH"
-if [[ -d "$HOME/.local/src/z/z.sh" ]]; then
-	source "$HOME/.local/src/z/z.sh"
-fi
 
 latest(){
    A=(${@})
