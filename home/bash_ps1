@@ -11,6 +11,9 @@ fi
 if [[ -z "${GIT_PS1}" ]]; then
 	export GIT_PS1=1
 fi
+if [[ -z "${GIT_PS1_TIMEOUT}" ]]; then
+	export GIT_PS1_TIMEOUT=0.200
+fi
 
 # Set the terminal window to be the path and last cmd used
 #trap 'echo -ne "\033]2;${USER}@${HOSTNAME}:${PWD} {$(history 1 | sed "s/^[ ]*[0-9]*[ ]*//g")}:.\007"' DEBUG
@@ -74,12 +77,15 @@ fi
 readonly usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
 readonly clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
 readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)$(tput sgr0)\\]"
-
 git_dirty() {
 	local dirty
-	dirty="$(git status --porcelain 2>/dev/null| wc -l )"
-	if (( dirty > 0 ))
-	then
+	dirty=$(timeout $GIT_PS1_TIMEOUT git status --porcelain 2>/dev/null )
+	if (( $? == 124 )); then
+		echo "${colors[BLKF]} ?${syms[LOCAL]}"
+		return
+	fi
+	dirty=$(wc -l <<< "$dirty")
+	if (( dirty > 0 )); then
 		echo "${colors[REDF]}${syms[DIRTY]} $dirty${syms[LOCAL]}"
 	else
 		echo "${colors[GREF]}${syms[CLEAN]} "
@@ -88,45 +94,58 @@ git_dirty() {
 
 git_stash() {
 	local stash
-	stash="$(git stash list 2>/dev/null| wc -l)"
-	if (( stash > 0 )); then
-		echo "${stash}${syms[STASH]}"
+	stash="$(timeout $GIT_PS1_TIMEOUT git stash list 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?${syms[STASH]}"
+		return
+	fi
+	if [[ "$stash" != "" ]]; then
+		echo "$(wc -l <<< "$stash")${syms[STASH]}"
 	fi
 }
 
 git_ahead() {
 	local ahead
-	ahead="$(git rev-list "@{u}..HEAD" 2>/dev/null| wc -l)"
-	if (( ahead > 0 )); then
-		echo "${ahead}${syms[AHEAD]}"
+	ahead="$(timeout $GIT_PS1_TIMEOUT git rev-list "@{u}..HEAD" 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?${syms[AHEAD]}"
+		return
+	fi
+	if [[ "$ahead" != "" ]]; then
+		echo "$(wc -l <<< "$ahead")${syms[AHEAD]}"
 	fi
 }
 
 git_behind() {
 	local behind
-	behind="$(git rev-list "HEAD..@{u}" 2>/dev/null| wc -l)"
-	if (( behind > 0 )); then
-		echo "${behind}${syms[BHIND]}"
+	behind="$(timeout $GIT_PS1_TIMEOUT git rev-list "HEAD..@{u}" 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?${syms[BHIND]}"
+	fi
+	if [[ "$behind" != "" ]]; then
+		echo "$(wc -l <<< "$behind")${syms[BHIND]}"
 	fi
 }
 
 git_prompt() {
 	# GIT STUFF
 	local git_repo_name branch
+	if (( GIT_PS1 == 0 )); then
+		return
+	fi
 	git_repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null)
 	if [[ "$git_repo_name" == '' ]] ; then
 		return 0
 	fi
-	branch=$(git symbolic-ref HEAD 2>/dev/null )
-	branch=${branch#refs/heads/} # apparently faster than sed
-	echo "${colors[YELB]}${syms[RA]}${colors[BLKF]} ${syms[BRANCH]}${git_repo_name}:${branch}$(git_dirty &)$(git_ahead &)$(git_behind &)${colors[YELF]}"
-	# disabled git stash as it takes 1s to run which cause prompt to take about 1.4s every time. Too slow for now
-	# echo "${colors[YELB]}${syms[RA]}${colors[BLKF]} ${syms[BRANCH]}${git_repo_name}:${branch}$(git_dirty &)$(git_stash &)$(git_ahead &)$(git_behind &)${colors[YELF]}"
+	branch=$(timeout $GIT_PS1_TIMEOUT git symbolic-ref HEAD 2>/dev/null )
+	branch=${branch#refs/heads/}
+	echo "${colors[YELB]}${syms[RA]}${colors[BLKF]} ${syms[BRANCH]}${git_repo_name}:${branch}$(git_dirty &)$(git_stash &)$(git_ahead &)$(git_behind &)${colors[YELF]}"
 }
 
 set_prompt() {
 	local branch venv path
-	branch=$(git_prompt&)
+
+	branch=$(git_prompt &)
 
 	# Virtual Env stuff
 	if [[ ! -z $VIRTUAL_ENV ]]; then
@@ -134,7 +153,6 @@ set_prompt() {
 	else
 		venv=''
 	fi
-
 
 	# Check to make sure the path isn't going to run over the clock. Will display
 	# current directory and parent directory if it will run over the clock
