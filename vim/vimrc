@@ -62,6 +62,13 @@ nnoremap [[ :call b:Compile()<CR>
 nnoremap ]] :call b:CompileClean()<CR>
 nnoremap \ :cclose<CR>
 
+nnoremap gc :tabe<CR>
+nnoremap gC :tabe 
+nnoremap gn :tabNext<CR>
+
+cnoremap <c-a> <home>
+cnoremap <c-e> <end>
+
 
 " TMUX Navigation plugin
 if exists('$TMUX')
