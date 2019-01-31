@@ -6,45 +6,52 @@
 " generates a dictionary which defines the colors for each highlight group
 " Normal mode
 "          [ guifg, guibg, ctemfg, ctermbg, opts ]
-let s:N1 = [ '#141413' , '#CAE682' , 234 , 2   , 'bold'] " mode
-let s:N2L= [ '#CAE682' , '#32322F' , 10  , 240 , 'bold'] " info
-let s:N2R= [ '#CAE682' , '#32322F' , 232 , 240 , 'bold'] " info
-let s:N3 = [ '#CAE682' , '#242424' , 2   , 235 , 'bold'] " statusline
+" Colors:
+let s:BLK = 232
+let s:RED = 160
+let s:GRN = 70
+let s:YEL = 178
+let s:BLU = 32
+let s:PRP = 96
+let s:AQU = 37
+let s:GRY = 240
+let s:GRYD= 235
+
+let s:N1 = [ '#141413' , '#CAE682' , s:BLK, s:GRN , 'bold'] " mode
+let s:N2L= [ '#CAE682' , '#32322F' , s:GRN, s:GRY , 'bold'] " info
+let s:N2R= [ '#CAE682' , '#32322F' , s:BLK, s:GRY , 'bold'] " info
+let s:N3 = [ '#CAE682' , '#242424' , s:GRN, s:GRYD, 'bold'] " statusline
 
 " Insert mode
-let s:I1 = [ '#141413' , '#FDE76E' , 234 , 5   , 'bold']
-let s:I2L= [ '#FDE76E' , '#32322F' , 13  , 240 , 'bold']
-let s:I2R= [ '#FDE76E' , '#32322F' , 232 , 240 , 'bold']
-let s:I3 = [ '#FDE76E' , '#242424' , 5   , 235 , 'bold']
+let s:I1 = [ '#141413' , '#FDE76E' , s:BLK, s:PRP , 'bold']
+let s:I2L= [ '#FDE76E' , '#32322F' , s:PRP, s:GRY , 'bold']
+let s:I2R= [ '#FDE76E' , '#32322F' , s:BLK, s:GRY , 'bold']
+let s:I3 = [ '#FDE76E' , '#242424' , s:PRP, s:GRYD, 'bold']
 
 " Visual mode
-let s:V1 = [ '#141413' , '#B5D3F3' , 234 , 32  , 'bold']
-let s:V2L= [ '#B5D3F3' , '#32322F' , 12  , 240 , 'bold']
-let s:V2R= [ '#B5D3F3' , '#32322F' , 232 , 240 , 'bold']
-let s:V3 = [ '#B5D3F3' , '#242424' , 32  , 235 , 'bold']
+let s:V1 = [ '#141413' , '#B5D3F3' , s:BLK, s:BLU , 'bold']
+let s:V2L= [ '#B5D3F3' , '#32322F' , s:BLU, s:GRY , 'bold']
+let s:V2R= [ '#B5D3F3' , '#32322F' , s:BLK, s:GRY , 'bold']
+let s:V3 = [ '#B5D3F3' , '#242424' , s:BLU, s:GRYD, 'bold']
 
 " Replace mode
-let s:R1 = [ '#141413' , '#E5786D' , 234 , 1   , 'bold']
-let s:R2L= [ '#E5786D' , '#32322F' , 9   , 240 , 'bold']
-let s:R2R= [ '#E5786D' , '#32322F' , 232 , 240 , 'bold']
-let s:R3 = [ '#E5786D' , '#242424' , 1   , 235 , 'bold']
+let s:R1 = [ '#141413' , '#E5786D' , s:BLK, s:RED , 'bold']
+let s:R2L= [ '#E5786D' , '#32322F' , s:RED, s:GRY , 'bold']
+let s:R2R= [ '#E5786D' , '#32322F' , s:BLK, s:GRY , 'bold']
+let s:R3 = [ '#E5786D' , '#242424' , s:RED, s:GRYD, 'bold']
 
 " Paste mode
-let s:PA = [ '#94E42C' , 6 ]
+let s:PA = [ '#94E42C' , s:AQU ]
 
 " Info modified
-let s:IM = [ '#40403C' , 7 ]
+let s:IM = [ '#40403C' , s:GRY ]
 
 " Inactive mode
-let s:IA1 = [ '#141413' , '#CAE682' , 0   , 2   ] " mode
-let s:IA2 = [ '#CAE682' , '#32322F' , 232 , 240 ] " info
-let s:IA3 = [ '#CAE682' , '#242424' , 242 , 233 ] " statusline
+let s:IA1 = [ '#141413' , '#CAE682' , s:BLK, s:GRN ] " mode
+let s:IA2 = [ '#CAE682' , '#32322F' , s:BLK, s:GRY ] " info
+let s:IA3 = [ '#CAE682' , '#242424' , s:GRN, s:GRYD ] " statusline
 
 let g:airline#themes#mkarpoff#palette = {}
-
-let g:airline#themes#mkarpoff#palette.accents = {
-      \ 'red': [ '#E5786D' , '' , 203 , '' , '' ],
-      \ }
 
 let g:airline#themes#mkarpoff#palette.normal = airline#themes#generate_color_map(s:N1, s:N2L, s:N3,s:N3, s:N2R, s:N1 )
 let g:airline#themes#mkarpoff#palette.insert = airline#themes#generate_color_map(s:I1, s:I2L, s:I3, s:I3, s:I2R, s:I1)
@@ -59,13 +66,4 @@ let g:airline#themes#mkarpoff#palette.insert_paste = {
 let g:airline#themes#mkarpoff#palette.inactive = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3)
 let g:airline#themes#mkarpoff#palette.inactive_modified = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3)
 
-
-if !get(g:, 'loaded_ctrlp', 0)
-  finish
-endif
-
-let g:airline#themes#mkarpoff#palette.ctrlp = airline#extensions#ctrlp#generate_color_map(
-      \ [ '#DADADA' , '#242424' , 253 , 234 , ''     ] ,
-      \ [ '#DADADA' , '#40403C' , 253 , 238 , ''     ] ,
-      \ [ '#141413' , '#DADADA' , 232 , 253 , ''     ] )
 
