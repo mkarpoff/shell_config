@@ -38,8 +38,8 @@ if (( $(tput colors) == 256 )); then
 		[YELB]="\\[$(tput setab  178)\\]"
 		[BLUF]="\\[$(tput setaf  32)\\]"
 		[BLUB]="\\[$(tput setab  32)\\]"
-		[PRPF]="\\[$(tput setaf  096)\\]"
-		[PRPB]="\\[$(tput setab  096)\\]"
+		[PRPF]="\\[$(tput setaf  96)\\]"
+		[PRPB]="\\[$(tput setab  96)\\]"
 		[AQUF]="\\[$(tput setaf  37)\\]"
 		[AQUB]="\\[$(tput setab  37)\\]"
 		[GRYF]="\\[$(tput setaf  240)\\]"
@@ -84,9 +84,8 @@ git_dirty() {
 		echo "${colors[BLKF]} ?${syms[LOCAL]}"
 		return
 	fi
-	dirty=$(wc -l <<< "$dirty")
-	if (( dirty > 0 )); then
-		echo "${colors[REDF]}${syms[DIRTY]} $dirty${syms[LOCAL]}"
+	if [[ "$dirty" != "" ]]; then
+		echo "${colors[REDF]}${syms[DIRTY]} $(wc -l <<< "$dirty")${syms[LOCAL]}"
 	else
 		echo "${colors[GREF]}${syms[CLEAN]} "
 	fi
