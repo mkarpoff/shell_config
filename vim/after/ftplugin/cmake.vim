@@ -1,4 +1,6 @@
 
+packadd vim-autoformat
+
 function! s:Compile() 
 	AsyncRun cmake <cwd>
 endfunction

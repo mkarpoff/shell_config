@@ -44,8 +44,9 @@ autocmd InsertEnter,WinLeave * setlocal foldmethod=manual
 " folding options end
 
 function! s:Compile() 
-	AsyncRun rubber --pdf --inplace %
-	AsyncRun rubber --clean --inplace %
+	AsyncRun rubber-vim-pdf-compile %
+"	AsyncRun rubber --pdf --inplace %
+"	AsyncRun rubber --clean %
 endfunction
 
 function! s:CompileClean() 

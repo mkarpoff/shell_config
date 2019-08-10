@@ -23,7 +23,9 @@ setlocal foldmethod=indent
 setlocal shiftwidth=2
 setlocal foldnestmax=1
 " folding options end
-"
+
+packadd vim-autoformat
+
 function! s:Compile() 
 	AsyncRun make
 endfunction
