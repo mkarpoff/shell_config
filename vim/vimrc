@@ -64,11 +64,23 @@ nnoremap \ :cclose<CR>
 
 nnoremap gc :tabe<CR>
 nnoremap gC :tabe 
-nnoremap gn :tabNext<CR>
+nnoremap gn :tabnext
 
 cnoremap <c-a> <home>
 cnoremap <c-e> <end>
 
+" Search Settings
+function! PasteToggle()
+	if &paste
+		set nopaste
+		echo 'Paste off'
+	else
+		set paste 
+		echo 'Paste on'
+	endif
+endfunction
+command! -nargs=0 PasteToggle call PasteToggle()
+noremap <c-p> <esc>:call PasteToggle()<cr>
 
 " TMUX Navigation plugin
 if exists('$TMUX')
