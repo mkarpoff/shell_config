@@ -44,12 +44,17 @@ let s:R3 = [ '#E5786D' , '#242424' , s:RED, s:GRYD, 'bold']
 let s:PA = [ '#94E42C' , s:AQU ]
 
 " Info modified
-let s:IM = [ '#40403C' , s:GRY ]
+let s:IM = [ '#40403C' , s:GRYD ]
 
 " Inactive mode
 let s:IA1 = [ '#141413' , '#CAE682' , s:BLK, s:GRN ] " mode
 let s:IA2 = [ '#CAE682' , '#32322F' , s:BLK, s:GRY ] " info
 let s:IA3 = [ '#CAE682' , '#242424' , s:GRN, s:GRYD ] " statusline
+
+" Tabline active inactive
+let s:TA = [ '#141413' , '#CAE682' , s:BLK, s:GRN  ] " active
+let s:TI = [ '#CAE682' , '#32322F' , s:BLK, s:GRYD ] " inactive
+
 
 let g:airline#themes#mkarpoff#palette = {}
 
@@ -57,6 +62,9 @@ let g:airline#themes#mkarpoff#palette.normal = airline#themes#generate_color_map
 let g:airline#themes#mkarpoff#palette.insert = airline#themes#generate_color_map(s:I1, s:I2L, s:I3, s:I3, s:I2R, s:I1)
 let g:airline#themes#mkarpoff#palette.visual = airline#themes#generate_color_map(s:V1, s:V2L, s:V3, s:V3, s:V2R, s:V1)
 let g:airline#themes#mkarpoff#palette.replace = airline#themes#generate_color_map(s:R1, s:R2L, s:R3, s:R3, s:R2R, s:R1)
+let g:airline#themes#mkarpoff#palette.tabline = {
+    \ 'airline_tabmod'      : s:TA ,
+    \ 'airline_tabmod_unsel': s:TI }
 let g:airline#themes#mkarpoff#palette.insert_paste = {
     \ 'airline_a': [ s:I1[0] , s:PA[0] , s:I1[2] , s:PA[1] , ''     ] ,
     \ 'airline_b': [ s:PA[0] , s:IM[0] , s:PA[1] , s:IM[1] , ''     ] ,
