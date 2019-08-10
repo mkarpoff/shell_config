@@ -68,15 +68,15 @@ fi
 
 # Nested shell level
 if (( SHLVL != 1 )); then
-	readonly shlvl="${colors[GRYB]} ${SHLVL} ${colors[GRYF]}"
+	shlvl="${colors[GRYB]} ${SHLVL} ${colors[GRYF]}"
 else
-	readonly shlvl="${colors[GRYF]}${colors[GRYB]} "
+	shlvl="${colors[GRYF]}${colors[GRYB]} "
 fi
 
 # Display Username
-readonly usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
-readonly clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
-readonly ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)$(tput sgr0)\\]"
+usrin="${colors[GREB]}${syms[RA]}${colors[BLKF]} ${HOSTNAME}  ${colors[GREF]}"
+clock="${colors[GREF]}${colors[BLKB]}${LA}${colors[GREB]}${colors[BLKF]} \\@"
+ps1_2="${colors[TERMBLKB]}${colors[GRYF]}${syms[RA]}\\[$(tput el)$(tput sgr0)\\]"
 git_dirty() {
 	local dirty
 	dirty=$(timeout $GIT_PS1_TIMEOUT git status --porcelain 2>/dev/null )
