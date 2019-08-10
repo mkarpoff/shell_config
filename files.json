@@ -1,6 +1,8 @@
 [
     {"name":"home/bash_config",     "target":"~/.bash_config"},
     {"name":"home/bash_ps1",        "target":"~/.bash_ps1"},
+    {"name":"home/zsh_config",      "target":"~/.zsh_config"},
+    {"name":"home/zsh_ps1",         "target":"~/.zsh_ps1"},
     {"name":"home/inputrc",         "target":"~/.inputrc"},
     {"name":"home/screenrc",        "target":"~/.screenrc"},
     {"name":"home/global_makefile", "target":"~/.global_makefile"},

@@ -1,0 +1,167 @@
+#! /usr/bin/env zsh
+# Zsh prompt script
+# Requires Nerd Fonts for symbols to display properly
+
+# Exit if not in interactive mode
+if [[ $- != *i* ]]; then
+	exit 0
+fi
+
+# Enable git directory checks by default. This can slow down bash if the git
+# directory is huge
+if [[ -z "${GIT_PS1}" ]]; then
+	export GIT_PS1=1
+fi
+if [[ -z "${GIT_PS1_TIMEOUT}" ]]; then
+	export GIT_PS1_TIMEOUT=0.100
+fi
+
+typeset -A syms
+syms=( RA '' RB '' LB '' LA '' BRANCH '' CLEAN '√' DIRTY '×' LOCAL 'Δ' STASH '→' AHEAD '↑' BHIND '↓' )
+#syms=( RA '' RB '' LB '' LA '' BRANCH '' CLEAN '✓√○' DIRTY '✗●×' LOCAL 'Δ←◄' STASH '☇→►◌' AHEAD '↑▲' BHIND '↓▼' )
+NEWLINE=$'\n'
+
+# Check if 256 color pallet is available
+typeset -A colors
+if (( $(tput colors) == 256 )); then
+	colors=(
+		TERMBLKF %f
+		TERMBLKB %k
+		BLKF %F{236}
+		BLKB %K{236}
+		REDF %F{160}
+		REDB %K{160}
+		GREF %F{70}
+		GREB %K{70}
+		YELF %F{178}
+		YELB %K{178}
+		BLUF %F{32}
+		BLUB %K{32}
+		PRPF %F{96}
+		PRPB %K{96}
+		AQUF %F{37}
+		AQUB %K{37}
+		GRYF %F{240}
+		GRYB %K{240}
+		)
+else
+	colors=(
+		BLKF %F{0}
+		BLKB %K{0}
+		REDF %F{1}
+		REDB %K{1}
+		GREF %F{2}
+		GREB %K{2}
+		YELF %F{3}
+		YELB %K{3}
+		BLUF %F{4}
+		BLUB %K{4}
+		PRPF %F{5}
+		PRPB %K{5}
+		AQUF %F{6}
+		AQUB %K{6}
+		GRYF %F{8}
+		GRYB %K{8}
+		)
+fi
+
+# Nested shell level
+if (( SHLVL != 1 )); then
+	shlvl="$colors[GRYB] $SHLVL $colors[GRYF]"
+else
+	shlvl="$colors[GRYF]$colors[GRYB] "
+fi
+
+# Display Username
+local usrin="$colors[GREB]$syms[RA]$colors[BLKF] %M  $colors[GREF]"
+local clock="$colors[AQUF]$syms[LA]$colors[AQUB]$colors[BLKF] %D{%H:%M:%S} "
+local ps1_2="$colors[TERMBLKB]$colors[GRYF]$syms[RA]$colors[TERMBLKB]$colors[TERMBLKF]"
+
+git_dirty() {
+	local dirty
+	dirty=$(timeout $GIT_PS1_TIMEOUT git status --porcelain 2>/dev/null )
+	if (( $? == 124 )); then
+		echo "$colors[BLKF] ?$syms[LOCAL]"
+		return
+	fi
+	if [[ "$dirty" != "" ]]; then
+		echo "$colors[REDF]$syms[DIRTY] $(wc -l <<< "$dirty")$syms[LOCAL]"
+	else
+		echo "$colors[GREF]$syms[CLEAN] "
+	fi
+}
+
+git_stash() {
+	local stash
+	stash="$(timeout $GIT_PS1_TIMEOUT git stash list 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?$syms[STASH]"
+		return
+	fi
+	if [[ "$stash" != "" ]]; then
+		echo "$(wc -l <<< "$stash")$syms[STASH]"
+	fi
+}
+
+git_ahead() {
+	local ahead
+	ahead="$(timeout $GIT_PS1_TIMEOUT git rev-list "@{u}..HEAD" 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?$syms[AHEAD]"
+		return
+	fi
+	if [[ "$ahead" != "" ]]; then
+		echo "$(wc -l <<< "$ahead")$syms[AHEAD]"
+	fi
+}
+
+git_behind() {
+	local behind
+	behind="$(timeout $GIT_PS1_TIMEOUT git rev-list "HEAD..@{u}" 2>/dev/null)"
+	if (( $? == 124 )); then
+		echo "?$syms[BHIND]"
+	fi
+	if [[ "$behind" != "" ]]; then
+		echo "$(wc -l <<< "$behind")$syms[BHIND]"
+	fi
+}
+
+git_prompt() {
+	# GIT STUFF
+	local git_repo_name branch
+	if (( GIT_PS1 == 0 )); then
+		return
+	fi
+	git_repo_name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null)
+	if [[ "$git_repo_name" == '' ]] ; then
+		return 0
+	fi
+	branch=$(timeout $GIT_PS1_TIMEOUT git symbolic-ref HEAD 2>/dev/null )
+	branch=${branch#refs/heads/}
+	echo "$colors[YELB]$syms[RA]$colors[BLKF] $syms[BRANCH]${git_repo_name}:${branch}$(git_dirty &)$(git_stash &)$(git_ahead &)$(git_behind &)$colors[YELF]"
+}
+
+precmd() {
+	local branch venv cpath
+
+	# Check github stuff
+	branch=$(git_prompt &)
+
+	# Virtual Env stuff
+	if [[ ! -z $VIRTUAL_ENV ]]; then
+		venv="$colors[PRPB]$syms[RA]$colors[BLKF] ${VIRTUAL_ENV##*/}  $colors[PRPF]"
+	else
+		venv=''
+	fi
+
+	# Check to make sure the path isn't going to run over the clock. Will display
+	# current directory and parent directory if it will run over the clock
+	cpath="$colors[BLUB]$syms[RA]$colors[BLKF] %~ $colors[BLUF]"
+
+	PS1="${shlvl}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$colors[BLUF]$syms[RA]"
+	PS1="${PS1}${NEWLINE}${ps1_2}"
+	export PS1
+}
+
+PS2="${ps1_2}"
+export PS2

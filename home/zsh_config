@@ -1,0 +1,10 @@
+
+if [ -f $HOME/.zsh_ps1 ]; then
+	source $HOME/.zsh_ps1
+fi
+export EDITOR=vim
+export CLICOLOR=1
+
+alias ls="ls --color=auto"
+alias la="ls -a"
+alias grep="grep --color=auto"
