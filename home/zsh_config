@@ -4,7 +4,9 @@ if [ -f $HOME/.zsh_ps1 ]; then
 fi
 export EDITOR=vim
 export CLICOLOR=1
+export PATH="$HOME/.local/bin:$PATH"
 
 alias ls="ls --color=auto"
-alias la="ls -a"
+alias ll='ls -alF'
+alias la='ls -A'
 alias grep="grep --color=auto"
