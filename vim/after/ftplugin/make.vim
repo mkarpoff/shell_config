@@ -6,13 +6,3 @@ setlocal shiftwidth=4
 
 packadd completor.vim
 
-function! s:Compile() 
-	AsyncRun make
-endfunction
-
-function! s:CompileClean() 
-	AsyncRun make clean
-endfunction
-
-let b:Compile = function('<SID>Compile')
-let b:CompileClean = function('<SID>CompileClean')

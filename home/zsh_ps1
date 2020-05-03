@@ -73,19 +73,34 @@ else
 fi
 
 # Display Username
-local usrin="$colors[GREB]$syms[RA]$colors[BLKF] %M  $colors[GREF]"
+if [ -v SSH_CONNECTION ]; then
+	local usrin="$colors[AQUB]$syms[RA]$colors[BLKF] %m $colors[AQUF]"
+else
+	local usrin="$colors[GREB]$syms[RA]$colors[BLKF] %m $colors[GREF]"
+fi
+
 local clock="$colors[AQUF]$syms[LA]$colors[AQUB]$colors[BLKF] %D{%H:%M:%S} "
-local ps1_2="$colors[TERMBLKB]$colors[GRYF]$syms[RA]$colors[TERMBLKB]$colors[TERMBLKF]"
+
+ps1_2="$colors[GRYF]$VIMODE$syms[RA]$colors[TERMBLKB]$colors[TERMBLKF]"
+
+function zle-line-init zle-keymap-select {
+	VISUAL="$colors[GREF]"
+	INSERT="$colors[BLUF]"
+	VIMODE="${${KEYMAP/vicmd/$INSERT}/(main|viins)/$VISUAL}"
+	PS1="$colors[GRYF]$VIMODE$syms[RA]$colors[TERMBLKB]$colors[TERMBLKF]"
+	PS2="$colors[GRYF]$VIMODE$syms[RA]$colors[TERMBLKB]$colors[TERMBLKF]"
+	zle reset-prompt
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
+
 
 git_dirty() {
 	local dirty
-	dirty=$(timeout $GIT_PS1_TIMEOUT git status --porcelain 2>/dev/null )
-	if (( $? == 124 )); then
-		echo "$colors[BLKF] ?$syms[LOCAL]"
-		return
-	fi
+	dirty=$(git status --porcelain 2>/dev/null )
 	if [[ "$dirty" != "" ]]; then
-		echo "$colors[REDF]$syms[DIRTY] $(wc -l <<< "$dirty")$syms[LOCAL]"
+		echo "$colors[REDF]$syms[DIRTY] $(( $(wc -l <<< "$dirty") ))$syms[LOCAL]"
 	else
 		echo "$colors[GREF]$syms[CLEAN] "
 	fi
@@ -93,36 +108,36 @@ git_dirty() {
 
 git_stash() {
 	local stash
-	stash="$(timeout $GIT_PS1_TIMEOUT git stash list 2>/dev/null)"
+	stash="$(git stash list 2>/dev/null)"
 	if (( $? == 124 )); then
 		echo "?$syms[STASH]"
 		return
 	fi
 	if [[ "$stash" != "" ]]; then
-		echo "$(wc -l <<< "$stash")$syms[STASH]"
+		echo "$(( $(wc -l <<< "$stash") ))$syms[STASH]"
 	fi
 }
 
 git_ahead() {
 	local ahead
-	ahead="$(timeout $GIT_PS1_TIMEOUT git rev-list "@{u}..HEAD" 2>/dev/null)"
+	ahead="$(git rev-list "@{u}..HEAD" 2>/dev/null)"
 	if (( $? == 124 )); then
 		echo "?$syms[AHEAD]"
 		return
 	fi
 	if [[ "$ahead" != "" ]]; then
-		echo "$(wc -l <<< "$ahead")$syms[AHEAD]"
+		echo "$(( $(wc -l <<< "$ahead") ))$syms[AHEAD]"
 	fi
 }
 
 git_behind() {
 	local behind
-	behind="$(timeout $GIT_PS1_TIMEOUT git rev-list "HEAD..@{u}" 2>/dev/null)"
+	behind="$(git rev-list "HEAD..@{u}" 2>/dev/null)"
 	if (( $? == 124 )); then
 		echo "?$syms[BHIND]"
 	fi
 	if [[ "$behind" != "" ]]; then
-		echo "$(wc -l <<< "$behind")$syms[BHIND]"
+		echo "$(( $(wc -l <<< "$behind") ))$syms[BHIND]"
 	fi
 }
 
@@ -136,9 +151,9 @@ git_prompt() {
 	if [[ "$git_repo_name" == '' ]] ; then
 		return 0
 	fi
-	branch=$(timeout $GIT_PS1_TIMEOUT git symbolic-ref HEAD 2>/dev/null )
+	branch=$(git symbolic-ref HEAD 2>/dev/null )
 	branch=${branch#refs/heads/}
-	echo "$colors[YELB]$syms[RA]$colors[BLKF] $syms[BRANCH]${git_repo_name}:${branch}$(git_dirty &)$(git_stash &)$(git_ahead &)$(git_behind &)$colors[YELF]"
+	echo "$colors[YELB]$syms[RA]$colors[BLKF] $syms[BRANCH]${git_repo_name}:${branch}$(git_dirty &)$colors[BLKF]$(git_stash &)$(git_ahead &)$(git_behind &)$colors[YELF]"
 }
 
 precmd() {
@@ -149,7 +164,7 @@ precmd() {
 
 	# Virtual Env stuff
 	if [[ ! -z $VIRTUAL_ENV ]]; then
-		venv="$colors[PRPB]$syms[RA]$colors[BLKF] ${VIRTUAL_ENV##*/}  $colors[PRPF]"
+		venv="$colors[PRPB]$syms[RA]$colors[BLKF] ${VIRTUAL_ENV##*/} $colors[PRPF]"
 	else
 		venv=''
 	fi
@@ -158,10 +173,14 @@ precmd() {
 	# current directory and parent directory if it will run over the clock
 	cpath="$colors[BLUB]$syms[RA]$colors[BLKF] %~ $colors[BLUF]"
 
-	PS1="${shlvl}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$colors[BLUF]$syms[RA]"
-	PS1="${PS1}${NEWLINE}${ps1_2}"
-	export PS1
+	if [ ! -z "$branch" ]; then
+		cpath="$colors[TERMBLKB]$syms[RA]$NEWLINE$colors[GRYF]$colors[GRYB] $cpath"
+	fi
+
+	PRE_LINE="${shlvl}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$colors[BLUF]$syms[RA]$colors[TERMBLKF]$colors[TERMBLKB] "
+	print -P "$PRE_LINE"
 }
 
-PS2="${ps1_2}"
-export PS2
+PS1="${ps1_2}"
+export PS1
+

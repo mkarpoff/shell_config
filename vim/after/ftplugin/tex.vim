@@ -43,16 +43,3 @@ autocmd InsertLeave,WinEnter * setlocal foldmethod=syntax
 autocmd InsertEnter,WinLeave * setlocal foldmethod=manual
 " folding options end
 
-function! s:Compile() 
-	AsyncRun rubber-vim-pdf-compile %
-"	AsyncRun rubber --pdf --inplace %
-"	AsyncRun rubber --clean %
-endfunction
-
-function! s:CompileClean() 
-	AsyncRun rubber --pdf --clean --inplace %
-endfunction
-"autocmd QuickFixCmdPost * call asyncrun#quickfix_toggle(2, 1)
-
-let b:Compile = function('<SID>Compile')
-let b:CompileClean = function('<SID>CompileClean')

@@ -1,6 +1,5 @@
 " Python Specific
 packadd ale
-call ColorColumn(121)
 setlocal number
 setlocal nowrap
 setlocal shiftwidth=4

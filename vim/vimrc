@@ -1,23 +1,20 @@
-"""
 " Environment settings
 """
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-cmap w!! w !sudo tee > /dev/null %
 
 " I don't care about vi compatability
 set nocompatible
 
-" Huawei servers backspace doesn't work...
+" Turn on mouse
+" set mouse=a
 set backspace=2
 
-" Turn on mouse
-set mouse=a
+" Allow backspace in insert mode
 
 " Set the shell to run bash
-set shell=/bin/bash
+set shell=/usr/local/bin/zsh
 
 " To hell with visual and audio bell
-set noerrorbells visualbell t_vb=
+set belloff=all
 
 " Persistent undo history
 set undofile
@@ -35,17 +32,20 @@ set softtabstop=2
 set shiftwidth=2
 
 set encoding=utf-8
-scriptencoding=utf-8
 set termencoding=utf-8
-set term=xterm-256color
 
-if &term == 'xterm-256color' || &term == 'screen-256color'
+if &term == 'xterm-256color'
 	let &t_SI = "\<Esc>[1 q"
 	let &t_SR = "\<Esc>[1 q"
 	let &t_EI = "\<Esc>[1 q"
 endif
 
 filetype plugin on
+
+" set the path to be the vim folder
+set path=~/.vim/**
+
+command! PathAdd set path+=$PWD/**
 
 
 " Navigation Hotkeys for speeding usage
@@ -54,20 +54,39 @@ noremap! jk <Esc>
 noremap! Jk <Esc>
 noremap! jK <Esc>
 noremap! JK <Esc>
+
+
 noremap ww <c-w>
 tnoremap ww <c-w>
 tnoremap ww; <c-w>:
+
+map <M-h> <c-w> h
+map <M-j> <c-w> j
+map <M-k> <c-w> k
+map <M-l> <c-w> l
+
 noremap ; :
-nnoremap [[ :call b:Compile()<CR>
-nnoremap ]] :call b:CompileClean()<CR>
-nnoremap \ :cclose<CR>
+
+execute "set <M-h>=\eh"
+execute "set <M-j>=\ej"
+execute "set <M-k>=\ek"
+execute "set <M-l>=\el"
+map <A-h> <c-w>h
+map <A-j> <c-w>j
+map <A-k> <c-w>k
+map <A-l> <c-w>l
+map [[ :NERDTreeToggle<CR>
 
 nnoremap gc :tabe<CR>
 nnoremap gC :tabe 
-nnoremap gn :tabnext
+nnoremap gn :tabnext<CR>
 
 cnoremap <c-a> <home>
 cnoremap <c-e> <end>
+
+
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
 
 " Search Settings
 function! PasteToggle()

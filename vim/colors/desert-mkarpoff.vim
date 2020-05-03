@@ -21,8 +21,8 @@ if version > 580
 endif
 let g:colors_name="desert-mkarpoff"
 
-hi Normal	guifg=LightGrey guibg=Black
-hi Normal	ctermfg=LightGrey ctermbg=Black
+hi Normal	guifg=LightGrey
+hi Normal	ctermfg=LightGrey
 
 " highlight groups
 hi Cursor	guibg=khaki guifg=slategrey
@@ -121,7 +121,7 @@ highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
 "highlight VertSplit gui=bold guifg=#4e4e4e guibg=#1c1c1c
 "highlight ColorColumn ctermfg=239 ctermbg=234
 "highlight ColorColumn gui=bold guifg=#4e4e4e guibg=#1c1c1c
-highlight Search term=reverse ctermfg=234 ctermbg=12 guifg=wheat guibg=peru
+highlight Search term=reverse ctermfg=234 ctermbg=Cyan guifg=wheat guibg=peru
 highlight SpellLocal term=underline cterm=bold,underline ctermfg=14 ctermbg=0 gui=undercurl guisp=Cyan
 highlight SpellBad term=reverse ctermfg=0 ctermbg=9 gui=undercurl guisp=Red
 highlight ErrorMsg term=standout cterm=bold,underline ctermfg=1 ctermbg=0 guifg=White guibg=Red 

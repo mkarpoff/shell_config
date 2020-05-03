@@ -7,6 +7,22 @@ export CLICOLOR=1
 export PATH="$HOME/.local/bin:$PATH"
 
 alias ls="ls --color=auto"
-alias ll='ls -alF'
-alias la='ls -A'
-alias grep="grep --color=auto"
+alias la="ls -a"
+alias ll="ls -l"
+alias grep="grep -G"
+
+# Enable vim-mode
+bindkey -v
+bindkey 'jk' vi-cmd-mode
+bindkey '^[[Z' reverse-menu-complete
+
+# Enable reverse search
+bindkey '^R' history-incremental-search-backward
+
+
+if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
+	if [ -d "$HOME/.local/bin/" ]; then
+	 export PATH="$HOME/.local/bin/:$PATH"
+	fi
+fi
+
