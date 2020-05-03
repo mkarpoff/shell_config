@@ -35,9 +35,8 @@ set softtabstop=2
 set shiftwidth=2
 
 set encoding=utf-8
-scriptencoding=utf-8
 set termencoding=utf-8
-set term=xterm-256color
+scriptencoding=utf-8
 
 if &term == 'xterm-256color' || &term == 'screen-256color'
 	let &t_SI = "\<Esc>[1 q"
@@ -54,9 +53,16 @@ noremap! jk <Esc>
 noremap! Jk <Esc>
 noremap! jK <Esc>
 noremap! JK <Esc>
+
 noremap ww <c-w>
 tnoremap ww <c-w>
 tnoremap ww; <c-w>:
+
+map <M-h> <c-w> h
+map <M-j> <c-w> j
+map <M-k> <c-w> k
+map <M-l> <c-w> l
+
 noremap ; :
 nnoremap [[ :call b:Compile()<CR>
 nnoremap ]] :call b:CompileClean()<CR>
