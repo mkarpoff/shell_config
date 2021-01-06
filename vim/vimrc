@@ -191,7 +191,7 @@ augroup vimrc
 	autocmd BufNewFile,BufRead *.x86 set filetype=gas
 	autocmd BufNewFile,BufRead *.log set filetype=log
 	autocmd BufNewFile,BufRead *.h set filetype=cpp
-
+	autocmd BufNewFile,BufRead Config set filetype=BrazilConfig
 augroup END
 
 " Assume I want syntax highlighting
