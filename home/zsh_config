@@ -20,9 +20,23 @@ bindkey '^[[Z' reverse-menu-complete
 bindkey '^R' history-incremental-search-backward
 
 
+# Brazil Aliases
+if [ -f "$HOME/.config/brazil/rc" ]; then
+	source $HOME/.config/brazil/rc
+fi
+
+# VPN Aliases
+if [ -f "$HOME/.config/vpn/rc" ]; then
+	source $HOME/.config/vpn/rc
+fi
+
+
 if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
 	if [ -d "$HOME/.local/bin/" ]; then
 	 export PATH="$HOME/.local/bin/:$PATH"
 	fi
 fi
 
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi

@@ -2,7 +2,7 @@
 alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -lh'
-alias ls='ls --color=auto'
+#alias ls='ls --color=auto'
 alias lss='ls'
 #alias tmux='TERM=tmux-256color tmux'
 #alias make="global_make"
