@@ -14,5 +14,12 @@
     {"name":"vim/vim_packages",     "target":"~/.vim/vim_packages"},
     {"name":"vim/after/",           "target":"~/.vim/after"},
     {"name":"vim/_git-plugins-opt/","target":"~/.vim/pack/_git-plugins-opt"},
-    {"name":"vim/colors/",          "target":"~/.vim/colors"}
+    {"name":"vim/colors/",          "target":"~/.vim/colors"},
+		{"name":"local/bin/goodmorning","target":"~/.local/bin/goodmorning"},
+		{"name":"local/bin/mwinit-onetouch","target":"~/.local/bin/mwinit-onetouch"},
+		{"name":"local/bin/sneaky-ninja","target":"~/.local/bin/sneaky-ninja"},
+		{"name":"local/bin/ssh-tmux",   "target":"~/.local/bin/ssh-tmux"},
+		{"name":"local/bin/ssh-tunnel", "target":"~/.local/bin/ssh-tunnel"},
+		{"name":"local/bin/vpn-onetouch","target":"~/.local/bin/vpn-onetouch"}
+
 ]

@@ -1,0 +1,202 @@
+#!/usr/bin/env python3
+
+import logging
+import sys
+import re
+import os
+from pathlib import Path
+import subprocess
+from multiprocessing import Process
+import getpass
+import time
+from enum import Enum
+from daemon.runner import DaemonRunner
+from daemon import runner
+""" Needs python-daemon to run.
+    install by running:
+
+       python3 -m pip install python-daemon 
+
+"""
+_midway_cert_life_sec=73200
+_base_path = Path(Path.home(), ".sneaky-ninja")
+_midway_cert_path = Path(Path.home(), ".ssh/id_rsa-cert.pub")
+_user = getpass.getuser()
+_remote_host = _user+"@"+_user+".aka.corp.amazon.com"
+_ssh = 'ssh'
+_local_kerberos_check_command = ['klist', '-s']
+_remote_kerberos_check_command = 'klist -s'
+_remote_midway_check_command = 'echo $(date +%s -r "$HOME/.ssh/id_rsa-cert.pub")'
+
+logging.basicConfig(
+    format="%(asctime)s [%(processName)s] %(levelname)s %(message)s",
+    stream=sys.stdout,
+    level=logging.INFO)
+
+class Status(Enum):
+    RUNNING = "RUNNING"
+    STOPPED = "STOPPED"
+
+def isCredentialsValid():
+    if not isLocalCredentialsValid():
+        logging.error("Missing Local Credentials cannot validate remote credentials")
+        return False
+    if not isRemoteCredentialsValid():
+        logging.error("Missing Remote Credentials")
+        return False
+    return True
+
+def isLocalCredentialsValid():
+    valid_credentials = True
+    if not isLocalMidwayCertValid():
+        logging.error("Local Midway Key is no longer valid")
+        valid_credentials = False
+    if not isLocalKerberosValid():
+        logging.error("Local Kerberos is no longer valid")
+        valid_credentials = False
+    return valid_credentials
+
+def isRemoteCredentialsValid():
+    valid_credentials = True
+    if not isRemoteMidwayCertValid():
+        logging.error("Remote Midway Key is no longer valid")
+        valid_credentials = False
+    if not isRemoteKerberosValid():
+        logging.error("Remote Kerberos is no longer valid")
+        valid_credentials = False
+    return valid_credentials 
+
+def isLocalKerberosValid():
+    compProc = subprocess.run(_local_kerberos_check_command)
+    if compProc.returncode == 0:
+        return True
+    return False
+
+def isRemoteKerberosValid():
+    compProc = subprocess.run([_ssh, _remote_host, _remote_kerberos_check_command])
+    if compProc.returncode == 0:
+        return True
+    return False
+
+def isLocalMidwayCertValid():
+    cert_last_mod = _midway_cert_path.stat().st_mtime
+    epoch_time = int(time.time())
+    time_since_last_mod = epoch_time - cert_last_mod
+    if time_since_last_mod > _midway_cert_life_sec:
+        return False
+    return True
+
+def isRemoteMidwayCertValid():
+    compProc = subprocess.run([_ssh, _remote_host, _remote_midway_check_command], capture_output=True)
+    cert_last_mod_str = compProc.stdout.decode("utf-8")
+    found = re.search(r"\d+", cert_last_mod_str)
+    if not found: 
+        return False
+    cert_last_mod = int(found[0])
+    epoch_time = int(time.time())
+    time_since_last_mod = epoch_time - cert_last_mod
+    if time_since_last_mod > _midway_cert_life_sec:
+        return False
+    return True
+
+class FixedDaemonRunner(DaemonRunner):
+    """ There is a bug in the released DaemonRunner
+        This fixes that bug by overriding that one
+        function
+    """
+    def _open_streams_from_app_stream_paths(self, app):
+        self.daemon_context.stdin = open(app.stdin_path, 'rb')
+        self.daemon_context.stdout = open(app.stdout_path, 'ab+')
+        self.daemon_context.stderr = open(app.stderr_path, 'ab+', buffering=0)
+        self.daemon_context.stat_file = app.statfile_path
+
+    def _status(self):
+        pidfile = self.daemon_context.pidfile
+        if not pidfile.is_locked():
+            logging.info("sneaky-ninja is not running")
+            return False
+
+        if runner.is_pidfile_stale(pidfile):
+            logging.warning("sneaky-ninja pid file is stale. Recommend restart.")
+            return False
+
+        with open(self.app.statfile_path, 'r') as f:
+            status = f.read()
+
+        logging.info("sneaky-ninja is running with pid [%d] with status [%s]" %(pidfile.read_pid(), status))
+        return True
+
+    action_funcs = DaemonRunner.action_funcs
+    action_funcs['status'] = _status
+
+
+class SneakyNinjaApp(object):
+    _ninja_process = None
+    status = Status.STOPPED
+
+    def __init__(self):
+        self.stdin_path = "/dev/null"
+        self.stdout_path =   str(Path(_base_path, "sneaky-ninja.out"))
+        self.stderr_path =   str(Path(_base_path, "sneaky-ninja.out"))
+        self.pidfile_path =  str(Path(_base_path, "sneaky-ninja.pid"))
+        self.statfile_path = str(Path(_base_path, "sneaky-ninja.stat"))
+        self.pidfile_timeout = 3
+
+    def run(self):
+        try:
+            self.startup()
+            self.loop()
+        except(SystemExit, KeyboardInterrupt):
+            logging.info("Shutting down sneaky-ninja")
+            self.stopNinjaDevSync()
+            os.remove(self.statfile_path)
+        logging.info("Exiting")
+
+    def startup(self):
+        self.setStatus(Status.STOPPED)
+        logging.info("Starting")
+        if isCredentialsValid():
+            self.startNinjaDevSync()
+        else:
+            logging.warn("NinjaDevSync will automatically start once credentials authentication is done")
+
+    def loop(self):
+        while(True):
+            if self.status == Status.RUNNING:
+                if not isCredentialsValid():
+                    self.stopNinjaDevSync()
+            elif self.status == Status.STOPPED:
+                if isCredentialsValid():
+                    self.startNinjaDevSync()
+            time.sleep(5)
+
+    def startNinjaDevSync(self):
+        try:
+            logging.info("Launching Ninja Dev Sync")
+            self._ninja_process = subprocess.Popen(['ninja-dev-sync'])
+            self.setStatus(Status.RUNNING)
+        except:
+            logging.exception("An exception occured while trying to start NinjaDevSync process")
+
+    def stopNinjaDevSync(self):
+        try:
+            logging.info("Stopping Ninja Dev Sync")
+            if self._ninja_process is not None:
+                self._ninja_process.terminate()
+            self.setStatus(Status.STOPPED)
+        except:
+            logging.exception("An exception occured while trying to stop NinjaDevSync process")
+
+    def setStatus(self, status):
+        self.status = status
+        with open(self.statfile_path, 'w') as f:
+            f.write(status.value)
+
+
+
+if __name__ == '__main__':
+    if sys.argv[1] == "start":
+        if not isCredentialsValid():
+            logging.error("Invalid or missing credentials. Daemon will start NinjaDevSync automatically after credentials are providede")
+    run = FixedDaemonRunner(SneakyNinjaApp())
+    run.do_action()

@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+echo $'\e[1;35mStarting Local Midway certification\e[0m'
+if ! $HOME/.local/bin/mwinit-onetouch; then
+	echo $'\e[1;31mLocal Midway certification failed\e[0m'
+	exit 1
+fi
+sleep 2
+echo $'\e[1;32mLocal Midway certification successful\e[0m'
+
+echo $'\e[1;35mStarting Remote Kerberos certification\e[0m'
+if ! ssh devdesk '$HOME/.local/bin/kinit-onetouch'; then
+	echo $'\e[1;31mRemote Kerberos certification failed\e[0m'
+	exit 1
+fi
+sleep 2
+echo $'\e[1;32mRemote Kerberos certification successful\e[0m'
+
+echo $'\e[1;35mStarting Remote Midway certification\e[0m'
+if ! ssh devdesk '$HOME/.local/bin/mwinit-onetouch'; then
+	echo $'\e[1;31mRemote Midway certification failed\e[0m'
+	exit 1
+fi
+sleep 2
+echo $'\e[1;32mRemote Midway certification successful\e[0m'

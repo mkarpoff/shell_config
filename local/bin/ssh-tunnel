@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import getpass
+from datetime import date, datetime
+from subprocess import run
+from pathlib import Path
+
+# Config file is saved to settings to
+CONFIG_FILE = Path(Path.home(), '.ssh', 'ssh-tunnel.cfg')
+
+def create_default_config():
+    print('Creating config file with default configurations')
+    with CONFIG_FILE.open('w') as fp:
+        fp.write(json.dumps(
+            {
+                'port':1044,
+                'hostname': getpass.getuser() + '.aka.corp.amazon.com',
+                'log_file_location':str(Path(Path.home(), '.ssh', 'ssh-tunnel-logs'))
+            }, indent=4))
+
+
+def load_config():
+    with CONFIG_FILE.open('r') as fp:
+        config = json.load(fp)
+    return config
+
+
+def parse_args(config):
+    parser = argparse.ArgumentParser(description='Creates an ssh-tunnel')
+    parser.add_argument('command', choices=['start', 'status', 'stop', 'restart'])
+    parser.add_argument('--port','-p', type=int, default=config['port'])
+    parser.add_argument('--hostname','-n', default=config['hostname'])
+    parser.add_argument('--log_file_location', '-l', default=config['log_file_location'])
+    return parser.parse_args()
+
+def get_log_file(hostname, log_dir):
+    # Make a log directory if it doesn't exist
+    if not Path(log_dir).is_dir():
+        Path(log_dir).mkdir()
+    return Path(log_dir, args.hostname+'.log')
+
+
+def write_log(log, string):
+    with log.open('a') as f:
+        f.write(datetime.isoformat(datetime.now()) +' ')
+        f.write(string)
+        f.write('\n')
+
+def print_and_write_log(log, string):
+    if string == '':
+        return
+    print(string)
+    write_log(log, string)
+
+def init_tunnel(port, hostname, log):
+    port = str(port)
+    control_path = Path(Path.home(), '.ssh', hostname)
+    local_address = port+':localhost:'+port
+    remote_address = getpass.getuser()+'@'+hostname
+    print_and_write_log(log, 'Creating ssh tunnel to [' +remote_address+ '] using port [' + port + ']')
+
+    if control_path.is_socket():
+        print_and_write_log(log, 'Failed to create tunnel. Socket already exists ['+str(control_path)+']')
+        return False
+
+    with open(log) as log_file:
+        ret = run(['ssh', '-fNMS', control_path, '-L', local_address, remote_address], stdout=log_file,stderr=log_file)
+    if ret.returncode:
+        print_and_write_log(log, 'Tunnel initialization failed')
+        return False
+    else:
+        print_and_write_log(log, 'Tunnel initialziation succeded')
+        return True
+
+
+
+def status_tunnel(hostname, log):
+    control_path = str(Path(Path.home(), '.ssh', hostname))
+    remote_address = getpass.getuser()+'@'+hostname
+    ret = run(['ssh','-S', control_path,  '-O', 'check', remote_address], capture_output=True)
+    if ret.returncode:
+        print_and_write_log(log, 'Tunnel statue status failed')
+        print_and_write_log(log, ret.stdout.decode('utf-8'))
+        print_and_write_log(log, ret.stderr.decode('utf-8'))
+        return False
+    else:
+        print_and_write_log(log, 'Tunnel status status succeded')
+        print_and_write_log(log, ret.stdout.decode('utf-8'))
+        return True
+
+
+def kill_tunnel(hostname, log):
+    control_path = str(Path(Path.home(), '.ssh', hostname))
+    remote_address = getpass.getuser()+'@'+hostname
+    ret = run(['ssh', '-S', control_path, '-O', 'exit', remote_address], capture_output=True)
+    if ret.returncode:
+        print_and_write_log(log, 'Tunnel stop failed')
+        print_and_write_log(log, ret.stdout.decode('utf-8'))
+        print_and_write_log(log, ret.stderr.decode('utf-8'))
+        return False
+    else:
+        print_and_write_log(log, 'Tunnel stop succeded')
+        print_and_write_log(log, ret.stdout.decode('utf-8'))
+        return True
+
+def reset_tunnel(port, hostname, log):
+    print_and_write_log(log, 'Restarting tunnel')
+    success = kill_tunnel(hostname, log)
+    if not success:
+        print_and_write_log(log, 'Restart tunnel failed. Failed to stop tunnel')
+        return False
+    success = init_tunnel(port, hostname, log)
+    if not success:
+        print_and_write_log(log, 'Restart tunnel failed. Failed to start tunnel')
+        return False
+    print_and_write_log(log, 'Restart tunnel succeeded')
+    return True
+        
+
+if __name__ == '__main__':
+    if not CONFIG_FILE.is_file():
+        create_default_config()
+    config = load_config()
+    args = parse_args(config)
+    
+    log = get_log_file(args.hostname, args.log_file_location)
+
+    if args.command == 'start':
+        init_tunnel(args.port, args.hostname, log)
+    elif args.command == 'status':
+        status_tunnel(args.hostname, log)
+    elif args.command == 'stop':
+        kill_tunnel(args.hostname, log)
+    elif args.command == 'restart':
+        reset_tunnel(args.port, args.hostname, log)
+
