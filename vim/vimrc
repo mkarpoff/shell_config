@@ -55,7 +55,6 @@ noremap! Jk <Esc>
 noremap! jK <Esc>
 noremap! JK <Esc>
 
-
 noremap ww <c-w>
 tnoremap ww <c-w>
 tnoremap ww; <c-w>:
