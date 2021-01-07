@@ -1,0 +1,18 @@
+#/usr/bin/env sh
+
+#brazil aliases
+alias bb="brazil-build"
+alias bw="brazil workspace"
+alias cr-desc="cr --description $HOME/.config/cr-desc"
+alias brc=brazil-recursive-cmd
+alias bbr='brc brazil-build'
+
+# Midway/Kinit Aliases
+alias mwinit='mwinit -o'
+alias kinit='kinit -f'
+
+# brazil build settings
+export ANT_ARGS="-logger org.apache.tools.ant.listener.AnsiColorLogger"
+
+export ANT_OPTS="-Dant.logger.defaults=$HOME/.config/brazil/colours"
+

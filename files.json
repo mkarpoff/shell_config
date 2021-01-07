@@ -20,6 +20,9 @@
 		{"name":"local/bin/sneaky-ninja","target":"~/.local/bin/sneaky-ninja"},
 		{"name":"local/bin/ssh-tmux",   "target":"~/.local/bin/ssh-tmux"},
 		{"name":"local/bin/ssh-tunnel", "target":"~/.local/bin/ssh-tunnel"},
-		{"name":"local/bin/vpn-onetouch","target":"~/.local/bin/vpn-onetouch"}
-
+		{"name":"local/bin/vpn-onetouch","target":"~/.local/bin/vpn-onetouch"},
+		{"name":"brazil/rc",            "target":"~/.config/brazil/rc"},
+		{"name":"brazil/colours",       "target":"~/.config/brazil/colours"},
+		{"name":"cr/cr-desc",           "target":"~/.config/cr/cr-desc"},
+		{"name":"cr/preferences",       "target":"~/.config/cr/preferences"}
 ]
