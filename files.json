@@ -22,6 +22,6 @@
 		{"name":"local/bin/vpn-onetouch","target":"~/.local/bin/vpn-onetouch"},
 		{"name":"brazil/rc",            "target":"~/.config/brazil/rc"},
 		{"name":"brazil/colours",       "target":"~/.config/brazil/colours"},
-		{"name":"cr/cr-desc",           "target":"~/.config/cr/cr-desc"},
+		{"name":"cr/cr-desc.md",        "target":"~/.config/cr/cr-desc.mk"},
 		{"name":"cr/preferences",       "target":"~/.config/cr/preferences"}
 ]

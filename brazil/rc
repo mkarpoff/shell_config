@@ -3,7 +3,7 @@
 #brazil aliases
 alias bb="brazil-build"
 alias bw="brazil workspace"
-alias cr-desc="cr --description $HOME/.config/cr-desc"
+alias cr-desc="cr --description $HOME/.config/cr/cr-desc.md"
 alias brc=brazil-recursive-cmd
 alias bbr='brc brazil-build'
 

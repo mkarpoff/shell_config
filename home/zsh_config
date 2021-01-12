@@ -45,3 +45,5 @@ fi
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
+
+declare SSH_CERT="$HOME/.ssh/id_rsa-cert.pub"
