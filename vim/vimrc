@@ -197,6 +197,9 @@ augroup END
 " Assume I want syntax highlighting
 colorscheme desert-mkarpoff
 syntax enable
+" Let Vim use whichever regex engine is most effective
+" This allows it to use the cheapper engine when cost is too high
+set regexpengine=0
 
 let g:airline_powerline_fonts=1
 
