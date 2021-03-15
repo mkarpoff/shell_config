@@ -1,0 +1,106 @@
+#! /usr/bin/env sh
+
+alias bark=/apollo/env/BarkCLI/bin/bark
+
+bark -SetConfig -endpoint=https://timber-corp-pdx.pdx.proxy.amazon.com
+
+#bark -cf=$HOME/.config/bark/<bark_double_fantasy> -ListLogGroups
+
+function setup_bark {
+	source ~/.config/bark/setup_bark
+}
+# Bark logs #
+function artRecruitingWebsiteLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Hire/$stage/rails.log -p $HOME/bark/ArtRecruitingWebsite -StartTime=$1 -EndTime=$2
+}
+
+function artDocLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+	bark -cf=/home/$USER/.config/bark_sync -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/DocumentGeneration/$stage/ArtDocumentGeneration.log -p /home/$USER/bark/artdoc -StartTime=$1 -EndTime=$2
+}
+
+function hireWebsiteLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=HireWebsite/$stage/rails.log -p $HOME/bark/HireWebsite -StartTime=$1 -EndTime=$2
+}
+
+function artRecruitingServiceLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/$stage/application.log -p $HOME/bark/ArtRecruitingService -StartTime=$1 -EndTime=$2
+}
+
+function artRecruitingServiceAdminLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/admin/$stage/application.log -p $HOME/Monitoring/bark/  ArtRecruitingAdminService -StartTime=$1 -EndTime=$2
+}
+
+function serviceLogsOnebox
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/OneBox/$stage/application.log -p $HOME/bark/ArtRecruitingService -StartTime=$1 -EndTime=$2
+}
+
+# ArtRecruitingService-Crons
+function artRecruitingServiceCronsLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/$stage/crons.log -p $HOME/bark/ArtRecruitingService/crons -StartTime=$1 -EndTime=$2
+}
+
+
+# ArtRecruitingService-Admin
+function bananaFalconLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/admin/$stage/application.log -p $HOME/bark/bananaFalconLog$stage -StartTime=$1 -EndTime=$2
+}
+
+# ArtRecruitingService-Admin mail.log
+function adminMailLogs
+{
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+    bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/admin/$stage/mail.log -p $HOME/bark/ArtRecruitingService -StartTime=$1 -EndTime=$2
+}
+

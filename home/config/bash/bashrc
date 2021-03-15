@@ -2,7 +2,7 @@
 alias l='ls -CF'
 alias la='ls -A'
 alias ll='ls -lh'
-#alias ls='ls --color=auto'
+alias ls='ls --color=auto'
 alias lss='ls'
 #alias tmux='TERM=tmux-256color tmux'
 #alias make="global_make"
@@ -62,12 +62,6 @@ export LESS_TERMCAP_ue
 export LESS_TERMCAP_us
 
 # enable custom prompt
-if [[ -f ~/.bash_ps1 ]]; then
-    . ~/.bash_ps1
-fi
-
-# If is WSL system
-if [[ -d /mnt/c/Windows/System32/ ]]; then
-	WINBIN="/mnt/c/Users/mkarpoff/local/bin"
-	alias clip="$WINBIN/clip.exe"
+if [[ -f ~/.config/bash/bash_ps1 ]]; then
+    . ~/.config/bash/bash_ps1
 fi

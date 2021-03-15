@@ -1,15 +1,17 @@
-#! /usr/bin/env expect -f
+#! /usr/bin/env expect
 
 # USSAGE: $mwinit-onetouch
 #
-# if password isn't set
-# security add-generic-password -a "mkarpoff" -s Midway -w
+# If password isn't set:
+#
+#        keyring set midway <USERNAME>
 
+set keyring "$env(HOME)/.local/bin/keyring"
 set my_user "$env(USER)"
-set my_service Midway
-set my_password [exec security find-generic-password -a $my_user -s $my_service -w]
+set my_service midway
+set my_password [exec $keyring get $my_service $my_user]
 set timeout -1
-spawn /usr/local/bin/mwinit -o
+spawn /usr/bin/env mwinit -o
 match_max 100000
 expect -re "PIN for $my_user: "
 send -- "$my_password\r"

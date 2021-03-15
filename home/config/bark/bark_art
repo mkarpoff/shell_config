@@ -1,0 +1,5 @@
+[Authentication]
+EndPoint=https://timber-corp-pdx.pdx.proxy.amazon.com
+[Params]
+MaterialSetName=com.amazon.access.Amazon Recruiting Technology Service-art-timber-1
+OwnerEmail=art-service-aws@amazon.com

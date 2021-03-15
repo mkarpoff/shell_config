@@ -1,0 +1,18 @@
+#! /usr/bin/env expect
+
+# USSAGE: $kinit-onetouch
+#
+# If password isn't set:
+#
+#        keyring set kerberos <USERNAME>
+
+set keyring "$env(HOME)/.local/bin/keyring"
+set my_user "$env(USER)"
+set my_service kerberos 
+set my_password [exec $keyring get $my_service $my_user]
+set timeout -1
+spawn /usr/bin/env kinit -f -l 1d
+match_max 100000
+expect -re "Password for $my_user@ANT.AMAZON.COM: "
+send -- "$my_password\r"
+expect eof
