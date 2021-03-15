@@ -1,6 +1,6 @@
 
-if [ -f $HOME/.zsh_ps1 ]; then
-	source $HOME/.zsh_ps1
+if [ -f $HOME/.config/zsh/zsh_ps1 ]; then
+	source $HOME/.config/zsh/zsh_ps1
 fi
 export EDITOR=vim
 export CLICOLOR=1
@@ -40,10 +40,6 @@ if [[ "$PATH" != *"$HOME/.toolbox/bin/"* ]]; then
 	if [ -d "$HOME/.toolbox/bin/" ]; then
 		export PATH="$HOME/.toolbox/bin/:$PATH"
 	fi
-fi
-
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
 
 declare SSH_CERT="$HOME/.ssh/id_rsa-cert.pub"
