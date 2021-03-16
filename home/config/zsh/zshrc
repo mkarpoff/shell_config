@@ -1,45 +1,30 @@
-
+export PERSONAL_ACCOUNT='760030034999'
 if [ -f $HOME/.config/zsh/zsh_ps1 ]; then
 	source $HOME/.config/zsh/zsh_ps1
 fi
 export EDITOR=vim
 export CLICOLOR=1
-export PATH="$HOME/.local/bin:$PATH"
 
+alias ls="ls --color=auto"
 alias la="ls -a"
-alias ll="ls -l"
-alias grep="grep -G"
+alias grep="grep --color=auto"
+
+# brazil config
+if [ -f $HOME/.config/brazil/rc ]; then
+	source $HOME/.config/brazil/rc
+fi
+
+# bark config
+if [ -f $HOME/.config/bark/rc ]; then
+	source $HOME/.config/bark/rc
+fi
 
 # Enable vim-mode
+export KEYTIMEOUT=20
 bindkey -v
 bindkey 'jk' vi-cmd-mode
 bindkey '^[[Z' reverse-menu-complete
 
-# Enable reverse search
-bindkey '^R' history-incremental-search-backward
-
-
-# Brazil Aliases
-if [ -f "$HOME/.config/brazil/rc" ]; then
-	source $HOME/.config/brazil/rc
-fi
-
-# VPN Aliases
-if [ -f "$HOME/.config/vpn/rc" ]; then
-	source $HOME/.config/vpn/rc
-fi
-
-
 if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
-	if [ -d "$HOME/.local/bin/" ]; then
-		export PATH="$HOME/.local/bin/:$PATH"
-	fi
+  export PATH="$HOME/.local/bin/:$PATH"
 fi
-
-if [[ "$PATH" != *"$HOME/.toolbox/bin/"* ]]; then
-	if [ -d "$HOME/.toolbox/bin/" ]; then
-		export PATH="$HOME/.toolbox/bin/:$PATH"
-	fi
-fi
-
-declare SSH_CERT="$HOME/.ssh/id_rsa-cert.pub"

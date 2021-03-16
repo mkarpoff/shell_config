@@ -157,32 +157,22 @@ git_prompt() {
 }
 
 precmd() {
-	local branch venv cpath mwinit_s sneaky_s sneaky_pid sneaky_stat
+	local branch venv cpath
 
-	# Miday check
+	if klist -s; then
+		kinit_s=""
+	else
+		kinit_s="$colors[REDB]$syms[RA]$colors[BLKF] K $colors[REDF]"
+	fi
+
+	SSH_CERT=~/.ssh/id_rsa-cert.pub
 	if (! test -f "$SSH_CERT") || (test "`find ~/.ssh/id_rsa-cert.pub -mmin +1220`"); then
 		mwinit_s="$colors[REDB]$syms[RA]$colors[BLKF] M $colors[REDF]"
 	else
 		mwinit_s=""
 	fi
 
-	# sneaky-ninja
-	if [[ -f "$HOME/.sneaky-ninja/sneaky-ninja.pid" ]] && [[ -f "$HOME/.sneaky-ninja/sneaky-ninja.stat" ]]; then
-		sneaky_pid=$(<"$HOME/.sneaky-ninja/sneaky-ninja.pid")
-		sneaky_stat=$(<"$HOME/.sneaky-ninja/sneaky-ninja.stat")
-		if ps -p "$sneaky_pid" > /dev/null; then
-			if [[ "$sneaky_stat" == "RUNNING" ]]; then
-				sneaky_s=""
-			else
-				sneaky_s="$colors[YELB]$syms[RA]$colors[BLKF] SN $colors[YELF]"
-			fi
-		else
-			sneaky_s="$colors[REDB]$syms[RA]$colors[BLKF] SN $colors[REDF]"
-		fi
-	else
-		sneaky_s="$colors[REDB]$syms[RA]$colors[BLKF] SN $colors[REDF]"
-	fi
-	if
+
 	# Check github stuff
 	branch=$(git_prompt &)
 
@@ -201,10 +191,9 @@ precmd() {
 		cpath="$colors[TERMBLKB]$syms[RA]$NEWLINE$colors[GRYF]$colors[GRYB] $cpath"
 	fi
 
-	PRE_LINE="${shlvl}${mwinit_s}${sneaky_s}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$colors[BLUF]$syms[RA]$colors[TERMBLKF]$colors[TERMBLKB] "
+	PRE_LINE="${shlvl}${kinit_s}${mwinit_s}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$syms[RA]$colors[TERMBLKF]$colors[TERMBLKB] "
 	print -P "$PRE_LINE"
 }
 
 PS1="${ps1_2}"
 export PS1
-
