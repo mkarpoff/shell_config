@@ -13,6 +13,7 @@
     {"name":"home/config/brazil/colours",     "target":"~/.config/brazil/colours"},
     {"name":"home/config/cr/cr-desc.md",      "target":"~/.config/cr/cr-desc.md"},
     {"name":"home/config/cr/preferences",     "target":"~/.config/cr/preferences"},
+    {"name":"home/config/python_keyring/keyringrc.cfg", "target":"~/.config/python_keyring/keyringrc.cfg"},
     {"name":"home/config/zsh/zshrc",          "target":"~/.config/zsh/zshrc"},
     {"name":"home/config/zsh/zsh_ps1",        "target":"~/.config/zsh/zsh_ps1"},
     {"name":"home/tmux/tmux.conf",            "target":"~/.tmux.conf"},
@@ -24,11 +25,7 @@
     {"name":"home/vim/after/",                "target":"~/.vim/after"},
     {"name":"home/vim/_git-plugins-opt/",     "target":"~/.vim/pack/_git-plugins-opt"},
     {"name":"home/vim/colors/",               "target":"~/.vim/colors"},
-    {"name":"home/local/bin/goodmorning",     "target":"~/.local/bin/goodmorning"},
     {"name":"home/local/bin/mwinit-onetouch", "target":"~/.local/bin/mwinit-onetouch"},
     {"name":"home/local/bin/keyring",         "target":"~/.local/bin/keyring"},
-    {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"},
-    {"name":"home/local/bin/ssh-tmux",        "target":"~/.local/bin/ssh-tmux"},
-    {"name":"home/local/bin/ssh-tunnel",      "target":"~/.local/bin/ssh-tunnel"},
-    {"name":"home/local/bin/vpn-onetouch",    "target":"~/.local/bin/vpn-onetouch"}
+    {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"}
 ]
