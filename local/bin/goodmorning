@@ -1,25 +1,35 @@
 #!/usr/bin/env sh
+host_list=('al2')
 
-echo $'\e[1;35mStarting Local Midway certification\e[0m'
+red=`tput setaf 1`
+green=`tput setaf 2`
+purple=`tput setaf 5`
+reset=`tput sgr0`
+
+echo "${purple}Starting Local Midway certification${reset}"
 if ! $HOME/.local/bin/mwinit-onetouch; then
-	echo $'\e[1;31mLocal Midway certification failed\e[0m'
+	echo "${red}Local Midway certification failed${reset}"
 	exit 1
 fi
 sleep 2
-echo $'\e[1;32mLocal Midway certification successful\e[0m'
+echo "${green}Local Midway certification successful${reset}"
 
-echo $'\e[1;35mStarting Remote Kerberos certification\e[0m'
-if ! ssh devdesk '$HOME/.local/bin/kinit-onetouch'; then
-	echo $'\e[1;31mRemote Kerberos certification failed\e[0m'
-	exit 1
-fi
-sleep 2
-echo $'\e[1;32mRemote Kerberos certification successful\e[0m'
 
-echo $'\e[1;35mStarting Remote Midway certification\e[0m'
-if ! ssh devdesk '$HOME/.local/bin/mwinit-onetouch'; then
-	echo $'\e[1;31mRemote Midway certification failed\e[0m'
-	exit 1
-fi
-sleep 2
-echo $'\e[1;32mRemote Midway certification successful\e[0m'
+for host in ${host_list[@]}; do
+	echo "${purple}Starting Remote ${host} Kerberos certification${reset}"
+	if ! ssh ${host} '$HOME/.local/bin/kinit-onetouch'; then
+		echo "${red}Remote ${host} Kerberos certification failed${reset}"
+		exit 1
+	fi
+	sleep 2
+	echo "${green}Remote ${host} Kerberos certification successful${reset}"
+	
+	echo "${purple}Starting Remote ${host} Midway certification${reset}"
+	if ! ssh ${host} '$HOME/.local/bin/mwinit-onetouch'; then
+		echo "${red}Remote ${host} Midway certification failed${reset}"
+		exit 1
+	fi
+	sleep 2
+	echo "${green}Remote ${host} Midway certification successful${reset}"
+done
+

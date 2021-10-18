@@ -4,6 +4,15 @@
 " I don't care about vi compatability
 set nocompatible
 
+" If using mackvim
+if has("gui_running")
+  if has("gui_macvim")
+    " MacVim
+		set guifont=Monaco\ for\ Powerline:h12
+  endif
+endif
+
+
 " Turn on mouse
 " set mouse=a
 set backspace=2

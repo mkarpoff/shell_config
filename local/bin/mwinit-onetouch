@@ -9,7 +9,7 @@ set my_user "$env(USER)"
 set my_service Midway
 set my_password [exec security find-generic-password -a $my_user -s $my_service -w]
 set timeout -1
-spawn /usr/local/bin/mwinit -o
+spawn /usr/local/bin/mwinit -o -s
 match_max 100000
 expect -re "PIN for $my_user: "
 send -- "$my_password\r"

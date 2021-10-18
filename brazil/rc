@@ -8,7 +8,7 @@ alias brc=brazil-recursive-cmd
 alias bbr='brc brazil-build'
 
 # Midway/Kinit Aliases
-alias mwinit='mwinit -o'
+alias mwinit='mwinit -o -s'
 alias kinit='kinit -f'
 
 # brazil build settings

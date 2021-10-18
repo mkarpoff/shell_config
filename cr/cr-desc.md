@@ -1,15 +1,15 @@
 ### Description
- 
+
 <INSERT DETAILS>
- 
+
 ### Testing and reproduction steps
- 
+
 <DESCRIBE TESTING PROCESS>
- 
+
 ### Checklist
- 
+
 #### Front-end
- 
+
 * ran `bb release` (or `bb release-police` for HireWebsite) -
 * ran `bb acceptance` -
 * ran `bb rails` -
@@ -18,9 +18,9 @@
 * tested the performance impact of the code change -
 * added UX to reviewers -
 * other (specify) -
- 
+
 #### Apollo-Back-end
- 
+
 * ran Sonar lint in IDE -
 * ran unit tests in IDE with code coverage plugin (new code 100%, updated code >=90%) -
 * ran `bb release` -
@@ -39,13 +39,13 @@
 * ran `bb release` -
 * ran `bb integration` -
 * ran unit tests in IDE with code coverage plugin (new code 100%, updated code >=90%) -
-* deployed AWS stacks successfully to developer AWS account - 
-* confirmed all resources created in AWS - 
-* visited API gateway and ran service calls (specify which) - 
-* tested the performance impact of the code change - 
+* deployed AWS stacks successfully to developer AWS account -
+* confirmed all resources created in AWS -
+* visited API gateway and ran service calls (specify which) -
+* tested the performance impact of the code change -
 
 #### All CRs
- 
+
 * rebased against release branch before posting CR -
-* prefaced CR summary with [PackageNameX], [PackageNameY], [...] instead of [X packages] -
+* prefaced CR summary with `[ServiceName]` instead of [X packages] -
 * updated SIM task points and set next step to "Review" -
