@@ -3,13 +3,9 @@
 <INSERT DETAILS>
 
 ### Testing and reproduction steps
-
-<DESCRIBE TESTING PROCESS>
-
 ### Checklist
-
+___
 #### Front-end
-
 * ran `bb release` (or `bb release-police` for HireWebsite) -
 * ran `bb acceptance` -
 * ran `bb rails` -
@@ -18,9 +14,8 @@
 * tested the performance impact of the code change -
 * added UX to reviewers -
 * other (specify) -
-
+___
 #### Apollo-Back-end
-
 * ran Sonar lint in IDE -
 * ran unit tests in IDE with code coverage plugin (new code 100%, updated code >=90%) -
 * ran `bb release` -
@@ -33,8 +28,8 @@
 * (microservices only:) updated API wiki page -
 * (ArtRecruitingService only - if new call:) This call has to be on ArtRecruitingService because <insert reason here>
 
+___
 #### NAWS-Back-end
-
 * ran Sonar lint in IDE -
 * ran `bb release` -
 * ran `bb integration` -
@@ -43,7 +38,8 @@
 * confirmed all resources created in AWS -
 * visited API gateway and ran service calls (specify which) -
 * tested the performance impact of the code change -
-
+* bootstrapped new CDK stacks with `bb deploy:bootstrap` -
+___
 #### All CRs
 
 * rebased against release branch before posting CR -

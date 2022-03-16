@@ -1,0 +1,35 @@
+set timeoutlen=1000 ttimeoutlen=10
+set showmode
+
+
+" Remap the escape key
+inoremap jk <Esc>
+noremap! jk <Esc>
+noremap! Jk <Esc>
+noremap! jK <Esc>
+noremap! JK <Esc>
+
+" Remap the split navigation key
+noremap ww <c-w>
+tnoremap ww <c-w>
+tnoremap ww; <c-w>:
+noremap <M-h> <c-w> h
+noremap <M-j> <c-w> j
+noremap <M-k> <c-w> k
+noremap <M-l> <c-w> l
+
+" Fast command key
+noremap ; :
+
+" Tab navigation
+nnoremap gc :tabe<CR>
+nnoremap gC :tabe
+nnoremap gn :tabnext<CR>
+
+" Goto Implementation
+nmap gD :action GotoImplementation<CR>
+nnoremap gv :vsplit<CR>gd :tabonly<CR>
+nnoremap gV :vsplit<CR>:action GotoImplementation<CR> :tabonly<CR>
+nnoremap gs :split<CR>gd :tabonly<CR>
+nnoremap gS :split<CR>:action GotoImplementation<CR> :tabonly<CR>
+

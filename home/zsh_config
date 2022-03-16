@@ -46,6 +46,8 @@ if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
 
+source ~/.config/brazil/cdk_completion
+
 unsetopt BEEP
 declare SSH_CERT="$HOME/.ssh/id_rsa-cert.pub"
 export DEV=true

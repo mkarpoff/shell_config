@@ -6,6 +6,7 @@
     {"name":"home/inputrc",         "target":"~/.inputrc"},
     {"name":"home/screenrc",        "target":"~/.screenrc"},
     {"name":"home/global_makefile", "target":"~/.global_makefile"},
+    {"name":"home/ideavimrc",         "target":"~/.ideavimrc"},
     {"name":"tmux/tmux.conf",       "target":"~/.tmux.conf"},
     {"name":"tmux/plugins.conf",    "target":"~/.tmux/plugins.conf"},
     {"name":"tmux/theme",           "target":"~/.tmux/theme"},
@@ -20,8 +21,11 @@
 		{"name":"local/bin/ssh-tmux",   "target":"~/.local/bin/ssh-tmux"},
 		{"name":"local/bin/ssh-tunnel", "target":"~/.local/bin/ssh-tunnel"},
 		{"name":"local/bin/vpn-onetouch","target":"~/.local/bin/vpn-onetouch"},
+		{"name":"local/bin/scream",     "target":"~/.local/bin/scream"},
 		{"name":"brazil/rc",            "target":"~/.config/brazil/rc"},
 		{"name":"brazil/colours",       "target":"~/.config/brazil/colours"},
+		{"name":"brazil/_cdk_completion","target":"~/.config/brazil/_cdk_completion"},
 		{"name":"cr/cr-desc.md",        "target":"~/.config/cr/cr-desc.md"},
+		{"name":"cr/cr-naws.md",        "target":"~/.config/cr/cr-naws.md"},
 		{"name":"cr/preferences",       "target":"~/.config/cr/preferences"}
 ]
