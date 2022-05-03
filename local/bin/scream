@@ -1,3 +1,13 @@
 #!/bin/sh
-
-curl -X POST -H 'Content-type: application/json' --data "{\"message\":\"$1\"}" $SCREAM_WEBHOOK_URL
+if [[ "$SCREAM_WEBHOOK_URL" == "" ]]; then
+	echo "Set the SCREAM_WEBHOOK_URL environment variable with the Webhook Url to post to"
+	exit 1
+fi
+if (( $# > 2 )); then
+	cmd=${@:2}
+	echo "Executing: $cmd"
+	$cmd
+	curl -X POST -H 'Content-type: application/json' --data "{\"message\":\"$1\", \"command\":\"$cmd\"}" $SCREAM_WEBHOOK_URL
+else
+	curl -X POST -H 'Content-type: application/json' --data "{\"message\":\"$1\"}" $SCREAM_WEBHOOK_URL
+fi

@@ -33,3 +33,14 @@ nnoremap gV :vsplit<CR>:action GotoImplementation<CR> :tabonly<CR>
 nnoremap gs :split<CR>gd :tabonly<CR>
 nnoremap gS :split<CR>:action GotoImplementation<CR> :tabonly<CR>
 
+" Search Settings
+function! HighlightSearch()
+	if &hlsearch
+		set nohlsearch
+		echo 'Search highlight off'
+	else
+		set hlsearch
+		echo 'Search highlight on'
+	endif
+endfunction
+command! -nargs=0 HS call HighlightSearch()
