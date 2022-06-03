@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python3.7
 
 from datetime import datetime
 from datefinder import find_dates

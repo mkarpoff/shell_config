@@ -27,7 +27,7 @@ function artDocLogs
 	else
 		stage=$3
 	fi
-	bark -cf=/home/$USER/.config/bark_sync -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/DocumentGeneration/$stage/ArtDocumentGeneration.log -p /home/$USER/bark/artdoc -StartTime=$1 -EndTime=$2
+	bark -cf=/home/$USER/.config/bark/bark_sync -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/DocumentGeneration/$stage/ArtDocumentGeneration.log -p /home/$USER/bark/artdoc -StartTime=$1 -EndTime=$2
 }
 
 function hireWebsiteLogs
@@ -80,6 +80,19 @@ function artRecruitingServiceCronsLogs
 	fi
     bark -cf=$HOME/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/Recruiting/Service/$stage/crons.log -p $HOME/bark/ArtRecruitingService/crons -StartTime=$1 -EndTime=$2
 }
+
+# JODS Logs
+function jobOfferDocServiceLogs
+{
+
+	if [ -z $3 ]; then
+		stage=Prod
+	else
+		stage=$3
+	fi
+	/apollo/env/BarkCLI/bin/bark -cf=/home/$USER/.config/bark/bark_art -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/JobOfferDocService/$stage/application.log -p /home/$USER/bark/jodslogs -StartTime=$1 -EndTime=$2
+}
+
 
 
 # ArtRecruitingService-Admin

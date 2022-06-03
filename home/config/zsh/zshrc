@@ -8,6 +8,8 @@ export CLICOLOR=1
 alias ls="ls --color=auto"
 alias la="ls -a"
 alias grep="grep --color=auto"
+alias register_with_aaa="/apollo/env/AAAWorkspaceSupport/bin/register_with_aaa.py"
+
 
 # brazil config
 if [ -f $HOME/.config/brazil/rc ]; then

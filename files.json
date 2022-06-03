@@ -27,5 +27,6 @@
     {"name":"home/vim/colors/",               "target":"~/.vim/colors"},
     {"name":"home/local/bin/mwinit-onetouch", "target":"~/.local/bin/mwinit-onetouch"},
     {"name":"home/local/bin/keyring",         "target":"~/.local/bin/keyring"},
-    {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"}
+    {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"},
+    {"name":"home/local/bin/lumberjack.py",  "target":"~/.local/bin/lumberjack"}
 ]
