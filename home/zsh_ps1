@@ -160,7 +160,7 @@ precmd() {
 	local branch venv cpath mwinit_s sneaky_s sneaky_pid sneaky_stat
 
 	# Miday check
-	if (! test -f "$SSH_CERT") || (test "`find ~/.ssh/id_rsa-cert.pub -mmin +1220`"); then
+	if (! test -f "$SSH_CERT") || (test "`find ~/.ssh/*cert.pub -mmin +1220`"); then
 		mwinit_s="$colors[REDB]$syms[RA]$colors[BLKF] M $colors[REDF]"
 	else
 		mwinit_s=""

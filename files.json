@@ -24,7 +24,7 @@
 		{"name":"local/bin/scream",     "target":"~/.local/bin/scream"},
 		{"name":"brazil/rc",            "target":"~/.config/brazil/rc"},
 		{"name":"brazil/colours",       "target":"~/.config/brazil/colours"},
-		{"name":"brazil/cdk_completion","target":"~/.config/brazil/cdk_completion"},
+		{"name":"zsh/completion/_brazil_build", "target":"~/.zsh/completion/_brazil_build"},
 		{"name":"cr/cr-desc.md",        "target":"~/.config/cr/cr-desc.md"},
 		{"name":"cr/cr-naws.md",        "target":"~/.config/cr/cr-naws.md"},
 		{"name":"cr/preferences",       "target":"~/.config/cr/preferences"}

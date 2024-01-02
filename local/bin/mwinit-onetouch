@@ -9,17 +9,22 @@ set my_user "$env(USER)"
 set my_service Midway
 set my_password [exec security find-generic-password -a $my_user -s $my_service -w]
 set timeout -1
-spawn /usr/local/bin/mwinit -o -s
+spawn /usr/local/bin/mwinit -s
 match_max 100000
 expect -re "PIN for $my_user: "
 send -- "$my_password\r"
+#expect -exact "\r
+#Press the button on your YubiKey (you might have to hold it for about 3-5 seconds before your token produces a one-time password)...\r"
 expect -exact "\r
-Press the button on your YubiKey (you might have to hold it for about 3-5 seconds before your token produces a one-time password)...\r"
+Press the button on your U2F token...\r"
+stty -echo
 expect_user -re "(.*)\n"
 set my_yubikey "$expect_out(1,string)"
-send -- "$my_yubikey\r"
+#send -- "$my_yubikey\r"
+#expect -exact "\r
+#Now please wait a few seconds while the server processes your login request\r
+#Successfully authenticated using yubico otp, session cookie saved in /Users/$my_user/.midway/cookie\r
+#Successfully signed SSH public key /Users/$my_user/.ssh/id_rsa.pub. The SSH certificate saved in /Users/$my_user/.ssh/id_rsa-cert.pub\n"
 expect -exact "\r
-Now please wait a few seconds while the server processes your login request\r
-Successfully authenticated using yubico otp, session cookie saved in /Users/$my_user/.midway/cookie\r
-Successfully signed SSH public key /Users/$my_user/.ssh/id_rsa.pub. The SSH certificate saved in /Users/$my_user/.ssh/id_rsa-cert.pub\n"
-
+Successfully authenticated using u2f, session cookie saved in /Users/$my_user/.midway/cookie
+Successfully signed SSH public key /Users/$my_user/.ssh/id_ecdsa.pub. The SSH certificate was saved in /Users/$my_user/.ssh/id_ecdsa-cert.pub"

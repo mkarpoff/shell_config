@@ -6,10 +6,12 @@ alias bw="brazil workspace"
 alias cr-desc="cr --description $HOME/.config/cr/cr-desc.md"
 alias cr-naws="cr --description $HOME/.config/cr/cr-naws.md"
 alias brc=brazil-recursive-cmd
+alias brcp=brazil-recursive-cmd-parallel
 alias bbr='brc brazil-build'
+alias bbrp='brcp brazil-build'
 
 # Midway/Kinit Aliases
-alias mwinit='mwinit -o -s'
+alias mwinit='mwinit -s'
 alias kinit='kinit -f'
 
 # brazil build settings
