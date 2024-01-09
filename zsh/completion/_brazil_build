@@ -63,7 +63,7 @@ function _bb_cdk_base {
 
 function _brazil_build {
 	## If it's a CDK package then use CDK build
-	if [[ "$PWD" == *"CDK" ]]; then
+	if [[ -f "cdk.json" ]]; then
 		_bb_cdk_base "$@"
 	fi
 	## If it's a gradle build package this relies on gradle-completion to be installed
