@@ -1,0 +1,7 @@
+{
+  "name": "mkarpoff-skills",
+  "description": "Personal skills for AWS ADA profiles, CDK pipeline CD readiness, CloudWatch dashboard links, commit/CR hygiene, and job lookup",
+  "author": {
+    "name": "mkarpoff"
+  }
+}

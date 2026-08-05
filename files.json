@@ -28,5 +28,9 @@
     {"name":"home/local/bin/mwinit-onetouch", "target":"~/.local/bin/mwinit-onetouch"},
     {"name":"home/local/bin/keyring",         "target":"~/.local/bin/keyring"},
     {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"},
-    {"name":"home/local/bin/lumberjack.py",  "target":"~/.local/bin/lumberjack"}
+    {"name":"home/local/bin/lumberjack.py",  "target":"~/.local/bin/lumberjack"},
+    {"name":"home/claude/settings.json",      "target":"~/.claude/settings.json"},
+    {"name":"home/claude/statusline.sh",      "target":"~/.claude/statusline.sh"},
+    {"name":"home/claude/rules/",             "target":"~/.claude/rules"},
+    {"name":"home/claude/plugins/data/mkarpoff-skills/", "target":"~/.claude/plugins/data/mkarpoff-skills"}
 ]
