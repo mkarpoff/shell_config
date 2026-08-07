@@ -1,1 +1,3 @@
 *.swp
+# Claude Code per-machine permission grants (absolute paths, auto-generated)
+home/claude/settings.local.json

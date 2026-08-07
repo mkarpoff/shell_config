@@ -15,6 +15,8 @@
     {"name":"home/config/cr/preferences",     "target":"~/.config/cr/preferences"},
     {"name":"home/config/python_keyring/keyringrc.cfg", "target":"~/.config/python_keyring/keyringrc.cfg"},
     {"name":"home/config/zsh/zshrc",          "target":"~/.config/zsh/zshrc"},
+    {"name":"home/config/zsh/os-darwin.zsh",  "target":"~/.config/zsh/os-darwin.zsh"},
+    {"name":"home/config/zsh/os-linux.zsh",   "target":"~/.config/zsh/os-linux.zsh"},
     {"name":"home/config/zsh/zsh_ps1",        "target":"~/.config/zsh/zsh_ps1"},
     {"name":"home/zshenv",                    "target":"~/.zshenv"},
     {"name":"home/tmux/tmux.conf",            "target":"~/.tmux.conf"},
@@ -30,9 +32,10 @@
     {"name":"home/local/bin/keyring",         "target":"~/.local/bin/keyring"},
     {"name":"home/local/bin/kinit-onetouch",  "target":"~/.local/bin/kinit-onetouch"},
     {"name":"home/local/bin/pbcopy",          "target":"~/.local/bin/pbcopy"},
-    {"name":"home/local/bin/lumberjack.py",  "target":"~/.local/bin/lumberjack"},
+    {"name":"home/local/bin/lumberjack.py",   "target":"~/.local/bin/lumberjack"},
     {"name":"home/claude/settings.json",      "target":"~/.claude/settings.json"},
     {"name":"home/claude/statusline.sh",      "target":"~/.claude/statusline.sh"},
+    {"name":"home/claude/CLAUDE.md",          "target":"~/CLAUDE.md"},
     {"name":"home/claude/rules/",             "target":"~/.claude/rules"},
     {"name":"home/claude/plugins/data/mkarpoff-skills/", "target":"~/.claude/plugins/data/mkarpoff-skills"}
 ]

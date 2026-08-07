@@ -1,5 +1,5 @@
 {
-  "awsCredentialExport": "\"/home/mkarpoff/.toolbox/bin/claude\" default-credential-export",
+  "awsCredentialExport": "\"$HOME/.toolbox/bin/claude\" default-credential-export",
   "env": {
     "AWS_REGION": "us-west-2"
   },
@@ -88,8 +88,9 @@
     ],
     "defaultMode": "auto",
     "additionalDirectories": [
+      "/Volumes/workspace",
       "/ws",
-      "/home/mkarpoff",
+      "~",
       "/tmp"
     ]
   },
@@ -134,7 +135,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh",
+    "command": "$HOME/.claude/statusline.sh",
     "refreshInterval": 1,
     "hideVimModeIndicator": true
   },
@@ -147,13 +148,13 @@
     "aim": {
       "source": {
         "source": "directory",
-        "path": "/home/mkarpoff/.aim/cc-plugins"
+        "path": "~/.aim/cc-plugins"
       }
     },
     "local": {
       "source": {
         "source": "directory",
-        "path": "/home/mkarpoff/.claude/plugins/data"
+        "path": "~/.claude/plugins/data"
       }
     }
   },

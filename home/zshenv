@@ -6,3 +6,6 @@
 # .UTF-8. /etc/locale.conf declares en_US.UTF-8 but is only read by systemd,
 # so ssh sessions inherit an empty LANG.
 export LANG=en_US.UTF-8
+
+# Rust/cargo environment (macOS Mac has this; guard so it's a no-op where absent)
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"

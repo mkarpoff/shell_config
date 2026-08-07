@@ -1,7 +1,4 @@
 #!/usr/bin/env zsh
-# MANAGED FILE - deployed to your home directory by the
-# DevDesktop-mkarpoff-scripts Apollo package. Edits to the deployed copy are
-# OVERWRITTEN on the next activation. Change the source in the package instead.
 # Powerline-style status line matching zsh PS1 aesthetic
 input=$(cat)
 
@@ -70,12 +67,22 @@ if cache_is_stale; then
     git_repo="" git_dirty="" ahead="" behind="" stash=""
   fi
 
-  midway=$("$HOME/.toolbox/bin/claude" amzn-statusline --format "{midway_session_length}" <<< "$input" 2>/dev/null)
-  midway_clean=$(echo "$midway" | sed 's/\x1b\[[0-9;]*m//g')
+  amzn_sl=$("$HOME/.toolbox/bin/claude" amzn-statusline --format "{midway_session_length}" <<< "$input" 2>/dev/null)
+  session_ttl=$(echo "$amzn_sl" | tail -1 | sed $'s/\x1b[][()#;?]*[0-9;]*[A-Za-z]//g; s/\x1b\\][^\x1b]*\x1b\\\\//g; s/]8;;[^[:space:]]*//g')
+  # Extract warning lines (everything except the last line), preserved raw
+  amzn_sl_linecount=$(echo "$amzn_sl" | wc -l | tr -d ' ')
+  if [[ "$amzn_sl_linecount" -gt 1 ]]; then
+    status_warning=$(echo "$amzn_sl" | sed '$d')
+  else
+    status_warning=""
+  fi
 
-  echo "${git_branch}|${git_repo}|${git_dirty}|${ahead}|${behind}|${stash}|${midway_clean}" > "$CACHE_FILE"
+  # Cache only the simple fields; warning goes to a separate file
+  echo "${git_branch}|${git_repo}|${git_dirty}|${ahead}|${behind}|${stash}|${session_ttl}" > "$CACHE_FILE"
+  printf '%s' "$status_warning" > "${CACHE_FILE}.warning"
 else
-  IFS='|' read -r git_branch git_repo git_dirty ahead behind stash midway_clean < "$CACHE_FILE"
+  IFS='|' read -r git_branch git_repo git_dirty ahead behind stash session_ttl < "$CACHE_FILE"
+  status_warning=$(<"${CACHE_FILE}.warning" 2>/dev/null)
 fi
 
 # Build git segment
@@ -102,12 +109,18 @@ else
   git_to_next="${c[PRPF]}${c[AQUB]}${syms[RA]}"
 fi
 
-# Line 1: model | git | context% | midway
+# Line 1: hostname | model | git | context% | midway
+hostname=${HOST:-${HOSTNAME:-$(hostname -s)}}
+if [[ -n "$SSH_CONNECTION" ]]; then
+  host_seg="${c[GRYB]} ${c[GRYF]}${c[AQUB]}${syms[RA]}${c[BLKF]} ${hostname} ${c[AQUF]}${c[PRPB]}${syms[RA]}"
+else
+  host_seg="${c[GRYB]} ${c[GRYF]}${c[GREB]}${syms[RA]}${c[BLKF]} ${hostname} ${c[GREF]}${c[PRPB]}${syms[RA]}"
+fi
 printf '%b' \
-  "${c[GRYB]} ${c[GRYF]}${c[PRPB]}${syms[RA]}${c[BLKF]} ${model:-Claude} " \
+  "${host_seg}${c[BLKF]} ${model:-Claude} " \
   "${git_seg}" \
   "${git_to_next}${c[BLKF]} ${pct:-0}% " \
-  "${c[AQUF]}${c[GREB]}${syms[RA]}${c[BLKF]} M:${midway_clean} " \
+  "${c[AQUF]}${c[GREB]}${syms[RA]}${c[BLKF]} M:${session_ttl} " \
   "${c[GREF]}${c[RSTB]}${syms[RA]}${c[RST]}"
 echo
 
@@ -116,3 +129,8 @@ printf '%b' \
   "${c[GRYB]} ${c[GRYF]}${vim_bg}${syms[RA]}${vim_fg} ${vim_mode:-??} ${vim_arrow}${c[BLUB]}${syms[RA]}${c[BLKF]} ${cwd} " \
   "${c[BLUF]}${c[RSTB]}${syms[RA]}${c[RST]}"
 echo
+
+# Remaining lines: service warning (if any), passed through as-is
+if [[ -n "$status_warning" ]]; then
+  printf '%s\n' "$status_warning"
+fi

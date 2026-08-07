@@ -1,21 +1,465 @@
-#/usr/bin/env sh
+#!/usr/bin/env sh
 
 #brazil aliases
 alias bb="brazil-build"
 alias bw="brazil workspace"
 alias cr-desc="cr --description $HOME/.config/cr/cr-desc.md"
+alias cr-naws="cr --description $HOME/.config/cr/cr-naws.md"
+alias cr-evade="cr --description $HOME/.config/cr/cr-evade.md"
 alias brc=brazil-recursive-cmd
 alias brcp=brazil-recursive-cmd-parallel
 alias bbr='brc brazil-build'
 alias bbrp='brcp brazil-build'
+alias bbra='brc --all brazil-build'
+alias bwintegtest='run_integration_tests'
+alias bwbb='build_packages'
+
 
 # Midway/Kinit Aliases
-alias mwinit='mwinit -o -s'
+alias mwinit='mwinit -s'
 alias kinit='kinit -f'
 
 # brazil build settings
 export ANT_ARGS="-logger org.apache.tools.ant.listener.AnsiColorLogger"
 
 export ANT_OPTS="-Dant.logger.defaults=$HOME/.config/brazil/colours"
-export DEV=true
 
+# Set the parent directory containing all workspaces
+# Workspace root differs per machine: /Volumes/workspace on macOS, /ws on the dev-desktop.
+# The OS-split zsh file (os-darwin.zsh / os-linux.zsh) exports WORKSPACES_ROOT; fall back
+# to autodetection if it wasn't set (e.g. bash, or rc sourced standalone).
+if [ -z "$WORKSPACES_ROOT" ]; then
+    if [ -d "/Volumes/workspace" ]; then
+        export WORKSPACES_ROOT="/Volumes/workspace"
+    elif [ -d "/ws" ]; then
+        export WORKSPACES_ROOT="/ws"
+    fi
+fi
+
+# Function to add a test package to the test configuration
+add_test_package() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    package_path="$1"
+
+    # Check if package path was provided
+    if [ -z "$package_path" ]; then
+        echo "Error: No package path provided"
+        return 1
+    fi
+
+    # Convert to absolute path if relative and clean up the path
+    if [ "${package_path:0:1}" != "/" ]; then
+        # Use cd and pwd to resolve the actual path
+        ( cd "$(pwd)/$package_path" 2>/dev/null && pwd ) || {
+            echo "Error: Invalid path: $package_path"
+            return 1
+        }
+        package_path="$( cd "$(pwd)/$package_path" && pwd )"
+    else
+        # Clean up absolute path
+        package_path="$( cd "$package_path" 2>/dev/null && pwd )" || {
+            echo "Error: Invalid path: $package_path"
+            return 1
+        }
+    fi
+
+    # Verify the path exists
+    if [ ! -d "$package_path" ]; then
+        echo "Error: Directory does not exist: $package_path"
+        return 1
+    fi
+
+    # Verify the path is under the workspace
+    if [ "${package_path#$WORKSPACE_PATH/}" = "$package_path" ]; then
+        echo "Error: Package path must be within the workspace: $WORKSPACE_PATH"
+        return 1
+    fi
+
+    # Convert to relative path for storage
+    package_path="${package_path#$WORKSPACE_PATH/}"
+
+    # Initialize the test configuration file if it doesn't exist
+    TEST_CONFIG_FILE="${WORKSPACE_PATH}/.test_config"
+    if [ ! -f "$TEST_CONFIG_FILE" ]; then
+        mkdir -p "$(dirname "$TEST_CONFIG_FILE")"
+        touch "$TEST_CONFIG_FILE" || {
+            echo "Error: Could not create test configuration file at $TEST_CONFIG_FILE"
+            return 1
+        }
+    fi
+
+    # Add package to the test configuration if it's not already there
+    if ! grep -q "^${package_path}$" "$TEST_CONFIG_FILE" 2>/dev/null; then
+        echo "$package_path" >> "$TEST_CONFIG_FILE" || {
+            echo "Error: Could not write to test configuration file"
+            return 1
+        }
+        echo "Added package to test configuration: $package_path"
+    else
+        echo "Package already in test configuration: $package_path"
+    fi
+}
+
+# Function to remove a package from the test configuration
+remove_test_package() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    package_path="$1"
+    TEST_CONFIG_FILE="${WORKSPACE_PATH}/.test_config"
+
+    if [ "${package_path:0:1}" != "/" ]; then
+        package_path="$( cd "$(pwd)/$package_path" 2>/dev/null && pwd )"
+    fi
+
+    # Convert to relative path
+    if [ "${package_path#$WORKSPACE_PATH/}" != "$package_path" ]; then
+        package_path="${package_path#$WORKSPACE_PATH/}"
+    fi
+
+    if [ -f "$TEST_CONFIG_FILE" ]; then
+        sed -i.bak "/^${package_path}$/d" "$TEST_CONFIG_FILE"
+        rm "${TEST_CONFIG_FILE}.bak"
+        echo "Removed package from test configuration: $package_path"
+    else
+        echo "Test configuration file does not exist"
+    fi
+}
+
+# Function to list current test configuration
+list_test_packages() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    TEST_CONFIG_FILE="${WORKSPACE_PATH}/.test_config"
+    if [ -f "$TEST_CONFIG_FILE" ]; then
+        echo "Current test configuration for workspace '${CURRENT_WORKSPACE}':"
+        cat "$TEST_CONFIG_FILE" | nl
+    else
+        echo "No test configuration exists for workspace '${CURRENT_WORKSPACE}'"
+    fi
+}
+
+# Function to clear the entire test configuration
+clear_test_packages() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    TEST_CONFIG_FILE="${WORKSPACE_PATH}/.test_config"
+    if [ -f "$TEST_CONFIG_FILE" ]; then
+        > "$TEST_CONFIG_FILE"
+        echo "Test configuration cleared for workspace '${CURRENT_WORKSPACE}'"
+    else
+        echo "No test configuration file exists for workspace '${CURRENT_WORKSPACE}'"
+    fi
+}
+
+# Function to run integration tests
+run_integration_tests() {
+    # Parse arguments
+    IGNORE_FAILURES=0
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            -i|--ignore-failures)
+                IGNORE_FAILURES=1
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "Usage: run_integration_tests [-i|--ignore-failures]"
+                return 1
+                ;;
+        esac
+    done
+
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    TEST_CONFIG_FILE="${WORKSPACE_PATH}/.test_config"
+    if [ ! -f "$TEST_CONFIG_FILE" ]; then
+        echo "Error: No test configuration found for workspace '${CURRENT_WORKSPACE}'. Use add_test_package to configure packages."
+        return 1
+    fi
+
+    if [ ! -s "$TEST_CONFIG_FILE" ]; then
+        echo "Error: Test configuration is empty for workspace '${CURRENT_WORKSPACE}'. Use add_test_package to add packages."
+        return 1
+    fi
+
+    current_dir=$(pwd)
+    test_failed=0
+
+    while IFS= read -r package_path; do
+        # Skip empty lines
+        [ -z "$package_path" ] && continue
+
+        echo "Running integration tests for package: $package_path"
+        full_package_path="${WORKSPACE_PATH}/${package_path}"
+
+        if [ ! -d "$full_package_path" ]; then
+            echo "Error: Package directory does not exist: $full_package_path"
+            test_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+            continue
+        fi
+
+        cd "$full_package_path" || {
+            echo "Error: Could not change to directory: $full_package_path"
+            test_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+            continue
+        }
+
+        if ! brazil-build integTest; then
+            echo "Error: Integration tests failed for package: $package_path"
+            test_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+        fi
+
+        cd "$current_dir"
+    done < "$TEST_CONFIG_FILE"
+
+    if [ $test_failed -eq 0 ]; then
+        echo "All integration tests passed successfully in workspace '${CURRENT_WORKSPACE}'"
+        return 0
+    else
+        echo "Some integration tests failed in workspace '${CURRENT_WORKSPACE}'"
+        return 1
+    fi
+}
+
+# Helper function to validate we're in a workspace
+_validate_workspace() {
+    current_path=$(pwd)
+
+    # Check if we're under WORKSPACES_ROOT
+    if [ "${current_path#$WORKSPACES_ROOT}" = "$current_path" ]; then
+        echo "Error: Must be run from within a workspace under ${WORKSPACES_ROOT}"
+        return 1
+    fi
+
+    # Get the workspace path (first directory under WORKSPACES_ROOT in current path)
+    CURRENT_WORKSPACE=$(echo "${current_path}" | sed -n "s|^${WORKSPACES_ROOT}/\([^/]*\).*|\1|p")
+    if [ -z "${CURRENT_WORKSPACE}" ]; then
+        echo "Error: Could not determine workspace name"
+        return 1
+    fi
+
+    WORKSPACE_PATH="${WORKSPACES_ROOT}/${CURRENT_WORKSPACE}"
+    BUILD_ORDER_FILE="${WORKSPACE_PATH}/.build_order"
+    return 0
+}
+
+# Function to add a package to the build order
+add_build_package() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    package_path="$1"
+
+    # Check if package path was provided
+    if [ -z "$package_path" ]; then
+        echo "Error: No package path provided"
+        return 1
+    fi
+
+    # Convert to absolute path if relative and clean up the path
+    if [ "${package_path:0:1}" != "/" ]; then
+        # Use cd and pwd to resolve the actual path
+        ( cd "$(pwd)/$package_path" 2>/dev/null && pwd ) || {
+            echo "Error: Invalid path: $package_path"
+            return 1
+        }
+        package_path="$( cd "$(pwd)/$package_path" && pwd )"
+    else
+        # Clean up absolute path
+        package_path="$( cd "$package_path" 2>/dev/null && pwd )" || {
+            echo "Error: Invalid path: $package_path"
+            return 1
+        }
+    fi
+
+    # Verify the path exists
+    if [ ! -d "$package_path" ]; then
+        echo "Error: Directory does not exist: $package_path"
+        return 1
+    fi
+
+    # Verify the path is under the workspace
+    if [ "${package_path#$WORKSPACE_PATH/}" = "$package_path" ]; then
+        echo "Error: Package path must be within the workspace: $WORKSPACE_PATH"
+        return 1
+    fi
+
+    # Convert to relative path for storage
+    package_path="${package_path#$WORKSPACE_PATH/}"
+
+    # Ensure the build order file exists and is writable
+    if [ ! -f "$BUILD_ORDER_FILE" ]; then
+        mkdir -p "$(dirname "$BUILD_ORDER_FILE")"
+        touch "$BUILD_ORDER_FILE" || {
+            echo "Error: Could not create build order file at $BUILD_ORDER_FILE"
+            return 1
+        }
+    fi
+
+    # Add package to the build order if it's not already there
+    if ! grep -q "^${package_path}$" "$BUILD_ORDER_FILE" 2>/dev/null; then
+        echo "$package_path" >> "$BUILD_ORDER_FILE" || {
+            echo "Error: Could not write to build order file"
+            return 1
+        }
+        echo "Added package to build order: $package_path"
+    else
+        echo "Package already in build order: $package_path"
+    fi
+}
+
+
+# Function to remove a package from the build order
+remove_build_package() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    package_path="$1"
+
+    if [ "${package_path#$WORKSPACE_PATH/}" != "$package_path" ]; then
+        package_path="${package_path#$WORKSPACE_PATH/}"
+    fi
+
+    if [ -f "$BUILD_ORDER_FILE" ]; then
+        sed -i.bak "/^${package_path}$/d" "$BUILD_ORDER_FILE"
+        rm "${BUILD_ORDER_FILE}.bak"
+        echo "Removed package from build order: $package_path"
+    else
+        echo "Build order file does not exist"
+    fi
+}
+
+# Function to list current build order
+list_build_order() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    if [ -f "$BUILD_ORDER_FILE" ]; then
+        echo "Current build order for workspace '${CURRENT_WORKSPACE}':"
+        cat "$BUILD_ORDER_FILE" | nl
+    else
+        echo "No build order configured for workspace '${CURRENT_WORKSPACE}'"
+    fi
+}
+
+# Function to clear the entire build order
+clear_build_order() {
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    if [ -f "$BUILD_ORDER_FILE" ]; then
+        echo "" > "$BUILD_ORDER_FILE"
+        echo "Build order cleared for workspace '${CURRENT_WORKSPACE}'"
+    else
+        echo "No build order file exists for workspace '${CURRENT_WORKSPACE}'"
+    fi
+}
+# Function to build all packages in order
+build_packages() {
+    # Parse arguments
+    IGNORE_FAILURES=0
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            -i|--ignore-failures)
+                IGNORE_FAILURES=1
+                shift
+                ;;
+            *)
+                echo "Unknown option: $1"
+                echo "Usage: build_packages [-i|--ignore-failures]"
+                return 1
+                ;;
+        esac
+    done
+
+    if ! _validate_workspace; then
+        return 1
+    fi
+
+    if [ ! -f "$BUILD_ORDER_FILE" ]; then
+        echo "Error: No build order configured for workspace '${CURRENT_WORKSPACE}'. Use add_build_package to configure packages."
+        return 1
+    fi
+
+    if [ ! -s "$BUILD_ORDER_FILE" ]; then
+        echo "Error: Build order is empty for workspace '${CURRENT_WORKSPACE}'. Use add_build_package to add packages."
+        return 1
+    fi
+
+    current_dir=$(pwd)
+    build_failed=0
+
+    while IFS= read -r package_path; do
+        # Skip empty lines
+        [ -z "$package_path" ] && continue
+
+        echo "Building package: $package_path"
+        full_package_path="${WORKSPACE_PATH}/${package_path}"
+
+        if [ ! -d "$full_package_path" ]; then
+            echo "Error: Package directory does not exist: $full_package_path"
+            build_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+            continue
+        fi
+
+        cd "$full_package_path" || {
+            echo "Error: Could not change to directory: $full_package_path"
+            build_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+            continue
+        }
+
+        if ! brazil-build; then
+            echo "Error: Build failed for package: $package_path"
+            build_failed=1
+            if [ $IGNORE_FAILURES -eq 0 ]; then
+                cd "$current_dir"
+                return 1
+            fi
+        fi
+
+        cd "$current_dir"
+    done < "$BUILD_ORDER_FILE"
+
+    if [ $build_failed -eq 0 ]; then
+        echo "All packages built successfully in workspace '${CURRENT_WORKSPACE}'"
+        return 0
+    else
+        echo "Some packages failed to build in workspace '${CURRENT_WORKSPACE}'"
+        return 1
+    fi
+}

@@ -1,27 +1,58 @@
-export PERSONAL_ACCOUNT='760030034999'
+# Shared zsh configuration for all machines.
+# Machine/OS-specific "isms" live in os-darwin.zsh / os-linux.zsh, sourced below.
+
 if [ -f $HOME/.config/zsh/zsh_ps1 ]; then
 	source $HOME/.config/zsh/zsh_ps1
 fi
 export EDITOR=vim
 export CLICOLOR=1
 
-alias ls="ls --color=auto"
 alias la="ls -a"
-alias grep="grep --color=auto"
-alias register_with_aaa="/apollo/env/AAAWorkspaceSupport/bin/register_with_aaa.py"
+alias ll="ls -l"
 
-
-# brazil config
-if [ -f $HOME/.config/brazil/rc ]; then
-	source $HOME/.config/brazil/rc
-fi
-
-# Enable vim-mode
+# Enable vim-mode (KEYTIMEOUT speeds up the jk escape)
 export KEYTIMEOUT=20
 bindkey -v
 bindkey 'jk' vi-cmd-mode
 bindkey '^[[Z' reverse-menu-complete
 
-if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
-  export PATH="$HOME/.local/bin/:$PATH"
+# Enable reverse search
+bindkey '^R' history-incremental-search-backward
+
+# OS-specific configuration (brew/finch/notify vs AAA/PERSONAL_ACCOUNT, grep flags,
+# WORKSPACES_ROOT). Sourced early so PATH and env are set before brazil/rc.
+case "$(uname -s)" in
+  Darwin) [ -f "$HOME/.config/zsh/os-darwin.zsh" ] && source "$HOME/.config/zsh/os-darwin.zsh" ;;
+  Linux)  [ -f "$HOME/.config/zsh/os-linux.zsh"  ] && source "$HOME/.config/zsh/os-linux.zsh"  ;;
+esac
+
+# Brazil aliases/functions
+if [ -f "$HOME/.config/brazil/rc" ]; then
+	source $HOME/.config/brazil/rc
 fi
+
+# VPN aliases
+if [ -f "$HOME/.config/vpn/rc" ]; then
+	source $HOME/.config/vpn/rc
+fi
+
+# PATH additions
+if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
+	if [ -d "$HOME/.local/bin/" ]; then
+		export PATH="$HOME/.local/bin/:$PATH"
+	fi
+fi
+if [[ "$PATH" != *"$HOME/.toolbox/bin"* ]]; then
+	if [ -d "$HOME/.toolbox/bin" ]; then
+		export PATH="$HOME/.toolbox/bin:$PATH"
+	fi
+fi
+
+# kiro
+alias kc='kiro-cli'
+alias kc-config='kc --agent kiro-config-agent'
+
+unsetopt BEEP
+declare SSH_CERT="$HOME/.ssh/id_ecdsa-cert.pub"
+export DEV=true
+export PROMPT_FARM_COLLECTION_NAME="mkarpoffs-prompts"
