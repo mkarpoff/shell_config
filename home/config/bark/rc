@@ -27,7 +27,7 @@ function artDocLogs
 	else
 		stage=$3
 	fi
-	bark -cf=/home/$USER/.config/bark/bark_sync -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/DocumentGeneration/$stage/ArtDocumentGeneration.log -p /home/$USER/bark/artdoc -StartTime=$1 -EndTime=$2
+	bark -cf=$HOME/.config/bark/bark_sync -FetchLogs -LogGroupName=AmazonRecruitingTechnologies/DocumentGeneration/$stage/ArtDocumentGeneration.log -p /home/$USER/bark/artdoc -StartTime=$1 -EndTime=$2
 }
 
 function hireWebsiteLogs

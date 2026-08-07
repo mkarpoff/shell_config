@@ -16,11 +16,6 @@ if [ -f $HOME/.config/brazil/rc ]; then
 	source $HOME/.config/brazil/rc
 fi
 
-# bark config
-if [ -f $HOME/.config/bark/rc ]; then
-	source $HOME/.config/bark/rc
-fi
-
 # Enable vim-mode
 export KEYTIMEOUT=20
 bindkey -v

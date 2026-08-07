@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# pbcopy shim for Cloud Desktop -- sends stdin to the *local* Mac clipboard.
+#
+# Works by emitting an OSC 52 escape sequence, which the terminal emulator
+# (iTerm2) intercepts and applies to the macOS clipboard. Nothing is installed
+# on the Mac side; the bytes ride the existing ssh/tmux connection.
+#
+# Requires, on the iTerm2 side:
+#   Settings > General > Selection > "Applications in terminal may access
+#   clipboard"  (pref key AllowClipboardAccess, already enabled)
+#
+# When run inside tmux, the sequence must be wrapped in a DCS passthrough so
+# tmux forwards it to the outer terminal instead of consuming it. That in turn
+# needs `set -g allow-passthrough on` in tmux.conf.
+#
+# Usage:
+#   echo hello | pbcopy
+#   pbcopy < file.txt
+
+set -uo pipefail
+
+payload=$(base64 -w0)
+
+if [ -n "${TMUX:-}" ]; then
+	# Wrap in DCS tmux passthrough: ESC P tmux; <escaped-payload> ESC \
+	# Inner ESC bytes must be doubled per tmux's passthrough rules. There are
+	# none in base64 output, so a plain wrap is sufficient.
+	printf '\033Ptmux;\033\033]52;c;%s\007\033\\' "$payload"
+else
+	printf '\033]52;c;%s\007' "$payload"
+fi

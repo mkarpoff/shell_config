@@ -1,0 +1,8 @@
+# Sourced by zsh for ALL invocations, including non-interactive ssh commands
+# (e.g. `ssh host "tmux -CC ..."`), which never read .zshrc.
+#
+# The locale must be set here rather than in zshrc: iTerm2 launches tmux via a
+# non-interactive ssh command, and tmux refuses UTF-8 mode unless LANG ends in
+# .UTF-8. /etc/locale.conf declares en_US.UTF-8 but is only read by systemd,
+# so ssh sessions inherit an empty LANG.
+export LANG=en_US.UTF-8

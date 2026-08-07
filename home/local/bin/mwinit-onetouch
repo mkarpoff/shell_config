@@ -11,12 +11,15 @@ set my_user "$env(USER)"
 set my_service midway
 set my_password [exec $keyring get $my_service $my_user]
 set timeout -1
-spawn /usr/bin/env mwinit -o
+spawn /usr/bin/env mwinit -o -s
 match_max 100000
-expect -re "PIN for $my_user: "
+#expect -re "PIN for $my_user: "
+expect -re "Please enter your Midway PIN: "
 send -- "$my_password\r"
+#expect -exact "\r
+#Press the button on your YubiKey (you might have to hold it for about 3-5 seconds before your token produces a one-time password)...\r"
 expect -exact "\r
-Press the button on your YubiKey (you might have to hold it for about 3-5 seconds before your token produces a one-time password)...\r"
+Press your security key for 3-5 seconds to generate the one-time password (OTP)...\r"
 expect_user -re "(.*)\n"
 set my_yubikey "$expect_out(1,string)"
 send -- "$my_yubikey\r"
