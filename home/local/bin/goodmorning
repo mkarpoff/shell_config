@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+host_list=('mkarpoff.aka.corp.amazon.com')
+
+red=`tput setaf 1`
+green=`tput setaf 2`
+purple=`tput setaf 5`
+reset=`tput sgr0`
+
+echo "${purple}Starting Local Midway certification${reset}"
+if ! $HOME/.local/bin/mwinit-onetouch; then
+	echo "${red}Local Midway certification failed${reset}"
+	exit 1
+fi
+sleep 2
+echo "${green}Local Midway certification successful${reset}"
+
+
+for host in ${host_list[@]}; do
+	echo "${purple}Starting Remote ${host} Midway certification${reset}"
+	if ! ssh ${host} '$HOME/.local/bin/mwinit-onetouch'; then
+		echo "${red}Remote ${host} Midway certification failed${reset}"
+		exit 1
+	fi
+	sleep 2
+	echo "${green}Remote ${host} Midway certification successful${reset}"
+done
+

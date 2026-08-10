@@ -1,0 +1,143 @@
+#compdef brazil-build
+#compdef bb
+
+
+function _bb_cdk_list_templates() {
+    local templates
+    templates=(${(f)"$(ls -1 build/cdk.out/*.template.json 2>/dev/null | awk '{split($0,t,/\/|\./); print t[4]}')"})
+    _describe 'templates' templates
+}
+
+function _bb_cdk_deploy() {
+    _arguments \
+        '--app[Use the already build cdk.out for the build rather than re-building]:filename:_files -/' \
+        '--hotswap[Use hotswap deployment if possible]' \
+        '--hotswap-fallback[Attempts to perform a "hotswap" deployment, which skips CloudFormation and updates the resources directly, and falls back to a full deployment if that is not possible. Do not use this in production environments]' \
+        '--concurrency[Maximum number of simultaneous deployments]:number:_guard "[0-9]#"' \
+        '(-e --exclusively)'{-e,--exclusively}'[Only deploy requested stacks, do not include dependencies]' \
+        '--no-rollback[With this flag, failed deployments are not rolled back]' \
+        '--require-approval[You can specify the level of change that requires approval]:level:(never any-change broadening)' \
+        '(*)--all[Deploy all available stacks]' \
+        '(--all)*:stack:_bb_cdk_list_templates'
+}
+
+function _bb_cdk_diff() {
+    _arguments \
+        '--app=[CDK app output]:filename:_files -/' \
+        '*:stack:_bb_cdk_list_templates'
+}
+
+function _bb_cdk() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C \
+        '1: :->cdk_cmd' \
+        '*:: :->cdk_args'
+
+    case $state in
+        cdk_cmd)
+            local commands=(
+                'list:List all stacks in the app'
+                'synthesize:Synthesize and print the CloudFormation template'
+                'bootstrap:Deploy the CDK toolkit stack'
+                'deploy:Deploy the stack'
+                'destroy:Destroy the stack'
+								'drift:Compare deployed stack with actual resources to detect drift'
+                'diff:Compare deployed stack with current state'
+                'metadata:Show metadata about the stack'
+                'init:Create a new CDK project'
+                'context:Manage cached context'
+                'docs:Open CDK documentation'
+                'doctor:Check your CDK project'
+            )
+            _describe -t commands 'cdk command' commands
+            ;;
+        cdk_args)
+            case ${line[1]} in
+								drift)
+                    _bb_cdk_diff
+                    ;;
+                diff)
+                    _bb_cdk_diff
+                    ;;
+                destroy)
+                    _bb_cdk_list_templates
+                    ;;
+                deploy)
+                    _bb_cdk_deploy
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+function _bb_cdk_base() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments -C \
+        '1: :->cmd' \
+        '*:: :->args'
+
+    case $state in
+        cmd)
+            local commands=(
+                'cdk:CDK commands'
+                'deploy\:bootstrap:Deploy bootstrap resources'
+                'deploy\:pipeline:Deploy pipeline'
+                'diff\:pipeline:Show pipeline differences'
+                'bootstrap:Bootstrap resources'
+                'clean:Clean build artifacts'
+            )
+            _describe -t commands 'brazil-build command' commands
+            ;;
+        args)
+            case ${line[1]} in
+                cdk)
+                    _bb_cdk
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+function _brazil_build() {
+    local ret=1
+
+    if [[ -f "cdk.json" ]]; then
+        _bb_cdk_base "$@"
+        ret=$?
+    fi
+
+    if [[ -f "build.gradle" || -f "build.gradle.kts" ]]; then
+        # Try multiple ways to load gradle completion
+        if ! command -v _gradle >/dev/null 2>&1; then
+            # Try loading from brew if installed
+            if [[ -f /usr/local/share/zsh/site-functions/_gradle ]]; then
+                source /usr/local/share/zsh/site-functions/_gradle
+            elif [[ -f /opt/homebrew/share/zsh/site-functions/_gradle ]]; then
+                source /opt/homebrew/share/zsh/site-functions/_gradle
+            # Try oh-my-zsh location
+            elif [[ -f $ZSH/plugins/gradle/_gradle ]]; then
+                source $ZSH/plugins/gradle/_gradle
+            else
+                autoload -U _gradle
+            fi
+        fi
+
+        # If we now have _gradle function, use it
+        if command -v _gradle >/dev/null 2>&1; then
+            # Remove 'brazil-build' or 'bb' from arguments to pass to gradle
+            shift words
+            (( CURRENT-- ))
+            _gradle "$@"
+            ret=$?
+        fi
+    fi
+
+    return $ret
+}
+
+compdef _brazil_build brazil-build
+compdef _brazil_build bb

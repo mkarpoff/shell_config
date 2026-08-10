@@ -1,0 +1,8 @@
+#! /usr/bin/env sh
+if [ -z "$1" ]; then
+	targ="devdesk"
+else
+	targ="$1"
+fi
+
+ssh -t "$targ" "/apollo/env/envImprovement/bin/tmux -CC -u attach || /apollo/env/envImprovement/bin/tmux -CC -u"	
