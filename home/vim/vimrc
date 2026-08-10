@@ -10,8 +10,17 @@ set backspace=2
 
 " Allow backspace in insert mode
 
-" Set the shell to run bash
-set shell=/usr/local/bin/zsh
+" MacVim GUI font (macOS only)
+if has("gui_running") && has("gui_macvim")
+  set guifont=Monaco\ for\ Powerline:h12
+endif
+
+" Set the shell (per-OS: /bin/zsh on macOS, /usr/local/bin/zsh on dev-desktop)
+if has('mac')
+  set shell=/bin/zsh
+else
+  set shell=/usr/local/bin/zsh
+endif
 
 " To hell with visual and audio bell
 set belloff=all

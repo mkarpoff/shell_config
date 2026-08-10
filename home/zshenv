@@ -9,3 +9,6 @@ export LANG=en_US.UTF-8
 
 # Rust/cargo environment (macOS Mac has this; guard so it's a no-op where absent)
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# Added by AIM CLI
+export PATH="$HOME/.aim/mcp-servers:$PATH"

@@ -26,6 +26,8 @@
     {"name":"home/zshenv",                    "target":"~/.zshenv"},
     {"name":"home/tmux/tmux.conf",            "target":"~/.tmux.conf"},
     {"name":"home/tmux/plugins.conf",         "target":"~/.tmux/plugins.conf"},
+    {"name":"home/tmux/os-darwin.conf",       "target":"~/.tmux/os-darwin.conf"},
+    {"name":"home/tmux/os-linux.conf",        "target":"~/.tmux/os-linux.conf"},
     {"name":"home/tmux/theme",                "target":"~/.tmux/theme"},
     {"name":"home/vim/vimrc",                 "target":"~/.vim/vimrc"},
     {"name":"home/vim/vim-build",             "target":"~/.local/bin/vim-build"},
