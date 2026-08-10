@@ -1,30 +1,119 @@
 #! /usr/bin/env expect
 
-# USSAGE: $mwinit-onetouch
+# USAGE: mwinit-onetouch
 #
-# If password isn't set:
+# Cross-platform Midway one-touch auth. Behaviour differs per OS because the
+# credential store and mwinit prompts differ:
+#   macOS       -> password in the login Keychain (security), Touch-ID prompts
+#   dev-desktop -> password via the `keyring` binary, security-key OTP prompts
 #
-#        keyring set midway <USERNAME>
+# Set the stored password first:
+#   macOS:        security add-generic-password -a "$USER" -s Midway -w
+#   dev-desktop:  keyring set midway "$USER"
 
-set keyring "$env(HOME)/.local/bin/keyring"
-set my_user "$env(USER)"
-set my_service midway
-set my_password [exec $keyring get $my_service $my_user]
-set timeout -1
-spawn /usr/bin/env mwinit -o -s
-match_max 100000
-#expect -re "PIN for $my_user: "
-expect -re "Please enter your Midway PIN: "
-send -- "$my_password\r"
-#expect -exact "\r
-#Press the button on your YubiKey (you might have to hold it for about 3-5 seconds before your token produces a one-time password)...\r"
-expect -exact "\r
+set os [exec uname -s]
+
+if {$os eq "Darwin"} {
+    # ---------- macOS: Keychain + Touch ID, with retry loop ----------
+    proc ensure_keychain_password {user service} {
+        if { [catch {exec security find-generic-password -a $user -s $service -w} result] } {
+            puts "No password found for $service. Will need to be entered into Midway this time"
+            return ""
+        } else {
+            return $result
+        }
+    }
+
+    proc authenticate_mwinit {user service} {
+        set timeout 60
+        set max_attempts 3
+        set success 0
+        set attempt 1
+        set password [ensure_keychain_password $user $service]
+
+        spawn /usr/local/bin/mwinit -s -f
+
+        while {$attempt <= $max_attempts} {
+            expect {
+                timeout {
+                    puts "Timeout waiting for PIN prompt"
+                    exit 1
+                }
+                -re "Enter the on-token PIN of your security key.*: " {
+                    if {$password eq ""} {
+                        stty -echo
+                        flush stdout
+                        gets stdin password
+                        stty echo
+                        puts ""
+                    }
+                    send -- "$password\r"
+                }
+            }
+
+            expect {
+                timeout {
+                    puts "Timeout waiting for response"
+                    exit 1
+                }
+                -exact "Touch the security key..." {
+                    stty -echo
+                    expect_user -re "(.*)\n"
+                    expect {
+                        "Successfully authenticated using WebAuthN" {
+                            set success 1
+                            if {[catch {exec security find-generic-password -a $user -s $service -w}]} {
+                                exec security add-generic-password -a $user -s $service -w $password
+                            }
+                            break
+                        }
+                        "error" {
+                            puts "Authentication failed"
+                            exit 1
+                        }
+                    }
+                }
+                -re "Incorrect on-token PIN" {
+                    set password ""
+                    incr attempt
+                    continue
+                }
+            }
+        }
+
+        if {$success} {
+            expect {
+                "Successfully signed SSH public key" {
+                    puts "\nAuthentication successful!"
+                }
+            }
+        } else {
+            puts "Maximum attempts reached"
+            exit 1
+        }
+    }
+
+    set user [exec whoami]
+    authenticate_mwinit $user "Midway"
+
+} else {
+    # ---------- dev-desktop (Linux): keyring + security-key OTP ----------
+    set keyring "$env(HOME)/.local/bin/keyring"
+    set my_user "$env(USER)"
+    set my_service midway
+    set my_password [exec $keyring get $my_service $my_user]
+    set timeout -1
+    spawn /usr/bin/env mwinit -o -s
+    match_max 100000
+    expect -re "Please enter your Midway PIN: "
+    send -- "$my_password\r"
+    expect -exact "\r
 Press your security key for 3-5 seconds to generate the one-time password (OTP)...\r"
-expect_user -re "(.*)\n"
-set my_yubikey "$expect_out(1,string)"
-send -- "$my_yubikey\r"
-expect -exact "\r
+    expect_user -re "(.*)\n"
+    set my_yubikey "$expect_out(1,string)"
+    send -- "$my_yubikey\r"
+    expect -exact "\r
 Now please wait a few seconds while the server processes your login request\r
 Successfully authenticated using yubico otp, session cookie saved in /Users/$my_user/.midway/cookie\r
 Successfully signed SSH public key /Users/$my_user/.ssh/id_rsa.pub. The SSH certificate saved in /Users/$my_user/.ssh/id_rsa-cert.pub\n"
-
+}
