@@ -62,12 +62,6 @@ export LESS_TERMCAP_ue
 export LESS_TERMCAP_us
 
 # enable custom prompt
-if [[ -f ~/.bash_ps1 ]]; then
-    . ~/.bash_ps1
-fi
-
-# If is WSL system
-if [[ -d /mnt/c/Windows/System32/ ]]; then
-	WINBIN="/mnt/c/Users/mkarpoff/local/bin"
-	alias clip="$WINBIN/clip.exe"
+if [[ -f ~/.config/bash/bash_ps1 ]]; then
+    . ~/.config/bash/bash_ps1
 fi

@@ -1,0 +1,11 @@
+#! /usr/bin/env sh
+# Attach (or start) a tmux -CC session on a remote host for iTerm2 integration.
+# SSH_TMUX_REMOTE_BIN overrides the remote tmux binary (default: tmux on the remote PATH).
+if [ -z "$1" ]; then
+	targ="devdesk"
+else
+	targ="$1"
+fi
+rt="${SSH_TMUX_REMOTE_BIN:-tmux}"
+
+ssh -t "$targ" "$rt -CC -u attach || $rt -CC -u"

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Pull this config repo and an optional private overlay repo, then (re)link both.
+#
+# Usage: shell-config-sync [--no-pull]
+#
+# The overlay repo's git URL is read from ~/.config/shell_config.private-remote (one line,
+# kept outside any repo). It is cloned to ~/.config/shell_config-private on first run and
+# must contain its own files.json in the same format as this repo's.
+set -euo pipefail
+
+PUB="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || python3 -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' "${BASH_SOURCE[0]}")")" && pwd)"
+PRIV="${SHELL_CONFIG_PRIVATE_DIR:-$HOME/.config/shell_config-private}"
+REMOTE_FILE="$HOME/.config/shell_config.private-remote"
+PULL=1
+[ "${1:-}" = "--no-pull" ] && PULL=0
+
+if [ "$PULL" = 1 ]; then
+	echo "==> Pulling $PUB"
+	git -C "$PUB" pull --ff-only || echo "  ! pull failed for $PUB (continuing with local copy)" >&2
+fi
+
+if [ -s "$REMOTE_FILE" ]; then
+	url="$(head -1 "$REMOTE_FILE")"
+	if [ ! -d "$PRIV/.git" ]; then
+		echo "==> Cloning overlay into $PRIV"
+		git clone "$url" "$PRIV"
+	elif [ "$PULL" = 1 ]; then
+		echo "==> Pulling $PRIV"
+		git -C "$PRIV" pull --ff-only || echo "  ! pull failed for $PRIV (continuing with local copy)" >&2
+	fi
+fi
+
+# zsh reads ~/.zshrc, which installers also append to, so it stays a local file that
+# sources the shared config rather than a symlink.
+if ! grep -qs 'config/zsh/zshrc' "$HOME/.zshrc"; then
+	echo "==> Adding shared zshrc to ~/.zshrc"
+	printf '%s\n' 'source $HOME/.config/zsh/zshrc' >> "$HOME/.zshrc"
+fi
+
+echo "==> Linking $PUB"
+python3 "$PUB/linkall.py" --yes
+if [ -f "$PRIV/files.json" ]; then
+	echo "==> Linking $PRIV"
+	python3 "$PUB/linkall.py" --manifest "$PRIV/files.json" --yes
+fi

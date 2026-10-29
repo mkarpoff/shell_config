@@ -10,8 +10,18 @@ set backspace=2
 
 " Allow backspace in insert mode
 
-" Set the shell to run bash
-set shell=/usr/local/bin/zsh
+" MacVim GUI font (macOS only)
+if has("gui_running") && has("gui_macvim")
+  set guifont=Monaco\ for\ Powerline:h12
+endif
+
+" Set the shell: /bin/zsh on macOS, otherwise whichever zsh is first on PATH
+" (falls back to vim's default when zsh isn't installed)
+if has('mac')
+  set shell=/bin/zsh
+elseif executable('zsh')
+  let &shell = exepath('zsh')
+endif
 
 " To hell with visual and audio bell
 set belloff=all
@@ -102,7 +112,7 @@ noremap <c-p> <esc>:call PasteToggle()<cr>
 
 " TMUX Navigation plugin
 if exists('$TMUX')
-	packadd vim-tmux-navigator
+	silent! packadd vim-tmux-navigator
 endif
 
 " Persistent file undo across reopening vim
@@ -191,12 +201,14 @@ augroup vimrc
 	autocmd BufNewFile,BufRead *.x86 set filetype=gas
 	autocmd BufNewFile,BufRead *.log set filetype=log
 	autocmd BufNewFile,BufRead *.h set filetype=cpp
-
 augroup END
 
 " Assume I want syntax highlighting
 colorscheme desert-mkarpoff
 syntax enable
+" Let Vim use whichever regex engine is most effective
+" This allows it to use the cheapper engine when cost is too high
+set regexpengine=0
 
 let g:airline_powerline_fonts=1
 

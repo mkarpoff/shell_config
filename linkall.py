@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 from pathlib import Path
+import argparse
 import json
 import sys
 if sys.version_info[0] < 3 or sys.version_info[1] < 5:
@@ -8,22 +9,33 @@ if sys.version_info[0] < 3 or sys.version_info[1] < 5:
 name="name"
 target="target"
 
-with open("files.json") as data_files:
+parser = argparse.ArgumentParser(description="Symlink config files listed in a manifest.")
+parser.add_argument("--manifest", default=str(Path(__file__).resolve().parent / "files.json"),
+                    help="files.json to link; names resolve relative to its directory (default: this repo)")
+parser.add_argument("--yes", action="store_true",
+                    help="replace dangling or mis-pointed symlinks without asking (regular files are never touched)")
+args = parser.parse_args()
+manifest = Path(args.manifest).expanduser().resolve()
+
+with open(manifest) as data_files:
     files = json.load(data_files)
 
 
 def link(filename, target):
     target_path = Path(target).expanduser()
-    source_path = Path(filename).expanduser()
+    source_path = (manifest.parent / filename).expanduser()
     if (not source_path.exists()):
         print("[%-30s] -> [%-40s] Not linked. Source missing" %(source_path, target_path))
         return
-    if (target_path.exists()):
+    if (target_path.is_symlink() and target_path.resolve() == source_path.resolve()):
+        print("[%-30s] -> [%-40s] Already linked" %(source_path, target_path))
+        return
+    if (target_path.exists() and not (args.yes and target_path.is_symlink())):
         print("[%-30s] -> [%-40s] Not linked. Target exists" %(source_path, target_path))
         return
     if (target_path.is_symlink()):
         print("[%-30s] -> [%-40s] Target exist and is symlink" %(source_path, target_path))
-        if (query_yes_no("Remove and remake? ")):
+        if (args.yes or query_yes_no("Remove and remake? ")):
             target_path.unlink()
             print("[%-30s] -> [%-40s] Target old link removed" %(source_path, target_path))
         else:

@@ -23,7 +23,7 @@ NEWLINE=$'\n'
 
 # Check if 256 color pallet is available
 typeset -A colors
-if (( $(tput colors) == 256 )); then
+if (( ${$(tput colors 2>/dev/null):-0} >= 256 )); then
 	colors=(
 		TERMBLKF %f
 		TERMBLKB %k
@@ -156,8 +156,18 @@ git_prompt() {
 	echo "$colors[YELB]$syms[RA]$colors[BLKF] $syms[BRANCH]${git_repo_name}:${branch}$(git_dirty &)$colors[BLKF]$(git_stash &)$(git_ahead &)$(git_behind &)$colors[YELF]"
 }
 
+typeset -ga ps1_segment_functions
+
 precmd() {
 	local branch venv cpath
+
+	# Extra leading segments: overlays append function names to ps1_segment_functions
+	# (each prints a pre-coloured segment or nothing).
+	local extra_s="" fn
+	for fn in $ps1_segment_functions; do
+		extra_s+="$($fn)"
+	done
+
 
 	# Check github stuff
 	branch=$(git_prompt &)
@@ -177,10 +187,9 @@ precmd() {
 		cpath="$colors[TERMBLKB]$syms[RA]$NEWLINE$colors[GRYF]$colors[GRYB] $cpath"
 	fi
 
-	PRE_LINE="${shlvl}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$colors[BLUF]$syms[RA]$colors[TERMBLKF]$colors[TERMBLKB] "
+	PRE_LINE="${shlvl}${extra_s}${usrin}${branch}${venv}${cpath}$colors[TERMBLKB]$syms[RA]$colors[TERMBLKF]$colors[TERMBLKB] "
 	print -P "$PRE_LINE"
 }
 
 PS1="${ps1_2}"
 export PS1
-

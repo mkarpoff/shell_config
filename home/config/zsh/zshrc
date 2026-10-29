@@ -1,0 +1,57 @@
+# Shared zsh configuration for all machines.
+# Machine/OS-specific "isms" live in os-darwin.zsh / os-linux.zsh, sourced below.
+# Machine- or employer-specific additions go in ~/.config/zsh/conf.d/*.zsh (sourced last).
+
+if [ -f $HOME/.config/zsh/zsh_ps1 ]; then
+	source $HOME/.config/zsh/zsh_ps1
+fi
+export EDITOR=vim
+export CLICOLOR=1
+
+alias la="ls -a"
+alias ll="ls -l"
+
+# Enable vim-mode (KEYTIMEOUT speeds up the jk escape)
+export KEYTIMEOUT=20
+bindkey -v
+bindkey 'jk' vi-cmd-mode
+bindkey '^[[Z' reverse-menu-complete
+
+# Enable reverse search
+bindkey '^R' history-incremental-search-backward
+
+# OS-specific configuration (brew/finch/notify, grep flags). Sourced early so PATH
+# and env are set before conf.d.
+case "$(uname -s)" in
+  Darwin) [ -f "$HOME/.config/zsh/os-darwin.zsh" ] && source "$HOME/.config/zsh/os-darwin.zsh" ;;
+  Linux)  [ -f "$HOME/.config/zsh/os-linux.zsh"  ] && source "$HOME/.config/zsh/os-linux.zsh"  ;;
+esac
+
+# PATH additions
+if [[ "$PATH" != *"$HOME/.local/bin/"* ]]; then
+	if [ -d "$HOME/.local/bin/" ]; then
+		export PATH="$HOME/.local/bin/:$PATH"
+	fi
+fi
+
+# kiro
+alias kc='kiro-cli'
+alias kc-config='kc --agent kiro-config-agent'
+
+# Completions
+autoload -Uz compinit && compinit
+completions=(op)
+for cmd in $completions; do
+	if (( $+commands[$cmd] )); then
+		source =($cmd completion zsh)
+	fi
+done
+
+unsetopt BEEP
+export DEV=true
+
+# Local overlays (e.g. a private config repo). Sourced after compinit so they can
+# register completions.
+for f in $HOME/.config/zsh/conf.d/*.zsh(N); do
+	source "$f"
+done
