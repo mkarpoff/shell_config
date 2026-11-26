@@ -17,7 +17,6 @@
     {"name": "home/tmux/theme", "target": "~/.tmux/theme"},
     {"name": "home/vim/vimrc", "target": "~/.vim/vimrc"},
     {"name": "home/vim/vim-build", "target": "~/.local/bin/vim-build"},
-    {"name": "home/vim/vim_packages", "target": "~/.vim/vim_packages"},
     {"name": "home/vim/after/", "target": "~/.vim/after"},
     {"name": "home/vim/_git-plugins-opt/", "target": "~/.vim/pack/_git-plugins-opt"},
     {"name": "home/vim/colors/", "target": "~/.vim/colors"},
