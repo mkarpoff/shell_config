@@ -11,6 +11,15 @@ scriptencoding utf-8
 " Fancy set: the airline symbols (≡ line, Þ paste, § spell, ∄ not on disk).
 " Plain set: ASCII (ln, PASTE, SPELL, [new]).
 "
+" Separators toggle: g:statusline_powerline (1 = powerline arrows, 0 = plain).
+" Independent of g:statusline_fancy. Unset means 0. Powerline mode needs a
+" powerline-patched font and &encoding utf-8; when &encoding is not utf-8 it
+" falls back to plain. Also read at every draw, so change it live with:
+"   :let g:statusline_powerline = 1 | redrawstatus! | redrawtabline
+" Arrows (U+E0B0..U+E0B3) use StlT_<from>_<to> groups whose fg/bg are the two
+" sections' colors, rebuilt with the other groups on :colorscheme. Applies to
+" the status line and the tabline.
+"
 " Git branch: read with one `git` call per buffer, cached in
 " b:statusline_branch and refreshed on BufEnter, BufWritePost and
 " FocusGained only. Empty when the file is not in a repo or git is missing.
@@ -58,12 +67,43 @@ function! s:Colors() abort
   return g
 endfunction
 
+" Name of the powerline transition group from section a to section b.
+function! s:TGroup(a, b) abort
+  return 'StlT_' . a:a[3:] . '_' . a:b[3:]
+endfunction
+
 function! s:Highlight() abort
-  for [grp, v] in items(s:Colors())
+  let colors = s:Colors()
+  for [grp, v] in items(colors)
     let attr = v[4] ? 'bold' : 'NONE'
     execute 'highlight' grp 'guifg=' . v[0] 'guibg=' . v[1]
           \ 'ctermfg=' . v[2] 'ctermbg=' . v[3]
           \ 'gui=' . attr 'cterm=' . attr 'term=' . attr
+  endfor
+  " Transition groups: fg = a's background, bg = b's background, for every
+  " pair of sections that can sit next to each other.
+  let families = [['StlTabSel', 'StlTab', 'StlTabFill'],
+        \ ['StlInactiveA', 'StlInactiveB', 'StlInactiveC']]
+  for m in ['Normal', 'Insert', 'Visual', 'Replace']
+    call add(families, map(['A', 'B', 'C', 'Y'], '"Stl" . m . v:val') + ['StlPaste'])
+  endfor
+  let s:samebg = {}
+  for fam in families
+    for a in fam
+      for b in fam
+        if a ==# b
+          continue
+        endif
+        let [ca, cb] = [colors[a], colors[b]]
+        let t = s:TGroup(a, b)
+        if ca[1] ==# cb[1] || ca[3] ==# cb[3]
+          let s:samebg[t] = 1   " a solid arrow would be invisible
+        endif
+        execute 'highlight' t 'guifg=' . ca[1] 'guibg=' . cb[1]
+              \ 'ctermfg=' . ca[3] 'ctermbg=' . cb[3]
+              \ 'gui=NONE cterm=NONE term=NONE'
+      endfor
+    endfor
   endfor
 endfunction
 
@@ -80,6 +120,44 @@ function! s:Symbols() abort
     return {'linenr': '≡', 'paste': 'Þ', 'spell': '§', 'notexists': '∄'}
   endif
   return {'linenr': 'ln', 'paste': 'PASTE', 'spell': 'SPELL', 'notexists': '[new]'}
+endfunction
+
+" Powerline glyphs, or {} for plain separators.
+function! s:Powerline() abort
+  if !get(g:, 'statusline_powerline', 0) || &encoding !=# 'utf-8'
+    return {}
+  endif
+  return {'l': nr2char(0xE0B0), 'lthin': nr2char(0xE0B1),
+        \ 'r': nr2char(0xE0B2), 'rthin': nr2char(0xE0B3)}
+endfunction
+
+" Join [group, text] sections. prev is the group before the first section,
+" side is 'l' (arrows point right) or 'r' (arrows point left), plainsame is
+" the separator between two sections of the same group in plain mode.
+" Returns [string, last group].
+function! s:Join(segs, prev, side, pl, plainsame) abort
+  let s = ''
+  let prev = a:prev
+  for [g, text] in a:segs
+    if prev ==# g && s ==# ''
+      " Same group carried over from the other side of %=: no separator.
+      let s .= '%#' . g . '#' . text
+    elseif prev ==# g
+      let s .= '%#' . g . '#' . (empty(a:pl) ? a:plainsame : a:pl[a:side . 'thin']) . text
+    elseif prev !=# '' && !empty(a:pl)
+      let t = a:side ==# 'l' ? s:TGroup(prev, g) : s:TGroup(g, prev)
+      if has_key(get(s:, 'samebg', {}), t)
+        let s .= '%#' . prev . '#' . a:pl[a:side . 'thin']
+      else
+        let s .= '%#' . t . '#' . a:pl[a:side]
+      endif
+      let s .= '%#' . g . '#' . text
+    else
+      let s .= '%#' . g . '#' . text
+    endif
+    let prev = g
+  endfor
+  return [s, prev]
 endfunction
 
 " ---------------------------------------------------------------- git
@@ -127,33 +205,43 @@ function! StatuslineBuild(active) abort
   let enc = (&fileencoding !=# '' ? &fileencoding : &encoding)
         \ . (&fileformat !=# 'unix' ? '[' . &fileformat . ']' : '')
 
+  let pl = s:Powerline()
   if !a:active
-    return '%#StlInactiveA# %f%m%r %#StlInactiveC#%=%#StlInactiveB# %3p%% '
-          \ . sym.linenr . ' %l/%L :%v '
+    let [l, last] = s:Join([['StlInactiveA', ' %f%m%r '], ['StlInactiveC', '']],
+          \ '', 'l', pl, '|')
+    let [r, last] = s:Join([['StlInactiveB', ' %3p%% ' . sym.linenr . ' %l/%L :%v ']],
+          \ last, 'r', pl, '|')
+    return l . '%=' . r
   endif
 
   let m = get(s:mode_names, mode()[0], ['NORMAL', 'Normal'])
   let g = 'Stl' . m[1]
-  let s = '%#' . g . 'A# ' . m[0] . ' '
+  let left = [[g . 'A', ' ' . m[0] . ' ']]
   if &paste
-    let s .= '%#StlPaste# ' . sym.paste . ' '
+    call add(left, ['StlPaste', ' ' . sym.paste . ' '])
   endif
   if &spell
-    let s .= '%#' . g . 'A#| ' . sym.spell . ' ' . s:Esc(&spelllang) . ' '
+    call add(left, [g . 'A', ' ' . sym.spell . ' ' . s:Esc(&spelllang) . ' '])
   endif
-  let s .= '%#' . g . 'B#' . (branch !=# '' ? ' ' . branch . ' ' : '')
-  let s .= '%#' . g . 'C# %f%m%r' . (missing ? ' ' . sym.notexists : '') . ' '
-  let s .= '%='
-  let s .= (&filetype !=# '' ? s:Esc(&filetype) . ' | ' : '')
-  let s .= '%#' . g . 'Y# ' . s:Esc(enc) . ' '
-  let s .= '%#' . g . 'A# %3p%% ' . sym.linenr . ' %l/%L :%v '
-  return s
+  if branch !=# ''
+    call add(left, [g . 'B', ' ' . branch . ' '])
+  endif
+  call add(left, [g . 'C', ' %f%m%r' . (missing ? ' ' . sym.notexists : '') . ' '])
+  let right = []
+  if &filetype !=# ''
+    call add(right, [g . 'C', empty(pl) ? s:Esc(&filetype) . ' | ' : ' ' . s:Esc(&filetype) . ' '])
+  endif
+  call add(right, [g . 'Y', ' ' . s:Esc(enc) . ' '])
+  call add(right, [g . 'A', ' %3p%% ' . sym.linenr . ' %l/%L :%v '])
+  let [l, last] = s:Join(left, '', 'l', pl, '|')
+  let [r, last] = s:Join(right, last, 'r', pl, '|')
+  return l . '%=' . r
 endfunction
 
 " ---------------------------------------------------------------- tabline
 " Numbered tabs, like airline's tab_nr_type=1.
 function! StatuslineTabline() abort
-  let s = ''
+  let segs = []
   for t in range(1, tabpagenr('$'))
     let bufs = tabpagebuflist(t)
     let name = bufname(bufs[tabpagewinnr(t) - 1])
@@ -164,10 +252,11 @@ function! StatuslineTabline() abort
         let modified = 1
       endif
     endfor
-    let s .= (t == tabpagenr() ? '%#StlTabSel#' : '%#StlTab#')
-    let s .= '%' . t . 'T ' . t . ' ' . s:Esc(name) . (modified ? ' +' : '') . ' '
+    call add(segs, [t == tabpagenr() ? 'StlTabSel' : 'StlTab',
+          \ '%' . t . 'T ' . t . ' ' . s:Esc(name) . (modified ? ' +' : '') . ' '])
   endfor
-  return s . '%#StlTabFill#%T'
+  call add(segs, ['StlTabFill', '%T'])
+  return s:Join(segs, '', 'l', s:Powerline(), '')[0]
 endfunction
 
 " ---------------------------------------------------------------- wiring
