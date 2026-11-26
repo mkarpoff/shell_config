@@ -5,8 +5,6 @@ alias ll='ls -lh'
 alias ls='ls --color=auto'
 alias lss='ls'
 #alias tmux='TERM=tmux-256color tmux'
-#alias make="global_make"
-
 
 export EDITOR=vim
 export MANPATH="$HOME/.local/share/man:$MANPATH"
@@ -33,17 +31,6 @@ activate_func() {
 	alias pm='python manage.py'
 }
 alias activate='activate_func'
-
-global_make() {
-	if [[ -e 'GNUmakefile'  ||  -e 'makefile'  ||  -e 'Makefile' ]] ; then
-		make -j "$@"
-	elif  [[ $PWD == *'/home/mkarpoff/UVa'* ]]; then
-		echo 'Making using UVa makefile'
-		/usr/bin/make -f /home/mkarpoff/UVa/Support/Makefile "$*"
-	else
-		make --file=~/.global_makefile "$@"
-	fi
-}
 
 LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode - red
 LESS_TERMCAP_md=$(printf '\e[01;35m') # enter double-bright mode - bold, magenta

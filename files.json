@@ -1,7 +1,6 @@
 [
     {"name": "home/inputrc", "target": "~/.inputrc"},
     {"name": "home/screenrc", "target": "~/.screenrc"},
-    {"name": "home/global_makefile", "target": "~/.global_makefile"},
     {"name": "home/ideavimrc", "target": "~/.ideavimrc"},
     {"name": "home/config/bash/bash_ps1", "target": "~/.config/bash/bash_ps1"},
     {"name": "home/config/bash/bashrc", "target": "~/.config/bash/bashrc"},
