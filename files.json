@@ -20,8 +20,6 @@
     {"name": "home/vim/extras.vim", "target": "~/.vim/extras.vim"},
     {"name": "home/vim/colors/", "target": "~/.vim/colors"},
     {"name": "home/local/bin/pbcopy", "target": "~/.local/bin/pbcopy"},
-    {"name": "home/local/bin/lumberjack.py", "target": "~/.local/bin/lumberjack"},
-    {"name": "home/local/bin/scream", "target": "~/.local/bin/scream"},
     {"name": "home/local/bin/ssh-tmux", "target": "~/.local/bin/ssh-tmux"},
     {"name": "sync", "target": "~/.local/bin/shell-config-sync"}
 ]
