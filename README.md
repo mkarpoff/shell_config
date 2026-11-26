@@ -32,7 +32,5 @@ The overlay plugs into these hook points:
 ## Dependancy
 I do use [powerline fonts](https://github.com/powerline/fonts) symbols in both my vim setup for [vim-airline](https://github.com/vim-airline/vim-airline) and for my bash_ps1.
 
-I have a build script in here for building [vim 8.0](https://github.com/vim/vim) from source. It's called vim-build.
-
 #Issues
 God knows why you are here but if you post to the issues I check github pretty often... I have no life... :'(

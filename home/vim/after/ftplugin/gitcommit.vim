@@ -1,2 +1,0 @@
-" git commit messages
-SCon

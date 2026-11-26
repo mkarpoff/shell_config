@@ -1,215 +1,145 @@
-" Environment settings
-"""
+" Minimal portable vimrc, derived from ~/.vim/vimrc (mkarpoff).
+" Stock vim 7.4+ / neovim, no plugins, no external tools.
+" Copy to ~/.vimrc (or ~/.config/nvim/init.vim for neovim).
 
-" I don't care about vi compatability
 set nocompatible
+set backspace=2              " same as indent,eol,start
 
-" Turn on mouse
-" set mouse=a
-set backspace=2
-
-" Allow backspace in insert mode
-
-" MacVim GUI font (macOS only)
-if has("gui_running") && has("gui_macvim")
-  set guifont=Monaco\ for\ Powerline:h12
+" Quiet: no bell, audible or visual
+if exists('+belloff')
+  set belloff=all
+else
+  set noerrorbells visualbell t_vb=
 endif
 
-" Set the shell: /bin/zsh on macOS, otherwise whichever zsh is first on PATH
-" (falls back to vim's default when zsh isn't installed)
-if has('mac')
-  set shell=/bin/zsh
-elseif executable('zsh')
-  let &shell = exepath('zsh')
+if has('multi_byte')
+  set encoding=utf-8
 endif
 
-" To hell with visual and audio bell
-set belloff=all
-
-" Persistent undo history
-set undofile
-set undodir=$HOME/.vim/undo
-set undolevels=1000
-set undoreload=10000
-
-" Move viminfo to .vim folder
-set viminfo+=n$HOME/.vim/info
-
-" General indenting rules
+" Indenting
 set autoindent
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
-
-set encoding=utf-8
-set termencoding=utf-8
-
-if &term == 'xterm-256color'
-	let &t_SI = "\<Esc>[1 q"
-	let &t_SR = "\<Esc>[1 q"
-	let &t_EI = "\<Esc>[1 q"
-endif
+set tabstop=2 softtabstop=2 shiftwidth=2
 
 filetype plugin on
+syntax enable
 
-" set the path to be the vim folder
-set path=~/.vim/**
+" Persistent undo, kept in ~/.vim/undodir (created on first run)
+if has('persistent_undo')
+  if !isdirectory($HOME . '/.vim/undodir') && exists('*mkdir')
+    call mkdir($HOME . '/.vim/undodir', 'p')
+  endif
+  set undofile
+  set undodir=$HOME/.vim/undodir
+  set undolevels=1000 undoreload=10000
+endif
 
-command! PathAdd set path+=$PWD/**
+" viminfo in ~/.vim (neovim uses shada instead)
+if !has('nvim') && isdirectory($HOME . '/.vim')
+  set viminfo+=n$HOME/.vim/info
+endif
 
-
-" Navigation Hotkeys for speeding usage
+" Key timeouts and mappings
 set timeoutlen=1000 ttimeoutlen=10
 noremap! jk <Esc>
 noremap! Jk <Esc>
 noremap! jK <Esc>
 noremap! JK <Esc>
 
-noremap ww <c-w>
-tnoremap ww <c-w>
-tnoremap ww; <c-w>:
-
-map <M-h> <c-w> h
-map <M-j> <c-w> j
-map <M-k> <c-w> k
-map <M-l> <c-w> l
+noremap ww <C-w>
+if has('terminal')
+  tnoremap ww <C-w>
+  tnoremap ww; <C-w>:
+endif
 
 noremap ; :
 
-execute "set <M-h>=\eh"
-execute "set <M-j>=\ej"
-execute "set <M-k>=\ek"
-execute "set <M-l>=\el"
-map <A-h> <c-w>h
-map <A-j> <c-w>j
-map <A-k> <c-w>k
-map <A-l> <c-w>l
-map [[ :NERDTreeToggle<CR>
-
 nnoremap gc :tabe<CR>
-nnoremap gC :tabe 
+nnoremap gC :tabe<Space>
 nnoremap gn :tabnext<CR>
 
-cnoremap <c-a> <home>
-cnoremap <c-e> <end>
+cnoremap <C-a> <Home>
+cnoremap <C-e> <End>
 
+" Add the current directory tree to 'path'
+command! PathAdd set path+=$PWD/**
 
-" Allow saving of files as sudo when I forgot to start vim using sudo.
-cmap w!! w !sudo tee > /dev/null %
-
-" Search Settings
+" Paste mode toggle on Ctrl-p
 function! PasteToggle()
-	if &paste
-		set nopaste
-		echo 'Paste off'
-	else
-		set paste 
-		echo 'Paste on'
-	endif
+  if &paste
+    set nopaste
+    echo 'Paste off'
+  else
+    set paste
+    echo 'Paste on'
+  endif
 endfunction
 command! -nargs=0 PasteToggle call PasteToggle()
-noremap <c-p> <esc>:call PasteToggle()<cr>
+noremap <C-p> <Esc>:call PasteToggle()<CR>
 
-" TMUX Navigation plugin
-if exists('$TMUX')
-	silent! packadd vim-tmux-navigator
-endif
-
-" Persistent file undo across reopening vim
-if !isdirectory($HOME."/.vim/undodir")
-	call mkdir($HOME."/.vim/undodir", "p")
-endif
-set undodir=$HOME/.vim/undodir
-
-
-" Search Settings
+" Search highlight toggle: :HS, or type hs at the start of the command line
 function! HighlightSearch()
-	if &hlsearch
-		set nohlsearch
-		echo 'Search highlight off'
-	else
-		set hlsearch
-		echo 'Search highlight on'
-	endif
+  if &hlsearch
+    set nohlsearch
+    echo 'Search highlight off'
+  else
+    set hlsearch
+    echo 'Search highlight on'
+  endif
 endfunction
 command! -nargs=0 HS call HighlightSearch()
 cnoremap <nowait> <expr> hs getcmdtype() ==# ':' && getcmdpos() == 1 ? 'HS' : 'hs'
 
-" Spell Checking
-command! SCon setlocal spell spelllang=en_ca
-command! SCoff setlocal nospell
+" Color column from N to the right edge. :ColorColumn 0 turns it off.
+" (Changed from the original, which turned on every column for 0.)
+if exists('+colorcolumn')
+  function! ColorColumn(col)
+    let &colorcolumn = a:col > 0 ? join(range(a:col, 999), ',') : ''
+  endfunction
+  command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
+endif
 
-" Color Column
-function! ColorColumn(col)
-	let &colorcolumn=join(range(a:col,999),',')
-endfunction
-command! -nargs=1 ColorColumn call ColorColumn(<f-args>)
+" Show whitespace: :WSToggle
+if has('patch-7.4.710') && &encoding ==# 'utf-8'
+  set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
+  command! WSToggle set invlist
+endif
 
-" Show white spacing
-set listchars=eol:¬,tab:>•,trail:~,extends:>,precedes:<,space:·
-command! WSToggle set invlist
+" Close the quickfix window if it is the last window
+augroup QFClose
+  autocmd!
+  autocmd WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), '&buftype') ==# 'quickfix' | quit | endif
+augroup END
 
-
-" Close qf if it is only open window
-aug QFClose
-	au!
-	au WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
-aug END
-
-" Resize qf
-function! AdjustWindowHeight(minheight, maxheight)
-	let l = 1
-	let n_lines = 0
-	let w_width = winwidth(0)
-	while l <= line('$')
-		" number to float for division
-		let l_len = strlen(getline(l)) + 0.0
-		let line_width = l_len/w_width
-		let n_lines += float2nr(ceil(line_width))
-		let l += 1
-	endw
-	exe max([min([n_lines, a:maxheight]), a:minheight]) . "wincmd _"
-endfunction
-
-
-" Zoom / Restore window.
+" Zoom / restore the current window: wwf
 function! s:ZoomToggle() abort
-	if exists('t:zoomed') && t:zoomed
-		execute t:zoom_winrestcmd
-		let t:zoomed = 0
-	else
-		let t:zoom_winrestcmd = winrestcmd()
-		resize
-		vertical resize
-		let t:zoomed = 1
-	endif
+  if exists('t:zoomed') && t:zoomed
+    execute t:zoom_winrestcmd
+    let t:zoomed = 0
+  else
+    let t:zoom_winrestcmd = winrestcmd()
+    resize
+    vertical resize
+    let t:zoomed = 1
+  endif
 endfunction
 command! ZoomToggle call s:ZoomToggle()
 nnoremap <silent> wwf :ZoomToggle<CR>
-tnoremap <silent> wwf <C-w>:ZoomToggle<CR>
-
-" make using make! instead of make
-cnoremap <nowait> <expr> make getcmdtype() ==# ':' && getcmdpos() == 1 ? 'make!' : 'make'
+if has('terminal')
+  tnoremap <silent> wwf <C-w>:ZoomToggle<CR>
+endif
 
 augroup vimrc
-	" Uncomment the following to have Vim jump to the last position when
-	" reopening a file
-	if has('autocmd')
-		au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-			\| exe "normal! g'\"" | endif
-	endif
-	autocmd BufNewFile,BufRead *.x86 set filetype=gas
-	autocmd BufNewFile,BufRead *.log set filetype=log
-	autocmd BufNewFile,BufRead *.h set filetype=cpp
+  autocmd!
+  " Jump to the last cursor position when reopening a file
+  autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+  autocmd BufNewFile,BufRead *.log set filetype=log
+  autocmd BufNewFile,BufRead *.h set filetype=cpp
 augroup END
 
-" Assume I want syntax highlighting
-colorscheme desert-mkarpoff
-syntax enable
-" Let Vim use whichever regex engine is most effective
-" This allows it to use the cheapper engine when cost is too high
-set regexpengine=0
+" Stock colorscheme close to the custom desert-mkarpoff
+if has('syntax')
+  silent! colorscheme desert
+endif
 
-let g:airline_powerline_fonts=1
-
-silent! helptags ALL
+if filereadable(expand('~/.vim/statusline.vim')) | source ~/.vim/statusline.vim | endif
+" source ~/.vim/extras.vim  " sudo save, Alt window keys, spell, cursor shape
